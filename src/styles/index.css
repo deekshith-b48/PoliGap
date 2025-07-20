@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom base styles */
+@layer base {
+  body {
+    @apply bg-gray-900 text-white font-sans;
+  }
+}
+
+/* Custom utility classes */
+@layer utilities {
+  .shadow-neo {
+    box-shadow: 8px 8px 0px rgba(0, 0, 0, 1);
+  }
+  
+  /* Hide scrollbar for WebKit browsers */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}

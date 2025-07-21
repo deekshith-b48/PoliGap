@@ -223,7 +223,7 @@ export async function analyzeDocument(text, config = {}) {
       return result;
     } catch (parseError) {
       console.error('Failed to parse JSON response:', parseError);
-      console.error('Original response:', responseText);
+      console.error('Original response:', generatedText);
       console.error('Cleaned response:', cleanedResponse);
       
       // Return comprehensive fallback with benchmarking results

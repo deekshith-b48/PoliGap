@@ -1,10 +1,11 @@
 import { analyzeDocument } from './gemini';
 
 export async function testGeminiAPI() {
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  // Use environment variable or fallback to direct API key
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY || 'AIzaSyBEyNqivrte8K4J_pu6bWzsTfics57MNNA';
   
   if (!apiKey) {
-    return { error: 'No API key found in environment variables' };
+    return { error: 'No API key configured. Please check your Gemini API key.' };
   }
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;

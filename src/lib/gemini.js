@@ -299,7 +299,7 @@ export async function analyzeWithGemini(prompt, config = {}) {
   try {
     const response = await fetch(url, {
       method: 'POST',
-      headers: { 
+      headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -316,7 +316,7 @@ export async function analyzeWithGemini(prompt, config = {}) {
             threshold: "BLOCK_NONE"
           },
           {
-            category: "HARM_CATEGORY_HATE_SPEECH", 
+            category: "HARM_CATEGORY_HATE_SPEECH",
             threshold: "BLOCK_NONE"
           },
           {
@@ -331,21 +331,35 @@ export async function analyzeWithGemini(prompt, config = {}) {
       }),
     });
 
+    console.log('Chat API response status:', response.status);
+    console.log('Chat API response ok:', response.ok);
+
+    // Read the response body only once
+    let responseText;
     let responseData;
 
+    try {
+      responseText = await response.text();
+    } catch (readError) {
+      console.error('Failed to read response body:', readError);
+      throw new Error('Failed to read API response');
+    }
+
     if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`API request failed: ${response.status} - ${errorText}`);
+      console.error('Chat API Error Response:', responseText);
+      throw new Error(`API request failed: ${response.status} - ${responseText}`);
     }
 
     try {
-      responseData = await response.json();
+      responseData = JSON.parse(responseText);
     } catch (jsonError) {
       console.error('Failed to parse JSON response:', jsonError);
-      throw new Error('Invalid JSON response from API');
+      console.error('Raw response text:', responseText);
+      throw new Error(`Invalid JSON response from API: ${jsonError.message}`);
     }
 
     if (!responseData.candidates || !responseData.candidates[0] || !responseData.candidates[0].content) {
+      console.error('Invalid API response format:', responseData);
       throw new Error('Invalid API response format');
     }
 

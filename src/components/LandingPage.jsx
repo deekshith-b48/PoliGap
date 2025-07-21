@@ -1,7 +1,13 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 function LandingPage({ onNavigate }) {
   const [activeTestimonial, setActiveTestimonial] = useState(0);
+  const [activeDropdown, setActiveDropdown] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [showProductTour, setShowProductTour] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   const testimonials = [
     {
@@ -26,28 +32,316 @@ function LandingPage({ onNavigate }) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="sticky top-0 z-50 glass backdrop-blur-md border-b border-gray-200/20">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+      {/* Cyberpunk Header */}
+      <header className="sticky top-0 z-50 bg-gradient-to-r from-slate-900 via-gray-900 to-slate-900 border-b border-cyan-500/30 shadow-lg">
+        {/* Neon glow effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-purple-500/5 to-cyan-500/5"></div>
+
+        <div className="relative max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-700 rounded-2xl flex items-center justify-center shadow-glow">
-                <span className="text-white font-bold">PG</span>
+
+            {/* Left Side - Logo + Main CTAs */}
+            <div className="flex items-center space-x-8">
+              {/* Logo */}
+              <div className="flex items-center space-x-3 group">
+                <div className="relative">
+                  <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-purple-600 rounded-2xl flex items-center justify-center shadow-glow-accent">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                  </div>
+                  <div className="absolute inset-0 bg-cyan-400 rounded-2xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                </div>
+                <div>
+                  <h1 className="text-2xl font-black text-white tracking-wider" style={{fontFamily: 'Space Grotesk, sans-serif'}}>POLIGAP</h1>
+                  <p className="text-xs text-cyan-300 font-medium">Policy Gap Analyzer</p>
+                </div>
               </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">PoliGap</h1>
-                <p className="text-xs text-gray-600">AI-Powered Compliance</p>
+
+              {/* Main CTAs */}
+              <div className="hidden lg:flex items-center space-x-4">
+                <button
+                  onMouseEnter={() => setShowProductTour(true)}
+                  onMouseLeave={() => setShowProductTour(false)}
+                  className="relative px-4 py-2 text-cyan-300 hover:text-cyan-100 transition-colors font-medium border border-cyan-500/30 rounded-xl hover:border-cyan-400/50"
+                >
+                  Product Tour
+                  {showProductTour && (
+                    <div className="absolute top-full left-0 mt-2 w-80 bg-slate-800 border border-cyan-500/30 rounded-2xl p-4 shadow-glow z-50">
+                      <div className="bg-slate-700 rounded-xl h-32 mb-3 flex items-center justify-center">
+                        <div className="text-center">
+                          <div className="w-12 h-12 bg-cyan-500/20 rounded-xl flex items-center justify-center mx-auto mb-2">
+                            <svg className="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.01M15 10h1.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </div>
+                          <p className="text-cyan-300 text-sm">30-sec Demo Video</p>
+                        </div>
+                      </div>
+                      <p className="text-white text-sm font-medium">See how PoliGap analyzes policies in real-time</p>
+                    </div>
+                  )}
+                </button>
+                <button className="px-4 py-2 text-purple-300 hover:text-purple-100 transition-colors font-medium">
+                  Pricing
+                </button>
               </div>
             </div>
-            <nav className="hidden md:flex items-center space-x-8">
-              <button className="text-gray-600 hover:text-gray-900 transition-colors font-medium">Features</button>
-              <button className="text-gray-600 hover:text-gray-900 transition-colors font-medium">Pricing</button>
-              <button className="text-gray-600 hover:text-gray-900 transition-colors font-medium">About</button>
-              <button className="bg-gradient-primary text-white px-6 py-3 rounded-2xl font-semibold btn-hover focus-ring shadow-glow">
-                Get Demo
+
+            {/* Center - Functional Dropdown Menus */}
+            <div className="hidden xl:flex items-center space-x-6">
+
+              {/* Features Dropdown */}
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setActiveDropdown(activeDropdown === 'features' ? null : 'features')}
+                  className="flex items-center space-x-2 px-4 py-2 text-white hover:text-cyan-300 transition-colors font-medium"
+                >
+                  <span>⚡</span>
+                  <span>Features</span>
+                  <svg className={`w-4 h-4 transition-transform ${activeDropdown === 'features' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                {activeDropdown === 'features' && (
+                  <div className="absolute top-full left-0 mt-2 w-96 bg-slate-800 border border-cyan-500/30 rounded-2xl p-6 shadow-glow z-50 animate-fadeInUp">
+                    <div className="grid grid-cols-1 gap-4">
+                      <button
+                        onClick={() => onNavigate('analyzer')}
+                        className="flex items-start p-4 bg-slate-700/50 rounded-xl hover:bg-slate-700 transition-colors text-left group"
+                      >
+                        <div className="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center mr-4 group-hover:bg-blue-500/30 transition-colors">
+                          <span className="text-blue-400">🔍</span>
+                        </div>
+                        <div>
+                          <h3 className="text-white font-semibold mb-1">Policy Gap Analyzer</h3>
+                          <p className="text-gray-400 text-sm">Upload policies, get instant compliance scores</p>
+                        </div>
+                      </button>
+
+                      <button
+                        onClick={() => onNavigate('generator')}
+                        className="flex items-start p-4 bg-slate-700/50 rounded-xl hover:bg-slate-700 transition-colors text-left group"
+                      >
+                        <div className="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center mr-4 group-hover:bg-purple-500/30 transition-colors">
+                          <span className="text-purple-400">⚡</span>
+                        </div>
+                        <div>
+                          <h3 className="text-white font-semibold mb-1">AI Policy Generator</h3>
+                          <p className="text-gray-400 text-sm">Generate GDPR/HIPAA docs in 1 click</p>
+                        </div>
+                      </button>
+
+                      <button
+                        onClick={() => onNavigate('assessment')}
+                        className="flex items-start p-4 bg-slate-700/50 rounded-xl hover:bg-slate-700 transition-colors text-left group"
+                      >
+                        <div className="w-10 h-10 bg-red-500/20 rounded-xl flex items-center justify-center mr-4 group-hover:bg-red-500/30 transition-colors">
+                          <span className="text-red-400">🛡️</span>
+                        </div>
+                        <div>
+                          <h3 className="text-white font-semibold mb-1">Risk Assessment</h3>
+                          <p className="text-gray-400 text-sm">AI-powered vulnerability scoring</p>
+                        </div>
+                      </button>
+
+                      <div className="flex items-start p-4 bg-slate-700/50 rounded-xl hover:bg-slate-700 transition-colors text-left group">
+                        <div className="w-10 h-10 bg-green-500/20 rounded-xl flex items-center justify-center mr-4 group-hover:bg-green-500/30 transition-colors">
+                          <span className="text-green-400">🤖</span>
+                        </div>
+                        <div>
+                          <h3 className="text-white font-semibold mb-1">AI Expert Chat</h3>
+                          <p className="text-gray-400 text-sm">Gemini-powered compliance Q&A</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Frameworks Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setActiveDropdown(activeDropdown === 'frameworks' ? null : 'frameworks')}
+                  className="flex items-center space-x-2 px-4 py-2 text-white hover:text-cyan-300 transition-colors font-medium"
+                >
+                  <span>🛡️</span>
+                  <span>Frameworks</span>
+                  <svg className={`w-4 h-4 transition-transform ${activeDropdown === 'frameworks' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                {activeDropdown === 'frameworks' && (
+                  <div className="absolute top-full left-0 mt-2 w-80 bg-slate-800 border border-cyan-500/30 rounded-2xl p-6 shadow-glow z-50 animate-fadeInUp">
+                    <div className="grid grid-cols-2 gap-3 mb-4">
+                      <div className="flex items-center p-3 bg-slate-700/50 rounded-xl hover:bg-slate-700 transition-colors group">
+                        <span className="text-lg mr-3">🇪🇺</span>
+                        <div>
+                          <div className="text-white font-medium text-sm">GDPR</div>
+                          <div className="text-gray-400 text-xs">EU Privacy</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center p-3 bg-slate-700/50 rounded-xl hover:bg-slate-700 transition-colors group">
+                        <span className="text-lg mr-3">🏥</span>
+                        <div>
+                          <div className="text-white font-medium text-sm">HIPAA</div>
+                          <div className="text-gray-400 text-xs">US Healthcare</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center p-3 bg-slate-700/50 rounded-xl hover:bg-slate-700 transition-colors group">
+                        <span className="text-lg mr-3">📊</span>
+                        <div>
+                          <div className="text-white font-medium text-sm">SOX</div>
+                          <div className="text-gray-400 text-xs">Financial</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center p-3 bg-slate-700/50 rounded-xl hover:bg-slate-700 transition-colors group">
+                        <span className="text-lg mr-3">💳</span>
+                        <div>
+                          <div className="text-white font-medium text-sm">PCI DSS</div>
+                          <div className="text-gray-400 text-xs">Payments</div>
+                        </div>
+                      </div>
+                    </div>
+                    <button className="w-full text-cyan-400 hover:text-cyan-300 transition-colors font-medium text-sm border border-cyan-500/30 rounded-xl py-2">
+                      See all 50+ supported frameworks →
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Resources Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setActiveDropdown(activeDropdown === 'resources' ? null : 'resources')}
+                  className="flex items-center space-x-2 px-4 py-2 text-white hover:text-cyan-300 transition-colors font-medium"
+                >
+                  <span>📚</span>
+                  <span>Resources</span>
+                  <svg className={`w-4 h-4 transition-transform ${activeDropdown === 'resources' ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                {activeDropdown === 'resources' && (
+                  <div className="absolute top-full left-0 mt-2 w-64 bg-slate-800 border border-cyan-500/30 rounded-2xl p-4 shadow-glow z-50 animate-fadeInUp">
+                    <div className="space-y-2">
+                      <button
+                        onClick={() => onNavigate('compliances')}
+                        className="w-full text-left p-3 text-white hover:bg-slate-700/50 rounded-xl transition-colors"
+                      >
+                        📋 Compliance Guides
+                      </button>
+                      <button className="w-full text-left p-3 text-white hover:bg-slate-700/50 rounded-xl transition-colors">
+                        🎥 Webinars
+                      </button>
+                      <button className="w-full text-left p-3 text-white hover:bg-slate-700/50 rounded-xl transition-colors">
+                        🔌 API Docs
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Right Side - Search + Demo CTA + Account */}
+            <div className="flex items-center space-x-4">
+
+              {/* AI Search Bar */}
+              <div className="hidden lg:block relative">
+                <div className={`relative transition-all duration-300 ${isSearchFocused ? 'w-80' : 'w-64'}`}>
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onFocus={() => setIsSearchFocused(true)}
+                    onBlur={() => setIsSearchFocused(false)}
+                    placeholder="Ask compliance questions..."
+                    className="w-full bg-slate-800/80 border border-cyan-500/30 rounded-2xl px-4 py-3 pl-12 text-white placeholder-gray-400 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 transition-all"
+                  />
+                  <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+                    <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </div>
+                  {searchQuery && (
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-slate-800 border border-cyan-500/30 rounded-2xl p-4 shadow-glow z-50">
+                      <div className="space-y-2">
+                        <div className="p-2 hover:bg-slate-700 rounded-xl cursor-pointer">
+                          <div className="text-white text-sm font-medium">GDPR data retention requirements</div>
+                          <div className="text-gray-400 text-xs">Article 5(1)(e) - Storage limitation principle</div>
+                        </div>
+                        <div className="p-2 hover:bg-slate-700 rounded-xl cursor-pointer">
+                          <div className="text-white text-sm font-medium">HIPAA breach notification timeline</div>
+                          <div className="text-gray-400 text-xs">164.400-414 - 60 day notification rule</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Demo CTA - Glowing */}
+              <button
+                onClick={() => onNavigate('analyzer')}
+                className="relative px-6 py-3 bg-gradient-to-r from-cyan-500 to-purple-600 text-white font-bold rounded-2xl hover:from-cyan-400 hover:to-purple-500 transition-all transform hover:scale-105 shadow-glow-accent animate-ai-pulse"
+              >
+                Try Live Demo →
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-2xl blur-lg opacity-30 -z-10"></div>
               </button>
-            </nav>
+
+              {/* Mobile Menu Button */}
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="lg:hidden p-2 text-white hover:text-cyan-300 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+            </div>
           </div>
+
+          {/* Mobile Menu */}
+          {isMobileMenuOpen && (
+            <div className="lg:hidden mt-4 pb-4 border-t border-cyan-500/30">
+              <div className="flex flex-col space-y-4 pt-4">
+                <button
+                  onClick={() => onNavigate('analyzer')}
+                  className="text-left text-white hover:text-cyan-300 transition-colors font-medium"
+                >
+                  🔍 Policy Analyzer
+                </button>
+                <button
+                  onClick={() => onNavigate('generator')}
+                  className="text-left text-white hover:text-cyan-300 transition-colors font-medium"
+                >
+                  ⚡ AI Generator
+                </button>
+                <button
+                  onClick={() => onNavigate('compliances')}
+                  className="text-left text-white hover:text-cyan-300 transition-colors font-medium"
+                >
+                  📚 Learn Frameworks
+                </button>
+                <button
+                  onClick={() => onNavigate('assessment')}
+                  className="text-left text-white hover:text-cyan-300 transition-colors font-medium"
+                >
+                  🛡️ Risk Assessment
+                </button>
+                <div className="pt-2 border-t border-cyan-500/30">
+                  <input
+                    type="text"
+                    placeholder="Search compliance topics..."
+                    className="w-full bg-slate-800/80 border border-cyan-500/30 rounded-xl px-4 py-2 text-white placeholder-gray-400 focus:border-cyan-400 transition-all"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </header>
 

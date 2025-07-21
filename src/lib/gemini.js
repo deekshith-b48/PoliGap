@@ -96,6 +96,11 @@ export async function analyzeDocument(text, config = {}) {
     Document text analyzed: "${text.substring(0, 2000)}..."
   `;
 
+  console.log('Starting analyzeDocument API request...');
+  console.log('Text length:', text.length);
+  console.log('Frameworks:', frameworksArray);
+  console.log('Industry:', industry);
+
   try {
     const response = await fetch(url, {
       method: 'POST',

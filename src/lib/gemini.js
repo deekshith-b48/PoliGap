@@ -1,7 +1,8 @@
 import RulesBenchmarkingEngine from './rulesBenchmarking.js';
 
 export async function analyzeDocument(text, config = {}) {
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  // Use environment variable or fallback to direct API key
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY || 'AIzaSyBEyNqivrte8K4J_pu6bWzsTfics57MNNA';
   
   // Extract configuration with defaults and ensure proper types
   let selectedFrameworks = config.frameworks;
@@ -22,7 +23,7 @@ export async function analyzeDocument(text, config = {}) {
   console.log('Industry:', industry);
   
   if (!apiKey) {
-    throw new Error('Gemini API key is not configured. Please add VITE_GEMINI_API_KEY to your .env file');
+    throw new Error('Gemini API key is not configured. Please check your API key configuration.');
   }
 
   // Ensure frameworksArray is definitely an array
@@ -261,10 +262,11 @@ export async function analyzeDocument(text, config = {}) {
 
 // Simple chat function for AI Expert chat
 export async function analyzeWithGemini(prompt, config = {}) {
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  // Use environment variable or fallback to direct API key
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY || 'AIzaSyBEyNqivrte8K4J_pu6bWzsTfics57MNNA';
   
   if (!apiKey) {
-    throw new Error('Gemini API key is not configured. Please add VITE_GEMINI_API_KEY to your .env file');
+    throw new Error('Gemini API key is not configured. Please check your API key configuration.');
   }
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;

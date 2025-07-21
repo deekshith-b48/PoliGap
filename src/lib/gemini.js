@@ -171,11 +171,11 @@ export async function analyzeDocument(text, config = {}) {
       throw new Error('Invalid API response format');
     }
 
-    const responseText = data.candidates[0].content.parts[0].text;
-    console.log('Generated text:', responseText);
+    const generatedText = data.candidates[0].content.parts[0].text;
+    console.log('Generated text:', generatedText);
 
     // Clean up the response text - remove markdown formatting if present
-    let cleanedResponse = responseText.trim();
+    let cleanedResponse = generatedText.trim();
     
     // Remove markdown code blocks if they exist
     if (cleanedResponse.startsWith('```json')) {

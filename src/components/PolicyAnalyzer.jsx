@@ -89,7 +89,22 @@ function PolicyAnalyzer({ onNavigate, onDocumentUpload }) {
       
     } catch (err) {
       console.error('Analysis error:', err);
-      setError(err.message || 'An error occurred during analysis');
+
+      let userFriendlyMessage = 'An error occurred during analysis';
+
+      if (err.message) {
+        if (err.message.includes('stream already read')) {
+          userFriendlyMessage = 'Network error occurred. Please try again.';
+        } else if (err.message.includes('API request failed')) {
+          userFriendlyMessage = 'Unable to connect to AI service. Please check your connection and try again.';
+        } else if (err.message.includes('Invalid JSON')) {
+          userFriendlyMessage = 'Received invalid response from AI service. Please try again.';
+        } else {
+          userFriendlyMessage = err.message;
+        }
+      }
+
+      setError(userFriendlyMessage);
       setProgress('');
     } finally {
       setLoading(false);

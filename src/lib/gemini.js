@@ -134,14 +134,23 @@ export async function analyzeDocument(text, config = {}) {
     console.log('Response status:', response.status);
     console.log('Response ok:', response.ok);
 
+    let responseData;
+
     if (!response.ok) {
       const errorText = await response.text();
       console.error('API Error Response:', errorText);
       throw new Error(`API request failed: ${response.status} - ${errorText}`);
     }
 
-    const data = await response.json();
-    console.log('API Response:', data);
+    try {
+      responseData = await response.json();
+      console.log('API Response:', responseData);
+    } catch (jsonError) {
+      console.error('Failed to parse JSON response:', jsonError);
+      throw new Error('Invalid JSON response from API');
+    }
+
+    const data = responseData;
 
     if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
       throw new Error('Invalid API response format');
@@ -230,7 +239,9 @@ export async function analyzeDocument(text, config = {}) {
     }
   } catch (error) {
     console.error('Detailed error:', error);
-    
+    console.error('Error type:', error.constructor.name);
+    console.error('Error message:', error.message);
+
     // Return benchmarking results even if API completely fails
     return {
       summary: `Automated rules benchmarking completed despite API error. Compliance score: ${benchmarkResults.overallResults.averageScore}%. ${benchmarkResults.overallResults.criticalGaps} critical gaps identified.`,

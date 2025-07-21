@@ -105,7 +105,24 @@ function PolicyGenerator({ onNavigate }) {
       
     } catch (err) {
       console.error('Generation error:', err);
-      setError(err.message || 'Failed to generate policy');
+
+      let userFriendlyMessage = 'Failed to generate policy';
+
+      if (err.message) {
+        if (err.message.includes('stream already read')) {
+          userFriendlyMessage = 'Network error occurred. Please try again.';
+        } else if (err.message.includes('API request failed')) {
+          userFriendlyMessage = 'Unable to connect to AI service. Please check your connection and try again.';
+        } else if (err.message.includes('Invalid JSON')) {
+          userFriendlyMessage = 'Received invalid response from AI service. Please try again.';
+        } else if (err.message.includes('API key')) {
+          userFriendlyMessage = 'AI service configuration error. Please contact support.';
+        } else {
+          userFriendlyMessage = err.message;
+        }
+      }
+
+      setError(userFriendlyMessage);
       setProgress('');
     } finally {
       setGenerating(false);

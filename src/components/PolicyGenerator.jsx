@@ -176,9 +176,16 @@ function PolicyGenerator({ onNavigate }) {
       Format the response in clear markdown structure suitable for both digital viewing and PDF generation.`;
 
       setProgress('Generating policy content with AI...');
-      
-      const response = await analyzeWithGemini(prompt);
-      
+
+      const response = await analyzeWithGemini(prompt, {
+        temperature: 0.7,
+        maxOutputTokens: 4000,
+        topP: 0.8,
+        topK: 40,
+        enhancedFormatting: true,
+        isPolicyGeneration: true
+      });
+
       setProgress('Formatting and finalizing document...');
       
       setGeneratedPolicy(response);

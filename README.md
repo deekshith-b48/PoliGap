@@ -40,3 +40,4 @@ A React-based application with a Neobrutalism theme for legal, compliance, and a
 - Supabase (Storage, PostgreSQL)
 - Gemini AI (NLP parsing)
 - pdf.js (PDF text extraction)
+# PoliGap

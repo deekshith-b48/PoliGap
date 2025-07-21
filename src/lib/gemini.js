@@ -139,20 +139,30 @@ export async function analyzeDocument(text, config = {}) {
     console.log('Response status:', response.status);
     console.log('Response ok:', response.ok);
 
+    // Read the response body only once
+    let responseText;
     let responseData;
 
+    try {
+      responseText = await response.text();
+    } catch (readError) {
+      console.error('Failed to read response body:', readError);
+      throw new Error('Failed to read API response');
+    }
+
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('API Error Response:', errorText);
-      throw new Error(`API request failed: ${response.status} - ${errorText}`);
+      console.error('API Error Response:', responseText);
+      throw new Error(`API request failed: ${response.status} - ${responseText}`);
     }
 
     try {
-      responseData = await response.json();
-      console.log('API Response:', responseData);
+      responseData = JSON.parse(responseText);
+      console.log('API Response received successfully');
+      console.log('Response has candidates:', !!responseData.candidates);
     } catch (jsonError) {
       console.error('Failed to parse JSON response:', jsonError);
-      throw new Error('Invalid JSON response from API');
+      console.error('Raw response text:', responseText);
+      throw new Error(`Invalid JSON response from API: ${jsonError.message}`);
     }
 
     const data = responseData;

@@ -9,23 +9,29 @@ function DocumentUpload({ onUpload, uploading, progress, error }) {
   const [dragActive, setDragActive] = useState(false);
 
   const availableFrameworks = [
-    { id: 'GDPR', name: 'GDPR (General Data Protection Regulation)', region: 'EU', color: 'blue' },
-    { id: 'HIPAA', name: 'HIPAA (Health Insurance Portability)', region: 'US', color: 'green' },
-    { id: 'SOX', name: 'SOX (Sarbanes-Oxley Act)', region: 'US', color: 'purple' },
-    { id: 'CCPA', name: 'CCPA (California Consumer Privacy Act)', region: 'California', color: 'orange' },
-    { id: 'PCI_DSS', name: 'PCI DSS (Payment Card Industry)', region: 'Global', color: 'red' },
-    { id: 'ISO_27001', name: 'ISO 27001 (Information Security Management)', region: 'International', color: 'indigo' },
-    { id: 'FERPA', name: 'FERPA (Family Educational Rights)', region: 'US', color: 'teal' },
-    { id: 'GLBA', name: 'GLBA (Gramm-Leach-Bliley Act)', region: 'US', color: 'pink' },
-    { id: 'COPPA', name: 'COPPA (Children\'s Online Privacy)', region: 'US', color: 'yellow' },
-    { id: 'NIST_CSF', name: 'NIST Cybersecurity Framework', region: 'US', color: 'gray' },
-    { id: 'CAN_SPAM', name: 'CAN-SPAM Act', region: 'US', color: 'cyan' },
-    { id: 'FISMA', name: 'FISMA (Federal Information Security)', region: 'US', color: 'emerald' }
+    { id: 'GDPR', name: 'GDPR (General Data Protection Regulation)', region: 'EU', icon: '🇪🇺' },
+    { id: 'HIPAA', name: 'HIPAA (Health Insurance Portability)', region: 'US', icon: '🏥' },
+    { id: 'SOX', name: 'SOX (Sarbanes-Oxley Act)', region: 'US', icon: '📊' },
+    { id: 'CCPA', name: 'CCPA (California Consumer Privacy Act)', region: 'California', icon: '🌴' },
+    { id: 'PCI_DSS', name: 'PCI DSS (Payment Card Industry)', region: 'Global', icon: '💳' },
+    { id: 'ISO_27001', name: 'ISO 27001 (Information Security Management)', region: 'International', icon: '🔒' },
+    { id: 'FERPA', name: 'FERPA (Family Educational Rights)', region: 'US', icon: '🎓' },
+    { id: 'GLBA', name: 'GLBA (Gramm-Leach-Bliley Act)', region: 'US', icon: '🏦' },
+    { id: 'COPPA', name: 'COPPA (Children\'s Online Privacy)', region: 'US', icon: '👶' },
+    { id: 'NIST_CSF', name: 'NIST Cybersecurity Framework', region: 'US', icon: '🛡️' },
+    { id: 'CAN_SPAM', name: 'CAN-SPAM Act', region: 'US', icon: '📧' },
+    { id: 'FISMA', name: 'FISMA (Federal Information Security)', region: 'US', icon: '🏛️' }
   ];
 
   const industries = [
-    'Technology', 'Healthcare', 'Financial', 'Manufacturing', 
-    'Retail', 'Education', 'Government', 'Energy'
+    { id: 'technology', name: 'Technology', icon: '💻', description: 'Software, SaaS, IT services, and tech startups' },
+    { id: 'healthcare', name: 'Healthcare', icon: '🏥', description: 'Hospitals, medical devices, health services' },
+    { id: 'financial', name: 'Financial Services', icon: '🏦', description: 'Banks, insurance, investment firms' },
+    { id: 'manufacturing', name: 'Manufacturing', icon: '🏭', description: 'Production, industrial, automotive' },
+    { id: 'retail', name: 'Retail & E-commerce', icon: '🛍️', description: 'Online stores, consumer goods, retail chains' },
+    { id: 'education', name: 'Education', icon: '🎓', description: 'Schools, universities, educational platforms' },
+    { id: 'government', name: 'Government', icon: '🏛️', description: 'Public sector, agencies, municipalities' },
+    { id: 'energy', name: 'Energy & Utilities', icon: '⚡', description: 'Power, oil & gas, renewable energy' }
   ];
 
   const handleFileChange = (e) => {
@@ -60,6 +66,10 @@ function DocumentUpload({ onUpload, uploading, progress, error }) {
         ? currentFrameworks.filter(id => id !== frameworkId)
         : [...currentFrameworks, frameworkId];
     });
+  };
+
+  const handleIndustryChange = (industryId) => {
+    setSelectedIndustry(industryId);
   };
 
   const handleUpload = async () => {
@@ -97,24 +107,6 @@ function DocumentUpload({ onUpload, uploading, progress, error }) {
     } catch (err) {
       console.error('Upload error:', err);
     }
-  };
-
-  const getFrameworkColorClasses = (color) => {
-    const colorMap = {
-      blue: 'bg-blue-50 border-blue-200 text-blue-800 hover:bg-blue-100',
-      green: 'bg-green-50 border-green-200 text-green-800 hover:bg-green-100',
-      purple: 'bg-purple-50 border-purple-200 text-purple-800 hover:bg-purple-100',
-      orange: 'bg-orange-50 border-orange-200 text-orange-800 hover:bg-orange-100',
-      red: 'bg-red-50 border-red-200 text-red-800 hover:bg-red-100',
-      indigo: 'bg-indigo-50 border-indigo-200 text-indigo-800 hover:bg-indigo-100',
-      teal: 'bg-teal-50 border-teal-200 text-teal-800 hover:bg-teal-100',
-      pink: 'bg-pink-50 border-pink-200 text-pink-800 hover:bg-pink-100',
-      yellow: 'bg-yellow-50 border-yellow-200 text-yellow-800 hover:bg-yellow-100',
-      gray: 'bg-gray-50 border-gray-200 text-gray-800 hover:bg-gray-100',
-      cyan: 'bg-cyan-50 border-cyan-200 text-cyan-800 hover:bg-cyan-100',
-      emerald: 'bg-emerald-50 border-emerald-200 text-emerald-800 hover:bg-emerald-100'
-    };
-    return colorMap[color] || colorMap.blue;
   };
 
   return (
@@ -184,29 +176,72 @@ function DocumentUpload({ onUpload, uploading, progress, error }) {
         </div>
       </div>
 
-      {/* Industry Selection */}
+      {/* Industry Selection - Professional Card Grid */}
       <div className="mb-8">
-        <label className="block text-sm font-semibold text-gray-700 mb-3">
+        <label className="block text-sm font-semibold text-gray-700 mb-4">
           Industry Sector
         </label>
-        <select
-          value={selectedIndustry}
-          onChange={(e) => setSelectedIndustry(e.target.value)}
-          className="w-full p-4 border border-gray-300 rounded-2xl bg-white text-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
-        >
-          <option value="">Select your industry...</option>
+        <p className="text-sm text-gray-600 mb-4">Select your organization's primary industry</p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {industries.map((industry) => (
-            <option key={industry} value={industry}>{industry}</option>
+            <label
+              key={industry.id}
+              className={`flex items-start p-4 border rounded-2xl cursor-pointer transition-all ${
+                selectedIndustry === industry.id
+                  ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200'
+                  : 'border-gray-200 bg-gray-50 hover:bg-gray-100 hover:border-gray-300'
+              }`}
+            >
+              <input
+                type="radio"
+                name="industry"
+                value={industry.id}
+                checked={selectedIndustry === industry.id}
+                onChange={() => handleIndustryChange(industry.id)}
+                className="sr-only"
+              />
+              <div className="flex-shrink-0 mr-4">
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
+                  selectedIndustry === industry.id
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-gray-200 text-gray-600'
+                }`}>
+                  <span className="text-xl">{industry.icon}</span>
+                </div>
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className={`font-semibold mb-1 ${
+                  selectedIndustry === industry.id ? 'text-blue-900' : 'text-gray-900'
+                }`}>
+                  {industry.name}
+                </h4>
+                <p className={`text-sm ${
+                  selectedIndustry === industry.id ? 'text-blue-700' : 'text-gray-600'
+                }`}>
+                  {industry.description}
+                </p>
+              </div>
+              {selectedIndustry === industry.id && (
+                <div className="flex-shrink-0 ml-2">
+                  <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                </div>
+              )}
+            </label>
           ))}
-        </select>
+        </div>
       </div>
 
-      {/* Regulatory Frameworks */}
+      {/* Regulatory Frameworks - Consistent Styling */}
       <div className="mb-8">
-        <label className="block text-sm font-semibold text-gray-700 mb-3">
+        <label className="block text-sm font-semibold text-gray-700 mb-4">
           Regulatory Frameworks
         </label>
-        <p className="text-sm text-gray-600 mb-4">Select frameworks to benchmark against</p>
+        <p className="text-sm text-gray-600 mb-4">Select frameworks to benchmark against (choose multiple)</p>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-64 overflow-y-auto scrollbar-hide">
           {availableFrameworks.map((framework) => (
@@ -214,23 +249,76 @@ function DocumentUpload({ onUpload, uploading, progress, error }) {
               key={framework.id} 
               className={`flex items-center p-4 border rounded-2xl cursor-pointer transition-all ${
                 selectedFrameworks.includes(framework.id) 
-                  ? `${getFrameworkColorClasses(framework.color)} ring-2 ring-${framework.color}-300`
-                  : `bg-gray-50 border-gray-200 hover:bg-gray-100`
+                  ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200'
+                  : 'border-gray-200 bg-gray-50 hover:bg-gray-100 hover:border-gray-300'
               }`}
             >
               <input
                 type="checkbox"
                 checked={selectedFrameworks.includes(framework.id)}
                 onChange={() => handleFrameworkChange(framework.id)}
-                className="mr-3 w-4 h-4 text-blue-600 rounded focus-ring"
+                className="mr-4 w-5 h-5 text-blue-600 border-2 border-gray-300 rounded focus:ring-2 focus:ring-blue-200 transition-all"
               />
-              <div className="flex-1">
-                <span className="font-medium block">{framework.name}</span>
-                <span className="text-xs opacity-75">{framework.region}</span>
+              <div className="flex-shrink-0 mr-4">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                  selectedFrameworks.includes(framework.id)
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-gray-200'
+                }`}>
+                  <span className="text-sm">{framework.icon}</span>
+                </div>
               </div>
+              <div className="flex-1 min-w-0">
+                <span className={`font-semibold block ${
+                  selectedFrameworks.includes(framework.id) ? 'text-blue-900' : 'text-gray-900'
+                }`}>
+                  {framework.name}
+                </span>
+                <span className={`text-sm ${
+                  selectedFrameworks.includes(framework.id) ? 'text-blue-700' : 'text-gray-600'
+                }`}>
+                  {framework.region}
+                </span>
+              </div>
+              {selectedFrameworks.includes(framework.id) && (
+                <div className="flex-shrink-0 ml-2">
+                  <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                </div>
+              )}
             </label>
           ))}
         </div>
+        
+        {/* Selected Frameworks Summary */}
+        {selectedFrameworks.length > 0 && (
+          <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-2xl">
+            <div className="flex items-center mb-2">
+              <svg className="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="font-semibold text-blue-900">
+                {selectedFrameworks.length} framework{selectedFrameworks.length !== 1 ? 's' : ''} selected
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {selectedFrameworks.map((frameworkId) => {
+                const framework = availableFrameworks.find(f => f.id === frameworkId);
+                return (
+                  <span
+                    key={frameworkId}
+                    className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-xl"
+                  >
+                    {framework?.icon} {frameworkId}
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Submit Button */}

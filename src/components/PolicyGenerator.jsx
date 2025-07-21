@@ -70,80 +70,196 @@ function PolicyGenerator({ onNavigate }) {
     const pageHeight = doc.internal.pageSize.height;
     const margin = 20;
     const contentWidth = pageWidth - (margin * 2);
+    let currentY = 0;
 
-    // Professional header with gradient
-    doc.setFillColor(30, 58, 138); // Navy blue
-    doc.rect(0, 0, pageWidth, 50, 'F');
+    // Professional header with modern design
+    doc.setFillColor(15, 23, 42); // Slate-900
+    doc.rect(0, 0, pageWidth, 60, 'F');
 
-    // Company logo area (placeholder)
-    doc.setFillColor(255, 255, 255);
-    doc.rect(margin, 15, 20, 20, 'F');
+    // Modern logo placeholder
+    doc.setFillColor(59, 130, 246); // Blue-500
+    doc.roundedRect(margin, 15, 30, 30, 3, 3, 'F');
 
-    // Title and metadata
+    // Logo text
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(24);
+    doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
-    doc.text(metadata.title, margin + 30, 25);
+    doc.text('PG', margin + 10, 35);
 
+    // Title section
+    doc.setFontSize(20);
+    doc.setFont('helvetica', 'bold');
+    doc.text(metadata.title, margin + 40, 25);
+
+    // Subtitle with company info
     doc.setFontSize(12);
     doc.setFont('helvetica', 'normal');
-    doc.text(`${metadata.companyName}`, margin + 30, 35);
+    doc.text(metadata.companyName, margin + 40, 35);
 
-    doc.setFontSize(10);
-    doc.text(`${metadata.industry} | ${metadata.companySize || 'Enterprise'} | Generated: ${metadata.generatedDate}`, margin + 30, 43);
+    // Metadata line
+    doc.setFontSize(9);
+    doc.setTextColor(203, 213, 225); // Slate-300
+    const metadataText = `${metadata.industry} • ${metadata.companySize} • ${metadata.jurisdiction || 'Global'} • Generated: ${metadata.generatedDate}`;
+    doc.text(metadataText, margin + 40, 45);
 
-    // Content with improved formatting
-    doc.setTextColor(0, 0, 0);
-    let yPosition = 70;
+    // Status badge
+    doc.setFillColor(34, 197, 94); // Green-500
+    doc.roundedRect(pageWidth - margin - 60, 20, 50, 15, 3, 3, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.text('GENERATED', pageWidth - margin - 55, 30);
 
-    // Process content with markdown-like formatting
-    const processedContent = policyContent
-      .replace(/^# (.*$)/gim, '\n\n$1\n' + '='.repeat(50))
-      .replace(/^## (.*$)/gim, '\n\n$1\n' + '-'.repeat(30))
-      .replace(/^### (.*$)/gim, '\n\n$1')
-      .replace(/\*\*(.*?)\*\*/g, '$1')
-      .replace(/\*(.*?)\*/g, '$1');
+    currentY = 80;
 
-    const lines = doc.splitTextToSize(processedContent, contentWidth);
+    // Table of Contents generation
+    const tocItems = [];
+    const tocRegex = /^#{1,3}\s+(.+)$/gm;
+    let match;
+    while ((match = tocRegex.exec(policyContent)) !== null) {
+      const level = match[0].indexOf(' ') - 1;
+      tocItems.push({ title: match[1], level, page: 1 }); // Simplified for demo
+    }
 
-    lines.forEach((line) => {
-      if (yPosition > pageHeight - 40) {
-        doc.addPage();
-        yPosition = margin;
-      }
+    if (tocItems.length > 0) {
+      // Table of Contents section
+      doc.setFillColor(248, 250, 252); // Gray-50
+      doc.rect(margin, currentY, contentWidth, 8, 'F');
 
-      // Check for headers and format accordingly
-      if (line.includes('='.repeat(10))) {
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(16);
-      } else if (line.includes('-'.repeat(10))) {
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(14);
+      doc.setTextColor(15, 23, 42);
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Table of Contents', margin + 5, currentY + 6);
+      currentY += 15;
+
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      tocItems.slice(0, 8).forEach((item, index) => {
+        const indent = item.level * 10;
+        doc.text(`${' '.repeat(indent/2)}• ${item.title}`, margin + 5 + indent, currentY);
+        currentY += 5;
+      });
+      currentY += 10;
+    }
+
+    // Process content with advanced markdown formatting
+    const processedLines = [];
+    const lines = policyContent.split('\n');
+
+    lines.forEach(line => {
+      const trimmedLine = line.trim();
+
+      if (trimmedLine.startsWith('# ')) {
+        processedLines.push({ type: 'h1', text: trimmedLine.substring(2), style: { fontSize: 18, font: 'bold', color: [15, 23, 42], spaceBefore: 15, spaceAfter: 8 } });
+      } else if (trimmedLine.startsWith('## ')) {
+        processedLines.push({ type: 'h2', text: trimmedLine.substring(3), style: { fontSize: 14, font: 'bold', color: [30, 58, 138], spaceBefore: 12, spaceAfter: 6 } });
+      } else if (trimmedLine.startsWith('### ')) {
+        processedLines.push({ type: 'h3', text: trimmedLine.substring(4), style: { fontSize: 12, font: 'bold', color: [55, 65, 81], spaceBefore: 8, spaceAfter: 4 } });
+      } else if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
+        processedLines.push({ type: 'bullet', text: trimmedLine.substring(2), style: { fontSize: 10, font: 'normal', color: [75, 85, 99], indent: 10, spaceBefore: 2, spaceAfter: 2 } });
+      } else if (/^\d+\.\s/.test(trimmedLine)) {
+        processedLines.push({ type: 'numbered', text: trimmedLine, style: { fontSize: 10, font: 'normal', color: [75, 85, 99], indent: 10, spaceBefore: 2, spaceAfter: 2 } });
+      } else if (trimmedLine.length > 0) {
+        // Process bold and italic text
+        let processedText = trimmedLine
+          .replace(/\*\*(.*?)\*\*/g, '$1')
+          .replace(/\*(.*?)\*/g, '$1')
+          .replace(/`(.*?)`/g, '$1');
+
+        const isBold = /\*\*(.*?)\*\*/.test(trimmedLine);
+        processedLines.push({
+          type: 'paragraph',
+          text: processedText,
+          style: {
+            fontSize: 10,
+            font: isBold ? 'bold' : 'normal',
+            color: [75, 85, 99],
+            spaceBefore: 3,
+            spaceAfter: 3
+          }
+        });
       } else {
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(11);
+        processedLines.push({ type: 'space', style: { spaceBefore: 3 } });
       }
-
-      if (!line.includes('='.repeat(10)) && !line.includes('-'.repeat(10))) {
-        doc.text(line, margin, yPosition);
-      }
-      yPosition += line.includes('='.repeat(10)) || line.includes('-'.repeat(10)) ? 2 : 6;
     });
 
-    // Professional footer
+    // Render processed content
+    processedLines.forEach((item, index) => {
+      if (currentY > pageHeight - 60) {
+        doc.addPage();
+        currentY = margin;
+      }
+
+      if (item.style) {
+        currentY += item.style.spaceBefore || 0;
+
+        if (item.type !== 'space') {
+          doc.setFontSize(item.style.fontSize);
+          doc.setFont('helvetica', item.style.font);
+          doc.setTextColor(...(item.style.color || [0, 0, 0]));
+
+          const x = margin + (item.style.indent || 0);
+          const maxWidth = contentWidth - (item.style.indent || 0);
+
+          if (item.type === 'bullet') {
+            doc.text('•', x - 5, currentY);
+          }
+
+          if (item.text) {
+            const textLines = doc.splitTextToSize(item.text, maxWidth);
+            textLines.forEach((textLine, lineIndex) => {
+              if (currentY > pageHeight - 40) {
+                doc.addPage();
+                currentY = margin;
+              }
+              doc.text(textLine, x, currentY);
+              if (lineIndex < textLines.length - 1) currentY += 5;
+            });
+          }
+
+          currentY += item.style.spaceAfter || 0;
+        }
+      }
+    });
+
+    // Professional footer with modern styling
     const totalPages = doc.internal.getNumberOfPages();
     for (let i = 1; i <= totalPages; i++) {
       doc.setPage(i);
 
-      // Footer background
+      // Footer background with gradient effect (simulated)
       doc.setFillColor(248, 250, 252);
-      doc.rect(0, pageHeight - 20, pageWidth, 20, 'F');
+      doc.rect(0, pageHeight - 25, pageWidth, 25, 'F');
 
+      // Footer line
+      doc.setDrawColor(226, 232, 240);
+      doc.setLineWidth(0.5);
+      doc.line(0, pageHeight - 25, pageWidth, pageHeight - 25);
+
+      // Footer content
       doc.setFontSize(8);
       doc.setTextColor(100, 116, 139);
-      doc.text(`${metadata.companyName} - ${metadata.title}`, margin, pageHeight - 10);
-      doc.text(`Page ${i} of ${totalPages}`, pageWidth - margin - 20, pageHeight - 10);
-      doc.text(`Generated by PoliGap AI | Confidential`, margin, pageHeight - 5);
+      doc.setFont('helvetica', 'normal');
+
+      // Left: Company and document info
+      doc.text(`${metadata.companyName} • ${metadata.title}`, margin, pageHeight - 15);
+      doc.text(`Generated by PoliGap AI • Confidential Document`, margin, pageHeight - 8);
+
+      // Center: Version and date
+      const centerText = `Version 1.0 • ${metadata.generatedDate}`;
+      const centerX = (pageWidth - doc.getTextWidth(centerText)) / 2;
+      doc.text(centerText, centerX, pageHeight - 15);
+
+      // Right: Page numbers
+      const pageText = `Page ${i} of ${totalPages}`;
+      doc.text(pageText, pageWidth - margin - doc.getTextWidth(pageText), pageHeight - 15);
+
+      // Document status
+      if (i === 1) {
+        doc.setFontSize(7);
+        doc.setTextColor(34, 197, 94);
+        doc.text('DRAFT - FOR REVIEW', pageWidth - margin - 40, pageHeight - 8);
+      }
     }
 
     return doc;

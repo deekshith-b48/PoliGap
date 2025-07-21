@@ -7,215 +7,244 @@ function AnalysisResults({ analysis }) {
 
   const handleGeneratePlan = () => {
     setIsGeneratingPlan(true);
-    // Simulate plan generation time
     setTimeout(() => {
       setIsGeneratingPlan(false);
       setShowDetailedPlan(true);
-    }, 2000); // 2 second loading animation
+    }, 2000);
+  };
+
+  const getSeverityColor = (severity) => {
+    const s = severity.toLowerCase();
+    if (s === 'critical') return 'bg-red-500';
+    if (s === 'high') return 'bg-orange-500';
+    if (s === 'medium') return 'bg-yellow-500';
+    return 'bg-green-500';
+  };
+
+  const getSeverityIcon = (severity) => {
+    const s = severity.toLowerCase();
+    if (s === 'critical') return '🚨';
+    if (s === 'high') return '⚠️';
+    if (s === 'medium') return '📋';
+    return '✅';
+  };
+
+  const getScoreColor = (score) => {
+    if (score >= 80) return 'text-green-600';
+    if (score >= 60) return 'text-yellow-600';
+    return 'text-red-600';
   };
 
   return (
-    <div className="w-full bg-gradient-to-br from-gray-800 to-gray-900 p-8 rounded-3xl border-4 border-gray-600 shadow-[8px_8px_0px_0px_#6b7280] space-y-6">
+    <div className="space-y-8 animate-fadeInUp">
       
-      {/* Header */}
-      <div className="w-full bg-gradient-to-r from-purple-600 to-pink-600 p-6 rounded-2xl border-4 border-purple-300 shadow-[4px_4px_0px_0px_#000]">
-        <div className="flex items-center justify-between">
+      {/* Header Section */}
+      <div className="bg-white rounded-3xl p-8 shadow-soft border border-gray-200">
+        <div className="flex items-center justify-between mb-6">
           <div className="flex items-center">
-            <div className="w-12 h-12 bg-yellow-400 rounded-xl flex items-center justify-center border-4 border-black mr-4">
-              <span className="text-2xl">📊</span>
+            <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center mr-6">
+              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
             </div>
             <div>
-              <h1 className="text-3xl font-black text-white">ANALYSIS RESULTS</h1>
-              <p className="text-purple-100">Comprehensive compliance gap assessment</p>
+              <h1 className="text-3xl font-bold text-gray-900">Analysis Results</h1>
+              <p className="text-gray-600">Comprehensive compliance gap assessment</p>
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="text-center">
-              <div className="text-4xl font-black text-white">
-                {analysis.totalGaps || analysis.gaps.length} 
-              </div>
-              <div className="text-purple-200 text-sm font-bold">GAPS IDENTIFIED</div>
-            </div>
+          
+          <div className="flex items-center space-x-6">
             {analysis.overallScore && (
-              <div className="bg-purple-600 text-white px-4 py-2 rounded-xl font-bold border-2 border-purple-300">
-                OVERALL SCORE: {analysis.overallScore}%
+              <div className="text-center">
+                <div className={`text-3xl font-black ${getScoreColor(analysis.overallScore)}`}>
+                  {analysis.overallScore}%
+                </div>
+                <div className="text-sm text-gray-600 font-semibold">Overall Score</div>
               </div>
             )}
-            {analysis.industryBenchmark && (
-              <div className="bg-cyan-600 text-white px-4 py-2 rounded-xl font-bold border-2 border-cyan-300">
-                {analysis.industryBenchmark.comparison.toUpperCase()}
+            <div className="text-center">
+              <div className="text-3xl font-black text-gray-900">
+                {analysis.totalGaps || analysis.gaps?.length || 0} 
               </div>
-            )}
+              <div className="text-sm text-gray-600 font-semibold">Gaps Found</div>
+            </div>
           </div>
         </div>
+
+        {/* Industry Benchmark */}
+        {analysis.industryBenchmark && (
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-4 border border-blue-100">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-blue-500 rounded-xl flex items-center justify-center mr-3">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  </svg>
+                </div>
+                <div>
+                  <span className="font-semibold text-blue-900">Industry Benchmark</span>
+                  <p className="text-sm text-blue-700">Compared to industry peers</p>
+                </div>
+              </div>
+              <div className="bg-blue-500 text-white px-4 py-2 rounded-xl font-semibold text-sm">
+                {analysis.industryBenchmark.comparison}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Summary Section */}
-      <div className="w-full bg-gradient-to-r from-blue-700 to-indigo-800 p-6 rounded-2xl border-4 border-blue-400 shadow-[4px_4px_0px_0px_#1d4ed8]">
-        <h2 className="text-xl font-black text-white mb-3 flex items-center">
-          <span className="text-2xl mr-2">📋</span>
-          EXECUTIVE SUMMARY
-        </h2>
-        <p className="text-blue-100 text-lg leading-relaxed">
+      {/* Executive Summary */}
+      <div className="bg-white rounded-3xl p-8 shadow-soft border border-gray-200">
+        <div className="flex items-center mb-6">
+          <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mr-4">
+            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900">Executive Summary</h2>
+        </div>
+        <p className="text-gray-700 text-lg leading-relaxed">
           {analysis.summary}
         </p>
       </div>
 
-      {/* Gaps Section - 2x2 Grid Layout */}
-      <h3 className="text-2xl font-black text-yellow-400 mb-6 flex items-center">
-        <span className="text-2xl mr-2">🚨</span>
-        IDENTIFIED COMPLIANCE GAPS
-      </h3>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        {(analysis.gaps && Array.isArray(analysis.gaps) ? analysis.gaps : []).map((gap, index) => {
-          const getSeverityStyle = (severity) => {
-            const s = severity.toLowerCase();
-            if (s === 'critical') return 'from-red-600 to-red-700 border-red-400';
-            if (s === 'high') return 'from-orange-600 to-red-600 border-orange-400';
-            if (s === 'medium') return 'from-yellow-600 to-orange-600 border-yellow-400';
-            return 'from-green-600 to-green-700 border-green-400';
-          };
-
-          const getSeverityEmoji = (severity) => {
-            const s = severity.toLowerCase();
-            if (s === 'critical') return '🚨';
-            if (s === 'high') return '⚠️';
-            if (s === 'medium') return '📋';
-            return '✅';
-          };
-
-          return (
-            <div key={index} className={`bg-gradient-to-r ${getSeverityStyle(gap.severity)} p-6 rounded-2xl border-4 shadow-[4px_4px_0px_0px_#000] h-full`}>
+      {/* Compliance Gaps */}
+      <div className="bg-white rounded-3xl p-8 shadow-soft border border-gray-200">
+        <div className="flex items-center mb-8">
+          <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-orange-600 rounded-2xl flex items-center justify-center mr-4">
+            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900">Identified Compliance Gaps</h2>
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {(analysis.gaps && Array.isArray(analysis.gaps) ? analysis.gaps : []).map((gap, index) => (
+            <div key={index} className="bg-gray-50 rounded-2xl p-6 border border-gray-200 card-hover">
               <div className="flex items-start justify-between mb-4">
-                <h4 className="text-white font-black text-lg flex items-center">
-                  <span className="text-2xl mr-2">{getSeverityEmoji(gap.severity)}</span>
-                  GAP #{index + 1}
-                </h4>
-                <div className="flex flex-col items-end gap-2">
-                  <div className="bg-black text-white px-3 py-1 rounded-lg font-bold text-sm">
-                    {gap.severity.toUpperCase()}
+                <div className="flex items-center">
+                  <span className="text-2xl mr-3">{getSeverityIcon(gap.severity)}</span>
+                  <h4 className="font-bold text-gray-900 text-lg">Gap #{index + 1}</h4>
+                </div>
+                <div className="flex flex-col items-end space-y-2">
+                  <div className={`${getSeverityColor(gap.severity)} text-white px-3 py-1 rounded-xl text-sm font-semibold`}>
+                    {gap.severity}
                   </div>
                   {gap.framework && (
-                    <div className="bg-white text-black px-3 py-1 rounded-lg font-bold text-xs">
+                    <div className="bg-gray-600 text-white px-3 py-1 rounded-xl text-xs font-medium">
                       {gap.framework}
                     </div>
                   )}
                 </div>
               </div>
               
-              <div className="space-y-3">
-                <div className="bg-black bg-opacity-40 p-4 rounded-xl border-2 border-white border-opacity-30">
-                  <p className="text-white font-bold mb-2 flex items-center">
-                    <span className="text-lg mr-2">🎯</span>
-                    ACTION REQUIRED:
-                  </p>
-                  <p className="text-white text-sm">{gap.remediation}</p>
+              <div className="space-y-4">
+                <div className="bg-white rounded-xl p-4 border border-gray-200">
+                  <div className="flex items-center mb-2">
+                    <svg className="w-4 h-4 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p className="font-semibold text-gray-900 text-sm">Issue Identified</p>
+                  </div>
+                  <p className="text-gray-700 text-sm">{gap.issue}</p>
                 </div>
                 
-                <div className="bg-black bg-opacity-40 p-4 rounded-xl border-2 border-white border-opacity-30">
-                  <p className="text-white font-bold mb-2 flex items-center">
-                    <span className="text-lg mr-2">⚠️</span>
-                    ROOT ISSUE:
-                  </p>
-                  <p className="text-white text-sm">{gap.issue}</p>
+                <div className="bg-white rounded-xl p-4 border border-gray-200">
+                  <div className="flex items-center mb-2">
+                    <svg className="w-4 h-4 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p className="font-semibold text-gray-900 text-sm">Recommended Action</p>
+                  </div>
+                  <p className="text-gray-700 text-sm">{gap.remediation}</p>
                 </div>
               </div>
             </div>
-          );
-        })}
-      </div>
-
-      {/* Generate Plan Button */}
-      <div className="w-full text-center">
-        <div className="w-full bg-gradient-to-r from-green-700 to-emerald-800 p-6 rounded-2xl border-4 border-green-400 shadow-[4px_4px_0px_0px_#16a34a]">
-          <h3 className="text-xl font-black text-white mb-4 flex items-center justify-center">
-            <span className="text-2xl mr-2">📋</span>
-            DETAILED REMEDIATION PLANNING
-          </h3>
-          <button
-            onClick={handleGeneratePlan}
-            disabled={isGeneratingPlan}
-            className="bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xl font-black px-8 py-4 rounded-2xl border-4 border-blue-300 shadow-[6px_6px_0px_0px_#000] hover:shadow-[8px_8px_0px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] disabled:opacity-50 disabled:cursor-not-allowed transition-all transform"
-          >
-            {isGeneratingPlan ? (
-              <>
-                <span className="animate-spin mr-2">⚙️</span>
-                GENERATING PLAN...
-              </>
-            ) : (
-              <>🚀 GENERATE PLAN</>
-            )}
-          </button>
-          <p className="text-green-100 text-sm mt-3">
-            Get a detailed, prioritized action plan with timelines and business impact analysis
-          </p>
+          ))}
         </div>
       </div>
 
-      {/* Skeleton Loading Animation */}
+      {/* Generate Detailed Plan */}
+      <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl p-8 shadow-soft border border-green-200">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <h3 className="text-2xl font-bold text-gray-900 mb-4">Generate Detailed Remediation Plan</h3>
+          <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
+            Get a comprehensive, prioritized action plan with timelines, resource requirements, 
+            and business impact analysis to address all identified gaps.
+          </p>
+          <button
+            onClick={handleGeneratePlan}
+            disabled={isGeneratingPlan}
+            className="bg-gradient-primary text-white text-lg font-semibold px-8 py-4 rounded-2xl btn-hover focus-ring disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          >
+            {isGeneratingPlan ? (
+              <div className="flex items-center">
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Generating Plan...
+              </div>
+            ) : (
+              'Generate Detailed Plan'
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Loading Modal */}
       {isGeneratingPlan && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-          <div className="bg-gradient-to-br from-purple-400 to-pink-500 p-1 rounded-3xl border-4 border-black shadow-[12px_12px_0px_0px_#000] max-w-4xl w-[90%] max-h-[90%]">
-            <div className="bg-white p-8 rounded-2xl h-full overflow-hidden">
-              <div className="animate-pulse">
-                {/* Header skeleton */}
-                <div className="flex justify-between items-center mb-8">
-                  <div className="h-8 bg-gray-300 rounded-xl w-80"></div>
-                  <div className="h-8 bg-gray-300 rounded-xl w-32"></div>
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-6">
+          <div className="bg-white rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-glow">
+            <div className="animate-pulse">
+              {/* Header skeleton */}
+              <div className="flex justify-between items-center mb-8">
+                <div className="h-8 bg-gray-300 rounded-2xl w-80"></div>
+                <div className="h-8 bg-gray-300 rounded-2xl w-32"></div>
+              </div>
+              
+              {/* Content skeleton */}
+              <div className="space-y-6">
+                <div className="h-6 bg-gray-300 rounded-xl w-48"></div>
+                <div className="space-y-3">
+                  <div className="h-4 bg-gray-200 rounded-lg w-full"></div>
+                  <div className="h-4 bg-gray-200 rounded-lg w-5/6"></div>
+                  <div className="h-4 bg-gray-200 rounded-lg w-4/6"></div>
                 </div>
                 
-                {/* Executive summary skeleton */}
-                <div className="mb-8">
-                  <div className="h-6 bg-gray-300 rounded-lg w-48 mb-4"></div>
-                  <div className="space-y-2">
-                    <div className="h-4 bg-gray-200 rounded w-full"></div>
-                    <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-                    <div className="h-4 bg-gray-200 rounded w-4/6"></div>
-                  </div>
-                </div>
-
-                {/* Priority tasks skeleton */}
-                <div className="mb-8">
-                  <div className="h-6 bg-gray-300 rounded-lg w-56 mb-4"></div>
-                  {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="mb-4 p-4 bg-gray-100 rounded-xl">
-                      <div className="flex items-center mb-2">
-                        <div className="h-4 bg-gray-300 rounded w-8 mr-4"></div>
-                        <div className="h-5 bg-gray-300 rounded w-64"></div>
-                      </div>
-                      <div className="space-y-2 ml-12">
-                        <div className="h-3 bg-gray-200 rounded w-full"></div>
-                        <div className="h-3 bg-gray-200 rounded w-3/4"></div>
-                      </div>
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="bg-gray-50 rounded-2xl p-4">
+                    <div className="flex items-center mb-3">
+                      <div className="h-4 bg-gray-300 rounded w-8 mr-4"></div>
+                      <div className="h-5 bg-gray-300 rounded w-64"></div>
                     </div>
-                  ))}
-                </div>
+                    <div className="space-y-2 ml-12">
+                      <div className="h-3 bg-gray-200 rounded w-full"></div>
+                      <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
 
-                {/* Timeline skeleton */}
-                <div className="mb-8">
-                  <div className="h-6 bg-gray-300 rounded-lg w-40 mb-4"></div>
-                  <div className="grid grid-cols-3 gap-4">
-                    {[1, 2, 3].map((i) => (
-                      <div key={i} className="p-4 bg-gray-100 rounded-xl">
-                        <div className="h-5 bg-gray-300 rounded w-24 mb-3"></div>
-                        <div className="space-y-2">
-                          <div className="h-3 bg-gray-200 rounded w-full"></div>
-                          <div className="h-3 bg-gray-200 rounded w-4/5"></div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+              {/* Loading message */}
+              <div className="text-center py-8 mt-8">
+                <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-4 animate-ai-pulse">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  </svg>
                 </div>
-
-                {/* Loading message */}
-                <div className="text-center py-8">
-                  <div className="text-2xl font-black text-gray-600 mb-2">
-                    🤖 AI CRAFTING YOUR REMEDIATION PLAN
-                  </div>
-                  <div className="text-gray-500">
-                    Analyzing compliance gaps and generating actionable solutions...
-                  </div>
+                <div className="text-xl font-bold text-gray-900 mb-2">
+                  AI Crafting Your Remediation Plan
+                </div>
+                <div className="text-gray-600">
+                  Analyzing compliance gaps and generating actionable solutions...
                 </div>
               </div>
             </div>

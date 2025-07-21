@@ -246,6 +246,15 @@ export async function analyzeDocument(text, config = {}) {
     console.error('Detailed error:', error);
     console.error('Error type:', error.constructor.name);
     console.error('Error message:', error.message);
+    console.error('Stack trace:', error.stack);
+
+    // Check for specific error types
+    if (error.message && error.message.includes('stream already read')) {
+      console.error('Response body was consumed multiple times - this should be fixed now');
+    }
+    if (error.name === 'AbortError') {
+      console.error('Request was aborted (likely timeout)');
+    }
 
     // Return benchmarking results even if API completely fails
     return {

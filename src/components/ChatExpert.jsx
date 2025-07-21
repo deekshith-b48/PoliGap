@@ -78,9 +78,22 @@ function ChatExpert({ policyDocument, isOpen, onToggle, onClose }) {
       
     } catch (error) {
       console.error('Chat error:', error);
+
+      let errorContent = 'I apologize, but I encountered an error processing your request. Please try again or rephrase your question.';
+
+      if (error.message) {
+        if (error.message.includes('stream already read')) {
+          errorContent = 'Network connection issue. Please try your question again.';
+        } else if (error.message.includes('API request failed')) {
+          errorContent = 'Unable to connect to AI service. Please check your connection and try again.';
+        } else if (error.message.includes('Invalid JSON')) {
+          errorContent = 'Received an invalid response. Please try asking your question again.';
+        }
+      }
+
       const errorMessage = {
         type: 'assistant',
-        content: 'I apologize, but I encountered an error processing your request. Please try again or rephrase your question.',
+        content: errorContent,
         timestamp: new Date()
       };
       setMessages(prev => [...prev, errorMessage]);

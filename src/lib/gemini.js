@@ -317,20 +317,29 @@ export async function analyzeWithGemini(prompt, config = {}) {
       }),
     });
 
+    let responseData;
+
     if (!response.ok) {
       const errorText = await response.text();
       throw new Error(`API request failed: ${response.status} - ${errorText}`);
     }
 
-    const data = await response.json();
+    try {
+      responseData = await response.json();
+    } catch (jsonError) {
+      console.error('Failed to parse JSON response:', jsonError);
+      throw new Error('Invalid JSON response from API');
+    }
 
-    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+    if (!responseData.candidates || !responseData.candidates[0] || !responseData.candidates[0].content) {
       throw new Error('Invalid API response format');
     }
 
-    return data.candidates[0].content.parts[0].text.trim();
+    return responseData.candidates[0].content.parts[0].text.trim();
   } catch (error) {
     console.error('Chat API error:', error);
+    console.error('Error type:', error.constructor.name);
+    console.error('Error message:', error.message);
     throw error;
   }
 }

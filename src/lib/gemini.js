@@ -295,17 +295,48 @@ export async function analyzeDocument(text, config = {}) {
   }
 }
 
-// Simple chat function for AI Expert chat
+// Enhanced function for AI Expert chat and policy generation with improved formatting
 export async function analyzeWithGemini(prompt, config = {}) {
   // Use environment variable or fallback to direct API key
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY || 'AIzaSyBEyNqivrte8K4J_pu6bWzsTfics57MNNA';
-  
+
   if (!apiKey) {
     throw new Error('Gemini API key is not configured. Please check your API key configuration.');
   }
 
+  const {
+    temperature = 0.7,
+    maxOutputTokens = 4000,
+    topP = 0.8,
+    topK = 40,
+    enhancedFormatting = false,
+    isPolicyGeneration = false
+  } = config;
+
+  // Enhanced prompt for better policy generation with README-style formatting
+  const enhancedPrompt = isPolicyGeneration ? `
+${prompt}
+
+IMPORTANT FORMATTING GUIDELINES:
+- Use clear markdown headers (# for main sections, ## for subsections, ### for sub-subsections)
+- Use bullet points (-) for lists and numbered lists (1., 2., 3.) where appropriate
+- Use **bold** for important terms, policies, and requirements
+- Use *italics* for emphasis and definitions
+- Use \`code blocks\` for specific references, dates, or technical terms
+- Structure content with clear paragraphs and proper spacing
+- Include relevant legal disclaimers and compliance notes
+- Ensure professional, clear, and actionable language
+- Use proper section breaks and logical flow
+- Include specific implementation guidance where applicable
+- Format compliance requirements as clear bullet points
+- Use consistent terminology throughout
+- Include version control and effective date information
+
+Ensure the output is well-structured for both digital reading and PDF generation.
+` : prompt;
+
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-  
+
   try {
     const response = await fetch(url, {
       method: 'POST',
@@ -313,12 +344,14 @@ export async function analyzeWithGemini(prompt, config = {}) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
+        contents: [{ parts: [{ text: enhancedPrompt }] }],
         generationConfig: {
-          temperature: config.temperature || 0.7,
-          topK: config.topK || 20,
-          topP: config.topP || 0.8,
-          maxOutputTokens: config.maxOutputTokens || 1000,
+          temperature,
+          topK,
+          topP,
+          maxOutputTokens,
+          candidateCount: 1,
+          stopSequences: []
         },
         safetySettings: [
           {
@@ -373,11 +406,65 @@ export async function analyzeWithGemini(prompt, config = {}) {
       throw new Error('Invalid API response format');
     }
 
-    return responseData.candidates[0].content.parts[0].text.trim();
+    const generatedText = responseData.candidates[0].content.parts[0].text.trim();
+
+    // Post-process for better formatting if this is policy generation
+    if (isPolicyGeneration || enhancedFormatting) {
+      return postProcessPolicyText(generatedText);
+    }
+
+    return generatedText;
   } catch (error) {
     console.error('Chat API error:', error);
     console.error('Error type:', error.constructor.name);
     console.error('Error message:', error.message);
+
+    // Provide more user-friendly error messages
+    if (error.message.includes('API key')) {
+      throw new Error('Invalid API key. Please check your Gemini API configuration.');
+    } else if (error.message.includes('quota')) {
+      throw new Error('API quota exceeded. Please try again later.');
+    } else if (error.message.includes('network')) {
+      throw new Error('Network error. Please check your connection and try again.');
+    }
+
     throw error;
   }
 }
+
+// Post-process policy text for better formatting and accuracy
+const postProcessPolicyText = (text) => {
+  return text
+    // Ensure proper header formatting
+    .replace(/^([A-Z][A-Z\s]+)$/gm, '# $1')
+    .replace(/^([0-9]+\.)\s*([A-Z][A-Za-z\s]+)$/gm, '## $1 $2')
+    .replace(/^([a-z]\))\s*([A-Za-z\s]+)$/gm, '### $1 $2')
+
+    // Ensure proper list formatting
+    .replace(/^([\s]*)•([\s]*)/gm, '$1- ')
+    .replace(/^([\s]*)([ivx]+\.)([\s]*)/gim, '$1$2 ')
+
+    // Bold important terms
+    .replace(/\b(MUST|SHALL|REQUIRED|MANDATORY|PROHIBITED|FORBIDDEN|CRITICAL|ESSENTIAL)\b/g, '**$1**')
+    .replace(/\b(Policy|Procedure|Guidelines?|Standards?|Compliance|Violation|Enforcement)\b/g, '**$1**')
+
+    // Italicize definitions and emphasis
+    .replace(/\b(defined as|means|refers to|includes)\b/g, '*$1*')
+
+    // Ensure proper paragraph spacing
+    .replace(/\n{3,}/g, '\n\n')
+
+    // Clean up extra spaces
+    .replace(/[ \t]+/g, ' ')
+    .replace(/^[ \t]+|[ \t]+$/gm, '')
+
+    // Ensure sections are properly formatted
+    .replace(/^(Purpose|Scope|Policy|Procedure|Implementation|Compliance|Enforcement|Definitions|Background|Responsibilities|Violations|Review|Effective Date):/gim, '## $1')
+
+    // Format dates and versions consistently
+    .replace(/Version[\s]*([0-9\.]+)/gi, '**Version $1**')
+    .replace(/Effective[\s]+Date[\s]*:?[\s]*([^\n]+)/gi, '**Effective Date:** $1')
+    .replace(/Last[\s]+Updated[\s]*:?[\s]*([^\n]+)/gi, '**Last Updated:** $1')
+
+    .trim();
+};

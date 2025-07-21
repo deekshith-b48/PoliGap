@@ -1,7 +1,8 @@
 import RulesBenchmarkingEngine from './rulesBenchmarking.js';
 
 export async function analyzeDocument(text, config = {}) {
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+  // Use environment variable or fallback to direct API key
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY || 'AIzaSyBEyNqivrte8K4J_pu6bWzsTfics57MNNA';
   
   // Extract configuration with defaults and ensure proper types
   let selectedFrameworks = config.frameworks;
@@ -22,7 +23,7 @@ export async function analyzeDocument(text, config = {}) {
   console.log('Industry:', industry);
   
   if (!apiKey) {
-    throw new Error('Gemini API key is not configured. Please add VITE_GEMINI_API_KEY to your .env file');
+    throw new Error('Gemini API key is not configured. Please check your API key configuration.');
   }
 
   // Ensure frameworksArray is definitely an array
@@ -95,6 +96,11 @@ export async function analyzeDocument(text, config = {}) {
     Document text analyzed: "${text.substring(0, 2000)}..."
   `;
 
+  console.log('Starting analyzeDocument API request...');
+  console.log('Text length:', text.length);
+  console.log('Frameworks:', frameworksArray);
+  console.log('Industry:', industry);
+
   try {
     const response = await fetch(url, {
       method: 'POST',
@@ -133,24 +139,43 @@ export async function analyzeDocument(text, config = {}) {
     console.log('Response status:', response.status);
     console.log('Response ok:', response.ok);
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('API Error Response:', errorText);
-      throw new Error(`API request failed: ${response.status} - ${errorText}`);
+    // Read the response body only once
+    let responseText;
+    let responseData;
+
+    try {
+      responseText = await response.text();
+    } catch (readError) {
+      console.error('Failed to read response body:', readError);
+      throw new Error('Failed to read API response');
     }
 
-    const data = await response.json();
-    console.log('API Response:', data);
+    if (!response.ok) {
+      console.error('API Error Response:', responseText);
+      throw new Error(`API request failed: ${response.status} - ${responseText}`);
+    }
+
+    try {
+      responseData = JSON.parse(responseText);
+      console.log('API Response received successfully');
+      console.log('Response has candidates:', !!responseData.candidates);
+    } catch (jsonError) {
+      console.error('Failed to parse JSON response:', jsonError);
+      console.error('Raw response text:', responseText);
+      throw new Error(`Invalid JSON response from API: ${jsonError.message}`);
+    }
+
+    const data = responseData;
 
     if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
       throw new Error('Invalid API response format');
     }
 
-    const responseText = data.candidates[0].content.parts[0].text;
-    console.log('Generated text:', responseText);
+    const generatedText = data.candidates[0].content.parts[0].text;
+    console.log('Generated text:', generatedText);
 
     // Clean up the response text - remove markdown formatting if present
-    let cleanedResponse = responseText.trim();
+    let cleanedResponse = generatedText.trim();
     
     // Remove markdown code blocks if they exist
     if (cleanedResponse.startsWith('```json')) {
@@ -198,7 +223,7 @@ export async function analyzeDocument(text, config = {}) {
       return result;
     } catch (parseError) {
       console.error('Failed to parse JSON response:', parseError);
-      console.error('Original response:', responseText);
+      console.error('Original response:', generatedText);
       console.error('Cleaned response:', cleanedResponse);
       
       // Return comprehensive fallback with benchmarking results
@@ -229,7 +254,18 @@ export async function analyzeDocument(text, config = {}) {
     }
   } catch (error) {
     console.error('Detailed error:', error);
-    
+    console.error('Error type:', error.constructor.name);
+    console.error('Error message:', error.message);
+    console.error('Stack trace:', error.stack);
+
+    // Check for specific error types
+    if (error.message && error.message.includes('stream already read')) {
+      console.error('Response body was consumed multiple times - this should be fixed now');
+    }
+    if (error.name === 'AbortError') {
+      console.error('Request was aborted (likely timeout)');
+    }
+
     // Return benchmarking results even if API completely fails
     return {
       summary: `Automated rules benchmarking completed despite API error. Compliance score: ${benchmarkResults.overallResults.averageScore}%. ${benchmarkResults.overallResults.criticalGaps} critical gaps identified.`,
@@ -259,29 +295,63 @@ export async function analyzeDocument(text, config = {}) {
   }
 }
 
-// Simple chat function for AI Expert chat
+// Enhanced function for AI Expert chat and policy generation with improved formatting
 export async function analyzeWithGemini(prompt, config = {}) {
-  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-  
+  // Use environment variable or fallback to direct API key
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY || 'AIzaSyBEyNqivrte8K4J_pu6bWzsTfics57MNNA';
+
   if (!apiKey) {
-    throw new Error('Gemini API key is not configured. Please add VITE_GEMINI_API_KEY to your .env file');
+    throw new Error('Gemini API key is not configured. Please check your API key configuration.');
   }
 
+  const {
+    temperature = 0.7,
+    maxOutputTokens = 4000,
+    topP = 0.8,
+    topK = 40,
+    enhancedFormatting = false,
+    isPolicyGeneration = false
+  } = config;
+
+  // Enhanced prompt for better policy generation with README-style formatting
+  const enhancedPrompt = isPolicyGeneration ? `
+${prompt}
+
+IMPORTANT FORMATTING GUIDELINES:
+- Use clear markdown headers (# for main sections, ## for subsections, ### for sub-subsections)
+- Use bullet points (-) for lists and numbered lists (1., 2., 3.) where appropriate
+- Use **bold** for important terms, policies, and requirements
+- Use *italics* for emphasis and definitions
+- Use \`code blocks\` for specific references, dates, or technical terms
+- Structure content with clear paragraphs and proper spacing
+- Include relevant legal disclaimers and compliance notes
+- Ensure professional, clear, and actionable language
+- Use proper section breaks and logical flow
+- Include specific implementation guidance where applicable
+- Format compliance requirements as clear bullet points
+- Use consistent terminology throughout
+- Include version control and effective date information
+
+Ensure the output is well-structured for both digital reading and PDF generation.
+` : prompt;
+
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-  
+
   try {
     const response = await fetch(url, {
       method: 'POST',
-      headers: { 
+      headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
+        contents: [{ parts: [{ text: enhancedPrompt }] }],
         generationConfig: {
-          temperature: config.temperature || 0.7,
-          topK: config.topK || 20,
-          topP: config.topP || 0.8,
-          maxOutputTokens: config.maxOutputTokens || 1000,
+          temperature,
+          topK,
+          topP,
+          maxOutputTokens,
+          candidateCount: 1,
+          stopSequences: []
         },
         safetySettings: [
           {
@@ -289,7 +359,7 @@ export async function analyzeWithGemini(prompt, config = {}) {
             threshold: "BLOCK_NONE"
           },
           {
-            category: "HARM_CATEGORY_HATE_SPEECH", 
+            category: "HARM_CATEGORY_HATE_SPEECH",
             threshold: "BLOCK_NONE"
           },
           {
@@ -304,20 +374,97 @@ export async function analyzeWithGemini(prompt, config = {}) {
       }),
     });
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`API request failed: ${response.status} - ${errorText}`);
+    console.log('Chat API response status:', response.status);
+    console.log('Chat API response ok:', response.ok);
+
+    // Read the response body only once
+    let responseText;
+    let responseData;
+
+    try {
+      responseText = await response.text();
+    } catch (readError) {
+      console.error('Failed to read response body:', readError);
+      throw new Error('Failed to read API response');
     }
 
-    const data = await response.json();
+    if (!response.ok) {
+      console.error('Chat API Error Response:', responseText);
+      throw new Error(`API request failed: ${response.status} - ${responseText}`);
+    }
 
-    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+    try {
+      responseData = JSON.parse(responseText);
+    } catch (jsonError) {
+      console.error('Failed to parse JSON response:', jsonError);
+      console.error('Raw response text:', responseText);
+      throw new Error(`Invalid JSON response from API: ${jsonError.message}`);
+    }
+
+    if (!responseData.candidates || !responseData.candidates[0] || !responseData.candidates[0].content) {
+      console.error('Invalid API response format:', responseData);
       throw new Error('Invalid API response format');
     }
 
-    return data.candidates[0].content.parts[0].text.trim();
+    const generatedText = responseData.candidates[0].content.parts[0].text.trim();
+
+    // Post-process for better formatting if this is policy generation
+    if (isPolicyGeneration || enhancedFormatting) {
+      return postProcessPolicyText(generatedText);
+    }
+
+    return generatedText;
   } catch (error) {
     console.error('Chat API error:', error);
+    console.error('Error type:', error.constructor.name);
+    console.error('Error message:', error.message);
+
+    // Provide more user-friendly error messages
+    if (error.message.includes('API key')) {
+      throw new Error('Invalid API key. Please check your Gemini API configuration.');
+    } else if (error.message.includes('quota')) {
+      throw new Error('API quota exceeded. Please try again later.');
+    } else if (error.message.includes('network')) {
+      throw new Error('Network error. Please check your connection and try again.');
+    }
+
     throw error;
   }
 }
+
+// Post-process policy text for better formatting and accuracy
+const postProcessPolicyText = (text) => {
+  return text
+    // Ensure proper header formatting
+    .replace(/^([A-Z][A-Z\s]+)$/gm, '# $1')
+    .replace(/^([0-9]+\.)\s*([A-Z][A-Za-z\s]+)$/gm, '## $1 $2')
+    .replace(/^([a-z]\))\s*([A-Za-z\s]+)$/gm, '### $1 $2')
+
+    // Ensure proper list formatting
+    .replace(/^([\s]*)•([\s]*)/gm, '$1- ')
+    .replace(/^([\s]*)([ivx]+\.)([\s]*)/gim, '$1$2 ')
+
+    // Bold important terms
+    .replace(/\b(MUST|SHALL|REQUIRED|MANDATORY|PROHIBITED|FORBIDDEN|CRITICAL|ESSENTIAL)\b/g, '**$1**')
+    .replace(/\b(Policy|Procedure|Guidelines?|Standards?|Compliance|Violation|Enforcement)\b/g, '**$1**')
+
+    // Italicize definitions and emphasis
+    .replace(/\b(defined as|means|refers to|includes)\b/g, '*$1*')
+
+    // Ensure proper paragraph spacing
+    .replace(/\n{3,}/g, '\n\n')
+
+    // Clean up extra spaces
+    .replace(/[ \t]+/g, ' ')
+    .replace(/^[ \t]+|[ \t]+$/gm, '')
+
+    // Ensure sections are properly formatted
+    .replace(/^(Purpose|Scope|Policy|Procedure|Implementation|Compliance|Enforcement|Definitions|Background|Responsibilities|Violations|Review|Effective Date):/gim, '## $1')
+
+    // Format dates and versions consistently
+    .replace(/Version[\s]*([0-9\.]+)/gi, '**Version $1**')
+    .replace(/Effective[\s]+Date[\s]*:?[\s]*([^\n]+)/gi, '**Effective Date:** $1')
+    .replace(/Last[\s]+Updated[\s]*:?[\s]*([^\n]+)/gi, '**Last Updated:** $1')
+
+    .trim();
+};

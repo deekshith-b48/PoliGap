@@ -38,15 +38,21 @@ function App() {
   };
 
   return (
-    <div className="App">
-      {renderPage()}
-      
-      {/* Chat Button - only show when document is uploaded */}
-      <ChatButton 
-        hasDocument={!!uploadedDocument}
-        onClick={() => setIsChatOpen(true)}
-      />
-      
+    <div className="min-h-screen bg-gray-50 text-gray-900 font-sans antialiased">
+      <main className="relative">
+        {renderPage()}
+      </main>
+
+      {/* AI Chat Assistant - Enhanced styling */}
+      {uploadedDocument && (
+        <div className="fixed bottom-6 right-6 z-50">
+          <ChatButton
+            hasDocument={!!uploadedDocument}
+            onClick={() => setIsChatOpen(true)}
+          />
+        </div>
+      )}
+
       {/* Chat Expert Modal */}
       <ChatExpert
         policyDocument={uploadedDocument}

@@ -597,13 +597,9 @@ function DocumentUpload({ onUpload, uploading, progress, error }) {
       const relationshipExtractor = new RelationshipExtractor();
       const complianceScorer = new ComplianceScorer();
 
-      // Quick length check
+      // Quick length check - now just warn but don't reject
       if (normalizedContent.length < 200) {
-        return {
-          isValid: false,
-          reason: 'Document too short - Policy documents should contain substantial content.',
-          details: { contentLength: normalizedContent.length, keywordScore: 0, foundKeywords: [] }
-        };
+        console.warn('Document is quite short, but proceeding with analysis');
       }
 
       // 1. Document Structure Analysis

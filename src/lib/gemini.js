@@ -1333,8 +1333,12 @@ Ensure the output is well-structured for both digital reading and PDF generation
       }),
     });
 
+    // Check response status BEFORE reading the body
     console.log('Chat API response status:', response.status);
     console.log('Chat API response ok:', response.ok);
+
+    // Clone the response to ensure we can read it multiple times if needed
+    const responseClone = response.clone();
 
     // Read the response body only once
     let responseText;
@@ -1344,7 +1348,13 @@ Ensure the output is well-structured for both digital reading and PDF generation
       responseText = await response.text();
     } catch (readError) {
       console.error('Failed to read response body:', readError);
-      throw new Error('Failed to read API response');
+      // Try reading from the cloned response as fallback
+      try {
+        responseText = await responseClone.text();
+      } catch (cloneError) {
+        console.error('Failed to read cloned response body:', cloneError);
+        throw new Error('Failed to read API response');
+      }
     }
 
     if (!response.ok) {

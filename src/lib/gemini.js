@@ -920,12 +920,12 @@ PRIORITY: Provide comprehensive privacy policy compliance analysis with focus on
       }),
     });
 
+    // Clone the response immediately after fetch, before accessing any properties
+    const responseClone = response.clone();
+
     // Check response status BEFORE reading the body
     console.log('Response status:', response.status);
     console.log('Response ok:', response.ok);
-
-    // Clone the response to ensure we can read it multiple times if needed
-    const responseClone = response.clone();
 
     // Read the response body only once
     let responseText;

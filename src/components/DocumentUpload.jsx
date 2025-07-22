@@ -750,36 +750,7 @@ function DocumentUpload({ onUpload, uploading, progress, error }) {
 
       console.log(`📊 Advanced Analysis: Combined=${Math.round(combinedScore)}, Required=${minimumScore}, Compliance=${complianceAnalysis.score}%`);
 
-      if (combinedScore < minimumScore && complianceAnalysis.score < 60) {
-        return {
-          isValid: false,
-          reason: `Advanced NLP analysis insufficient. Score: ${Math.round(combinedScore)}/${minimumScore}, Compliance: ${complianceAnalysis.score}%. Found: ${foundKeywords.slice(0, 8).join(', ') || 'none'}.`,
-          details: {
-            contentLength: normalizedContent.length,
-            keywordScore: totalScore,
-            nlpScore: Math.round(nlpScore),
-            structureScore: structureScore,
-            combinedScore: Math.round(combinedScore),
-            foundKeywords: foundKeywords.slice(0, 15),
-            detectedCategories,
-            documentStructure: {
-              sections: documentStructure.sections.length,
-              lists: documentStructure.lists.length,
-              tables: documentStructure.tables.length
-            },
-            entityAnalysis: {
-              totalEntities: entityAnalysis.entities.length,
-              score: entityAnalysis.totalScore
-            },
-            relationshipAnalysis: {
-              totalRelationships: relationshipAnalysis.relationships.length,
-              highRiskCount: relationshipAnalysis.relationships.filter(r => r.riskLevel === 'high').length
-            },
-            complianceAnalysis,
-            suggestion: 'Upload comprehensive policy documents with clear structure, entity definitions, and compliance requirements.'
-          }
-        };
-      }
+      // Note: Accepting all documents regardless of score
 
       return {
         isValid: true,

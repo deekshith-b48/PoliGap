@@ -702,22 +702,7 @@ function DocumentUpload({ onUpload, uploading, progress, error }) {
         }
       }
 
-      // Quick rejection for obvious non-policy content
-      const nonPolicyTerms = [
-        'invoice', 'receipt', 'bill', 'purchase order', 'financial statement',
-        'menu', 'recipe', 'cookbook', 'story', 'novel', 'fiction', 'movie',
-        'game', 'entertainment', 'music', 'sports', 'news article', 'blog'
-      ];
-
-      for (const term of nonPolicyTerms) {
-        if (normalizedContent.includes(term)) {
-          return {
-            isValid: false,
-            reason: `This appears to be a ${term} document rather than a policy document.`,
-            details: { contentLength: normalizedContent.length, keywordScore: totalScore, foundKeywords }
-          };
-        }
-      }
+      // Note: Accepting all document types for analysis
 
       // Early success for strong policy indicators
       const strongIndicators = [

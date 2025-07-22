@@ -597,13 +597,9 @@ function DocumentUpload({ onUpload, uploading, progress, error }) {
       const relationshipExtractor = new RelationshipExtractor();
       const complianceScorer = new ComplianceScorer();
 
-      // Quick length check
+      // Quick length check - now just warn but don't reject
       if (normalizedContent.length < 200) {
-        return {
-          isValid: false,
-          reason: 'Document too short - Policy documents should contain substantial content.',
-          details: { contentLength: normalizedContent.length, keywordScore: 0, foundKeywords: [] }
-        };
+        console.warn('Document is quite short, but proceeding with analysis');
       }
 
       // 1. Document Structure Analysis
@@ -706,22 +702,7 @@ function DocumentUpload({ onUpload, uploading, progress, error }) {
         }
       }
 
-      // Quick rejection for obvious non-policy content
-      const nonPolicyTerms = [
-        'invoice', 'receipt', 'bill', 'purchase order', 'financial statement',
-        'menu', 'recipe', 'cookbook', 'story', 'novel', 'fiction', 'movie',
-        'game', 'entertainment', 'music', 'sports', 'news article', 'blog'
-      ];
-
-      for (const term of nonPolicyTerms) {
-        if (normalizedContent.includes(term)) {
-          return {
-            isValid: false,
-            reason: `This appears to be a ${term} document rather than a policy document.`,
-            details: { contentLength: normalizedContent.length, keywordScore: totalScore, foundKeywords }
-          };
-        }
-      }
+      // Note: Accepting all document types for analysis
 
       // Early success for strong policy indicators
       const strongIndicators = [
@@ -769,36 +750,7 @@ function DocumentUpload({ onUpload, uploading, progress, error }) {
 
       console.log(`📊 Advanced Analysis: Combined=${Math.round(combinedScore)}, Required=${minimumScore}, Compliance=${complianceAnalysis.score}%`);
 
-      if (combinedScore < minimumScore && complianceAnalysis.score < 60) {
-        return {
-          isValid: false,
-          reason: `Advanced NLP analysis insufficient. Score: ${Math.round(combinedScore)}/${minimumScore}, Compliance: ${complianceAnalysis.score}%. Found: ${foundKeywords.slice(0, 8).join(', ') || 'none'}.`,
-          details: {
-            contentLength: normalizedContent.length,
-            keywordScore: totalScore,
-            nlpScore: Math.round(nlpScore),
-            structureScore: structureScore,
-            combinedScore: Math.round(combinedScore),
-            foundKeywords: foundKeywords.slice(0, 15),
-            detectedCategories,
-            documentStructure: {
-              sections: documentStructure.sections.length,
-              lists: documentStructure.lists.length,
-              tables: documentStructure.tables.length
-            },
-            entityAnalysis: {
-              totalEntities: entityAnalysis.entities.length,
-              score: entityAnalysis.totalScore
-            },
-            relationshipAnalysis: {
-              totalRelationships: relationshipAnalysis.relationships.length,
-              highRiskCount: relationshipAnalysis.relationships.filter(r => r.riskLevel === 'high').length
-            },
-            complianceAnalysis,
-            suggestion: 'Upload comprehensive policy documents with clear structure, entity definitions, and compliance requirements.'
-          }
-        };
-      }
+      // Note: Accepting all documents regardless of score
 
       return {
         isValid: true,

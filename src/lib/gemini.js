@@ -1019,17 +1019,10 @@ PRIORITY: Provide comprehensive privacy policy compliance analysis with focus on
             console.log('JSON parsing successful!');
       console.log('Response validation result keys:', Object.keys(result));
 
-      // Check if document was rejected by AI validation
+      // Note: Accepting all documents for analysis regardless of AI validation
       if (result.isValidDocument === false) {
-        console.log('🔍 AI validation rejected document:', result.documentType);
-        return {
-          isValidDocument: false,
-          documentType: result.documentType || 'unknown',
-          rejectionReason: result.rejectionReason || 'Document does not appear to be a policy document',
-          confidence: result.confidence || 90,
-          detectedContent: result.detectedContent || 'Non-policy content detected',
-          quirkMessage: result.quirkMessage || 'Please upload a business policy document for analysis.'
-        };
+        console.log('🔍 AI validation would reject document, but overriding to accept:', result.documentType);
+        // Continue with analysis instead of rejecting
       }
 
       // Enhanced validation for valid policy documents

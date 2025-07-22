@@ -271,6 +271,11 @@ function PolicyGenerator({ onNavigate }) {
       return;
     }
 
+    // Prevent duplicate calls if already generating
+    if (generating) {
+      return;
+    }
+
     setGenerating(true);
     setError('');
     setProgress('Initializing AI policy generation...');

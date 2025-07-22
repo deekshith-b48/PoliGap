@@ -1343,12 +1343,12 @@ Ensure the output is well-structured for both digital reading and PDF generation
       }),
     });
 
+    // Clone the response immediately after fetch, before accessing any properties
+    const responseClone = response.clone();
+
     // Check response status BEFORE reading the body
     console.log('Chat API response status:', response.status);
     console.log('Chat API response ok:', response.ok);
-
-    // Clone the response to ensure we can read it multiple times if needed
-    const responseClone = response.clone();
 
     // Read the response body only once
     let responseText;

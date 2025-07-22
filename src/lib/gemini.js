@@ -920,8 +920,12 @@ PRIORITY: Provide comprehensive privacy policy compliance analysis with focus on
       }),
     });
 
+    // Check response status BEFORE reading the body
     console.log('Response status:', response.status);
     console.log('Response ok:', response.ok);
+
+    // Clone the response to ensure we can read it multiple times if needed
+    const responseClone = response.clone();
 
     // Read the response body only once
     let responseText;
@@ -931,7 +935,13 @@ PRIORITY: Provide comprehensive privacy policy compliance analysis with focus on
       responseText = await response.text();
     } catch (readError) {
       console.error('Failed to read response body:', readError);
-      throw new Error('Failed to read API response');
+      // Try reading from the cloned response as fallback
+      try {
+        responseText = await responseClone.text();
+      } catch (cloneError) {
+        console.error('Failed to read cloned response body:', cloneError);
+        throw new Error('Failed to read API response');
+      }
     }
 
     if (!response.ok) {

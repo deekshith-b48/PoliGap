@@ -1,0 +1,1 @@
+This is a very short document that should fail validation because it doesn't have enough content to be considered a proper policy document.

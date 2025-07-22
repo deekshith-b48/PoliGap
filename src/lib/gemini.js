@@ -40,7 +40,17 @@ export async function analyzeDocument(text, config = {}) {
   console.log('Making request to:', url.replace(apiKey, 'HIDDEN_API_KEY'));
 
   const prompt = `
-    You are an expert compliance analyst with rules benchmarking capabilities. Analyze this policy document against regulatory frameworks and provide enhanced gap analysis with benchmarking insights.
+    You are an expert compliance analyst with rules benchmarking capabilities. First, validate that this is a legitimate policy or official business document, then analyze it against regulatory frameworks.
+
+    DOCUMENT VALIDATION CRITERIA:
+    - Must be a policy document (privacy policy, security policy, HR policy, etc.)
+    - Official business documents (code of conduct, compliance framework, employee handbook)
+    - Regulatory or governance documents
+    - NOT personal documents (resumes, cover letters, personal statements)
+    - NOT academic papers, research documents, or scholarly articles  
+    - NOT marketing materials, brochures, or promotional content
+    - NOT invoices, receipts, or financial records
+    - NOT fiction, stories, novels, or creative writing
 
     BENCHMARKING RESULTS:
     - Overall Compliance Score: ${benchmarkResults.overallResults.averageScore}%
@@ -60,9 +70,23 @@ export async function analyzeDocument(text, config = {}) {
       `- Priority ${rec.priority}: ${rec.title} (${rec.framework} - ${rec.criticality})`
     ).join('\n    ')}
 
-    IMPORTANT: You MUST respond with ONLY valid JSON in this exact format:
+    If this document is NOT a policy or official business document, respond with:
+    {
+      "documentValidation": {
+        "isValid": false,
+        "documentType": "detected_type",
+        "reason": "Quirky rejection message explaining why this isn't appropriate"
+      }
+    }
+
+    If this IS a valid policy document, respond with the full analysis in this exact JSON format:
 
 {
+  "documentValidation": {
+    "isValid": true,
+    "documentType": "policy",
+    "reason": ""
+  },
   "summary": "Executive summary including benchmarking insights and industry comparison",
   "overallScore": ${benchmarkResults.overallResults.averageScore},
   "industryBenchmark": {
@@ -196,6 +220,11 @@ export async function analyzeDocument(text, config = {}) {
 
     try {
       const result = JSON.parse(cleanedResponse);
+      
+      // Check for document validation first
+      if (result.documentValidation && !result.documentValidation.isValid) {
+        throw new Error(`Invalid document type: ${result.documentValidation.reason}`);
+      }
       
       // Validate the response structure and ensure benchmarking data is included
       if (!result.summary || !result.gaps || !Array.isArray(result.gaps)) {

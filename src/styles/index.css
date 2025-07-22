@@ -208,4 +208,49 @@
       width: 100%;
     }
   }
+
+  /* Wave animations */
+  @keyframes wave-float {
+    0%, 100% {
+      transform: translateY(0) scaleX(1);
+    }
+    50% {
+      transform: translateY(-20px) scaleX(1.05);
+    }
+  }
+
+  @keyframes wave-float-delayed {
+    0%, 100% {
+      transform: translateY(0) scaleX(1);
+    }
+    50% {
+      transform: translateY(-15px) scaleX(1.03);
+    }
+  }
+
+  @keyframes wave-float-slow {
+    0%, 100% {
+      transform: translateY(0) scaleX(1);
+    }
+    50% {
+      transform: translateY(-10px) scaleX(1.02);
+    }
+  }
+
+  .animate-wave {
+    animation: wave-float 6s ease-in-out infinite;
+    transform-origin: center bottom;
+  }
+
+  .animate-wave-delayed {
+    animation: wave-float-delayed 8s ease-in-out infinite;
+    animation-delay: -2s;
+    transform-origin: center bottom;
+  }
+
+  .animate-wave-slow {
+    animation: wave-float-slow 10s ease-in-out infinite;
+    animation-delay: -4s;
+    transform-origin: center bottom;
+  }
 }

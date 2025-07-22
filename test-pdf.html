@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF.js Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-area { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 8px; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .output { margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 4px; }
+        .error { background: #f8d7da; color: #721c24; }
+        .success { background: #d1e7dd; color: #0f5132; }
+    </style>
+</head>
+<body>
+    <h1>PDF.js Configuration Test</h1>
+    
+    <div class="test-area">
+        <h3>1. PDF.js Library Check</h3>
+        <button onclick="testLibrary()">Test PDF.js Library</button>
+        <div id="library-output" class="output"></div>
+    </div>
+
+    <div class="test-area">
+        <h3>2. Worker Configuration Test</h3>
+        <button onclick="testWorker()">Test Worker Configuration</button>
+        <div id="worker-output" class="output"></div>
+    </div>
+
+    <div class="test-area">
+        <h3>3. PDF Processing Test</h3>
+        <input type="file" id="pdf-file" accept=".pdf" />
+        <button onclick="testPDFProcessing()">Test PDF Processing</button>
+        <div id="pdf-output" class="output"></div>
+    </div>
+
+    <script type="module">
+        import * as pdfjsLib from '/node_modules/pdfjs-dist/build/pdf.mjs';
+        
+        // Configure PDF.js with the same logic as our app
+        const configurePDFJS = () => {
+            try {
+                const workerUrl = new URL('/node_modules/pdfjs-dist/build/pdf.worker.mjs', import.meta.url).toString();
+                pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
+                console.log('PDF.js configured with import.meta.url worker:', workerUrl);
+                return { success: true, strategy: 'import.meta.url', url: workerUrl };
+            } catch (metaError) {
+                console.warn('import.meta.url worker failed:', metaError.message);
+                
+                try {
+                    pdfjsLib.GlobalWorkerOptions.workerSrc = '/node_modules/pdfjs-dist/build/pdf.worker.mjs';
+                    console.log('PDF.js configured with relative path worker');
+                    return { success: true, strategy: 'relative path', url: '/node_modules/pdfjs-dist/build/pdf.worker.mjs' };
+                } catch (relativeError) {
+                    console.warn('Relative path worker failed:', relativeError.message);
+                    
+                    try {
+                        const cdnUrl = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+                        pdfjsLib.GlobalWorkerOptions.workerSrc = cdnUrl;
+                        console.log('PDF.js configured with jsdelivr CDN worker');
+                        return { success: true, strategy: 'CDN', url: cdnUrl };
+                    } catch (cdnError) {
+                        console.warn('CDN worker failed:', cdnError.message);
+                        
+                        pdfjsLib.GlobalWorkerOptions.workerSrc = '';
+                        console.log('PDF.js configured in compatibility mode (no worker)');
+                        return { success: false, strategy: 'compatibility mode', url: 'none' };
+                    }
+                }
+            }
+        };
+
+        const workerConfig = configurePDFJS();
+        
+        window.testLibrary = () => {
+            const output = document.getElementById('library-output');
+            output.className = 'output success';
+            output.innerHTML = `
+                <strong>✅ PDF.js Library Loaded Successfully</strong><br>
+                Version: ${pdfjsLib.version}<br>
+                Build: ${pdfjsLib.build}
+            `;
+        };
+
+        window.testWorker = () => {
+            const output = document.getElementById('worker-output');
+            if (workerConfig.success) {
+                output.className = 'output success';
+                output.innerHTML = `
+                    <strong>✅ Worker Configuration Successful</strong><br>
+                    Strategy: ${workerConfig.strategy}<br>
+                    Worker URL: ${workerConfig.url}
+                `;
+            } else {
+                output.className = 'output error';
+                output.innerHTML = `
+                    <strong>⚠️ Worker Configuration Failed</strong><br>
+                    Strategy: ${workerConfig.strategy}<br>
+                    Note: PDF processing will be slower but should still work
+                `;
+            }
+        };
+
+        window.testPDFProcessing = async () => {
+            const output = document.getElementById('pdf-output');
+            const fileInput = document.getElementById('pdf-file');
+            
+            if (!fileInput.files[0]) {
+                output.className = 'output error';
+                output.innerHTML = '<strong>❌ Please select a PDF file first</strong>';
+                return;
+            }
+
+            const file = fileInput.files[0];
+            output.className = 'output';
+            output.innerHTML = '<strong>🔄 Processing PDF...</strong>';
+
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                
+                const loadingTask = pdfjsLib.getDocument({
+                    data: arrayBuffer,
+                    disableFontFace: true,
+                    useSystemFonts: true,
+                    disableAutoFetch: true,
+                    disableStream: true,
+                    verbosity: 0
+                });
+
+                const pdf = await loadingTask.promise;
+                
+                // Try to get first page
+                const page = await pdf.getPage(1);
+                const textContent = await page.getTextContent();
+                const text = textContent.items.map(item => item.str).join(' ').trim();
+                
+                pdf.destroy();
+
+                output.className = 'output success';
+                output.innerHTML = `
+                    <strong>✅ PDF Processing Successful</strong><br>
+                    File: ${file.name}<br>
+                    Size: ${(file.size / 1024).toFixed(1)} KB<br>
+                    Pages: ${pdf.numPages}<br>
+                    First page text preview: ${text.substring(0, 200)}${text.length > 200 ? '...' : ''}
+                `;
+                
+            } catch (error) {
+                console.error('PDF processing error:', error);
+                output.className = 'output error';
+                output.innerHTML = `
+                    <strong>❌ PDF Processing Failed</strong><br>
+                    Error: ${error.message}<br>
+                    This may indicate worker configuration issues or file compatibility problems.
+                `;
+            }
+        };
+        
+        // Auto-run library test
+        window.testLibrary();
+    </script>
+</body>
+</html>

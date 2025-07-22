@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { analyzeDocument } from '../lib/gemini';
-import * as pdfjsLib from 'pdfjs-dist/webpack';
+import * as pdfjsLib from 'pdfjs-dist';
+import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.mjs?url';
 
-// Configure PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+// Set up PDF.js with local worker - no more CDN or CORS issues!
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
+console.log('PDF.js configured with local worker');
 
 function DocumentUpload({ onUpload, uploading, progress, error }) {
   const [file, setFile] = useState(null);
@@ -15,6 +17,12 @@ function DocumentUpload({ onUpload, uploading, progress, error }) {
   const [invalidFileReason, setInvalidFileReason] = useState('');
   const [isValidatingFile, setIsValidatingFile] = useState(false);
   const [validationDetails, setValidationDetails] = useState(null);
+  
+  // Multi-step processing states
+  const [processingStep, setProcessingStep] = useState(null); // 'extracting', 'validating', 'analyzing', 'complete'
+  const [extractedContent, setExtractedContent] = useState(null);
+  const [extractionProgress, setExtractionProgress] = useState('');
+  const [extractionDetails, setExtractionDetails] = useState(null);
 
   const availableFrameworks = [
     { id: 'GDPR', name: 'GDPR (General Data Protection Regulation)', region: 'EU', icon: '🇪🇺' },
@@ -42,86 +50,137 @@ function DocumentUpload({ onUpload, uploading, progress, error }) {
     { id: 'energy', name: 'Energy & Utilities', icon: '⚡', description: 'Power, oil & gas, renewable energy' }
   ];
 
-  // Extract text content from different file types
+  // Extract text content from different file types - Enhanced with better error handling
   const extractTextContent = async (file) => {
     const fileType = file.type;
+    const fileName = file.name.toLowerCase();
 
     try {
-      if (fileType === 'application/pdf') {
+      // Check file size first (limit to 10MB for better performance)
+      if (file.size > 10 * 1024 * 1024) {
+        throw new Error('File too large. Please upload files smaller than 10MB for optimal performance.');
+      }
+
+      if (fileType === 'application/pdf' || fileName.endsWith('.pdf')) {
         return await extractPDFText(file);
       } else if (fileType.includes('text/') ||
                  fileType.includes('application/msword') ||
-                 fileType.includes('application/vnd.openxmlformats-officedocument')) {
+                 fileType.includes('application/vnd.openxmlformats-officedocument') ||
+                 fileName.endsWith('.txt') || 
+                 fileName.endsWith('.doc') ||
+                 fileName.endsWith('.docx')) {
         return await extractTextFromFile(file);
       } else {
-        throw new Error('Unsupported file type');
+        throw new Error(`Unsupported file type: ${fileType || 'unknown'}. Please upload PDF, Word, or text files.`);
       }
     } catch (error) {
       console.error('Text extraction error:', error);
-      throw new Error('Unable to extract text from file');
+      
+      // Provide more specific error messages
+      if (error.message.includes('timeout')) {
+        throw new Error('File processing timeout. Please try a smaller file or a different format.');
+      } else if (error.message.includes('PDF')) {
+        throw new Error('Unable to process PDF. Please ensure it\'s not password-protected and contains readable text.');
+      } else {
+        throw new Error(error.message || 'Unable to extract text from file');
+      }
     }
   };
 
-  // Fast PDF text extraction - optimized for speed
+  // Simple but robust PDF text extraction
   const extractPDFText = async (file) => {
+    console.log('Starting PDF text extraction...');
+    
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
+      
       const timeoutId = setTimeout(() => {
-        reject(new Error('PDF processing timeout. Please try a smaller file.'));
-      }, 10000); // 10 second timeout
+        reader.abort();
+        reject(new Error('PDF processing timeout'));
+      }, 20000); // Reduced timeout
 
       reader.onload = async (e) => {
         try {
+          clearTimeout(timeoutId);
           const arrayBuffer = e.target.result;
 
-          // Simplified PDF loading for speed
+          console.log('Loading PDF document...');
+
+          // Create loading task with basic configuration
           const loadingTask = pdfjsLib.getDocument({
             data: arrayBuffer,
+            verbosity: 0,
             disableFontFace: true,
-            useSystemFonts: true // Faster font handling
+            useSystemFonts: false
           });
 
           const pdf = await loadingTask.promise;
-          let fullText = '';
-          let successfulPages = 0;
+          console.log(`PDF loaded successfully: ${pdf.numPages} pages`);
+          
+          let allText = '';
+          const maxPages = Math.min(pdf.numPages, 2); // Process first 2 pages only
 
-          // Only process first 3 pages for speed (most policy info is at the beginning)
-          const maxPages = Math.min(pdf.numPages, 3);
-
-          for (let i = 1; i <= maxPages; i++) {
+          for (let pageNum = 1; pageNum <= maxPages; pageNum++) {
             try {
-              const page = await pdf.getPage(i);
+              console.log(`Processing page ${pageNum}...`);
+              const page = await pdf.getPage(pageNum);
               const textContent = await page.getTextContent();
+              
               const pageText = textContent.items
-                .map(item => item.str)
+                .map(item => item.str || '')
                 .join(' ')
                 .trim();
 
-              if (pageText.length > 0) {
-                fullText += pageText + ' ';
-                successfulPages++;
+              if (pageText.length > 5) {
+                allText += pageText + '\n';
+                console.log(`Page ${pageNum}: extracted ${pageText.length} characters`);
+              }
 
-                // Early exit if we have enough content
-                if (fullText.length > 2000) break;
+              // Early exit if we have enough content
+              if (allText.length > 1500) {
+                console.log('Early exit: sufficient content extracted');
+                break;
               }
             } catch (pageError) {
-              console.warn(`Error extracting page ${i}:`, pageError);
+              console.warn(`Error on page ${pageNum}:`, pageError.message);
+              // Continue with other pages
             }
           }
 
-          clearTimeout(timeoutId);
-
-          if (successfulPages === 0 || fullText.trim().length < 50) {
-            reject(new Error('Unable to extract readable text from PDF'));
-            return;
+          // Clean up
+          try {
+            if (pdf && pdf.destroy) {
+              pdf.destroy();
+            }
+          } catch (cleanupError) {
+            console.warn('Cleanup error:', cleanupError);
           }
 
-          resolve(fullText);
+          if (allText.trim().length < 30) {
+            reject(new Error('PDF contains no readable text or is image-based'));
+          } else {
+            const finalText = allText.trim();
+            console.log(`Successfully extracted ${finalText.length} characters from PDF`);
+            resolve(finalText);
+          }
 
         } catch (error) {
           clearTimeout(timeoutId);
-          console.error('PDF parsing error:', error);
-          reject(new Error('Failed to parse PDF. Please ensure it\'s a valid PDF file.'));
+          console.error('PDF extraction error:', error);
+          
+          // Provide user-friendly error messages
+          let errorMessage = 'PDF processing failed';
+          if (error.message.includes('Invalid PDF')) {
+            errorMessage = 'Invalid or corrupted PDF file';
+          } else if (error.message.includes('password') || error.message.includes('encrypted')) {
+            errorMessage = 'PDF is password-protected or encrypted';
+          } else if (error.message.includes('worker')) {
+            errorMessage = 'PDF worker loading failed - please try refreshing the page';
+          } else if (error.message.includes('timeout')) {
+            errorMessage = 'PDF processing timeout - try a smaller file';
+          }
+          
+          reject(new Error(errorMessage));
         }
       };
 
@@ -129,73 +188,562 @@ function DocumentUpload({ onUpload, uploading, progress, error }) {
         clearTimeout(timeoutId);
         reject(new Error('Failed to read PDF file'));
       };
+
+      reader.onabort = () => {
+        clearTimeout(timeoutId);
+        reject(new Error('PDF reading was cancelled'));
+      };
+
       reader.readAsArrayBuffer(file);
     });
   };
 
-  // Fast text extraction from regular files
+  // Enhanced text extraction from regular files
   const extractTextFromFile = async (file) => {
     return new Promise((resolve, reject) => {
-      const timeoutId = setTimeout(() => {
-        reject(new Error('File reading timeout'));
-      }, 5000); // 5 second timeout
-
       const reader = new FileReader();
+      
+      // Longer timeout for text files as they're usually quick
+      const timeoutId = setTimeout(() => {
+        reader.abort();
+        reject(new Error('File reading timeout. Please try a smaller file.'));
+      }, 8000);
+      
       reader.onload = (e) => {
-        clearTimeout(timeoutId);
         try {
+          clearTimeout(timeoutId);
           const content = e.target.result;
-          // Limit content to first 5000 characters for faster processing
-          resolve(content.substring(0, 5000));
+          
+          if (!content || content.trim().length === 0) {
+            reject(new Error('File appears to be empty or contains no readable text.'));
+            return;
+          }
+          
+          // Limit content to first 8000 characters for better processing
+          // but ensure we get enough content for validation
+          const processedContent = content.substring(0, 8000);
+          
+          console.log(`Extracted ${processedContent.length} characters from text file`);
+          resolve(processedContent);
+          
         } catch (error) {
-          reject(new Error('Failed to read file content'));
+          clearTimeout(timeoutId);
+          reject(new Error(`Failed to process file content: ${error.message}`));
         }
       };
-      reader.onerror = () => {
+      
+      reader.onerror = (error) => {
         clearTimeout(timeoutId);
-        reject(new Error('Failed to read file'));
+        console.error('FileReader error:', error);
+        reject(new Error('Failed to read file. The file may be corrupted or in an unsupported format.'));
       };
-      reader.readAsText(file);
+
+      reader.onabort = () => {
+        clearTimeout(timeoutId);
+        reject(new Error('File reading was cancelled due to timeout.'));
+      };
+      
+      reader.readAsText(file, 'UTF-8');
     });
   };
 
-  // Fast content validation - optimized for speed
-  const validateFileContent = async (file) => {
-    try {
-      const content = await extractTextContent(file);
-      const normalizedContent = content.toLowerCase();
+  // ==============================================
+  // MULTI-STEP PROCESSING FUNCTIONS
+  // ==============================================
 
-      // Quick length check
-      if (normalizedContent.length < 300) {
+  // STEP 1: Extract text content only
+  const performTextExtraction = async (file) => {
+    setProcessingStep('extracting');
+    setExtractionProgress('🔍 Starting text extraction...');
+    
+    try {
+      console.log(`STEP 1: Extracting text from ${file.name} (${Math.round(file.size / 1024)}KB)`);
+      
+      const startTime = Date.now();
+      const content = await extractTextContent(file);
+      const extractionTime = Date.now() - startTime;
+      
+      const details = {
+        fileName: file.name,
+        fileSize: Math.round(file.size / 1024),
+        contentLength: content.length,
+        extractionTime: extractionTime,
+        fileType: file.type || 'unknown',
+        wordsCount: content.split(/\s+/).length,
+        linesCount: content.split('\n').length
+      };
+      
+      console.log(`STEP 1 Complete: Extracted ${content.length} characters in ${extractionTime}ms`);
+      
+      setExtractedContent(content);
+      setExtractionDetails(details);
+      setExtractionProgress(`✅ Text extracted: ${content.length} characters (${details.wordsCount} words)`);
+      setProcessingStep('extracted');
+      
+      return { content, details };
+      
+    } catch (error) {
+      console.error('STEP 1 Failed:', error);
+      setExtractionProgress(`❌ Extraction failed: ${error.message}`);
+      throw error;
+    }
+  };
+
+  // STEP 2: Validate content only (separated from file operations)
+  const performContentValidation = async (content, fileDetails) => {
+    setProcessingStep('validating');
+    setExtractionProgress('🔍 Validating document content...');
+    
+    try {
+      console.log(`STEP 2: Validating content (${content.length} characters)`);
+      
+      const startTime = Date.now();
+      const validation = await validateExtractedContent(content, fileDetails);
+      const validationTime = Date.now() - startTime;
+      
+      console.log(`STEP 2 Complete: Validation completed in ${validationTime}ms - ${validation.isValid ? 'VALID' : 'INVALID'}`);
+      
+      if (!validation.isValid) {
+        setExtractionProgress(`❌ Validation failed: ${validation.reason}`);
+        setValidationDetails(validation.details);
+        setInvalidFileReason(validation.reason);
+        setShowInvalidFilePopup(true);
+        setProcessingStep(null);
+        return validation;
+      }
+      
+      setExtractionProgress(`✅ Document validated: ${validation.details.documentType} (Score: ${validation.details.keywordScore})`);
+      setProcessingStep('validated');
+      
+      return validation;
+      
+    } catch (error) {
+      console.error('STEP 2 Failed:', error);
+      setExtractionProgress(`❌ Validation failed: ${error.message}`);
+      throw error;
+    }
+  };
+
+  // STEP 3: Perform AI analysis
+  const performAIAnalysis = async (content, industry, frameworks) => {
+    setProcessingStep('analyzing');
+    setExtractionProgress('🤖 Starting AI analysis...');
+    
+    try {
+      console.log(`STEP 3: AI analysis starting`);
+      
+      const startTime = Date.now();
+      const results = await analyzeDocument(content, {
+        industry: industry,
+        frameworks: frameworks
+      });
+      const analysisTime = Date.now() - startTime;
+      
+      console.log(`STEP 3 Complete: AI analysis completed in ${analysisTime}ms`);
+      
+      setExtractionProgress(`✅ Analysis complete: ${results.totalGaps} gaps identified`);
+      setProcessingStep('complete');
+      
+      return results;
+      
+    } catch (error) {
+      console.error('STEP 3 Failed:', error);
+      setExtractionProgress(`❌ AI analysis failed: ${error.message}`);
+      throw error;
+    }
+  };
+
+  // Content validation function (works on extracted content, not file)
+  const validateExtractedContent = async (content, fileDetails) => {
+    const normalizedContent = content.toLowerCase();
+
+    // Quick length check with more reasonable minimum
+    if (normalizedContent.length < 200) {
+      return {
+        isValid: false,
+        reason: 'Document too short - Policy documents should contain substantial content (minimum 200 characters).',
+        details: { 
+          contentLength: normalizedContent.length, 
+          keywordScore: 0, 
+          foundKeywords: [],
+          documentType: 'insufficient_content'
+        }
+      };
+    }
+
+    // Enhanced keyword detection for policy documents and official documents
+    const quickPolicyKeywords = [
+      'policy', 'privacy', 'security', 'compliance', 'procedure', 'regulation',
+      'gdpr', 'hipaa', 'data protection', 'information', 'personal information',
+      'google', 'collect', 'use', 'share', 'cookies', 'services', 'terms of service',
+      'code of conduct', 'governance', 'framework', 'standard', 'guideline',
+      'sox', 'pci dss', 'iso 27001', 'ccpa', 'ferpa', 'glba', 'audit',
+      'risk management', 'incident response', 'business continuity', 'disaster recovery',
+      'employee handbook', 'hr policy', 'it policy', 'security policy'
+    ];
+
+    // Enhanced detection for inappropriate documents  
+    const quickNonPolicyKeywords = ['invoice', 'receipt', 'menu', 'recipe', 'story', 'novel', 'fiction'];
+    const resumeKeywords = ['resume', 'curriculum vitae', 'cv', 'experience:', 'education:', 'skills:', 'achievements:', 'references:', 'objective:', 'career summary', 'work experience', 'professional experience', 'employment history', 'phone:', 'email:', 'address:', 'linkedin', 'github', 'portfolio', 'bachelor', 'master', 'degree', 'university', 'college', 'gpa', 'intern', 'internship', 'volunteer', 'certification', 'award'];
+    const personalDocKeywords = ['dear hiring manager', 'cover letter', 'application for', 'i am writing to', 'personal statement', 'autobiography', 'diary', 'journal', 'letter to', 'birth certificate', 'passport', 'driver license', 'social security'];
+    const academicKeywords = ['abstract', 'introduction', 'methodology', 'results', 'conclusion', 'bibliography', 'references cited', 'thesis', 'dissertation', 'research paper', 'literature review', 'hypothesis', 'experiment', 'data analysis'];
+    const marketingKeywords = ['brochure', 'flyer', 'advertisement', 'promotional', 'marketing campaign', 'product catalog', 'price list', 'sales pitch', 'marketing strategy'];
+
+    let policyScore = 0;
+    let foundKeywords = [];
+    let resumeScore = 0;
+    let personalScore = 0;
+    let academicScore = 0;
+    let marketingScore = 0;
+
+    // Check for resume/CV content
+    for (const keyword of resumeKeywords) {
+      if (normalizedContent.includes(keyword)) {
+        resumeScore += 2;
+        if (resumeScore >= 8) {
+          return {
+            isValid: false,
+            reason: "Looks like you've uploaded your resume! While we're sure you're amazing, we're here to analyze policy documents. We hope that your resume would also be something we could speak about :-)",
+            details: { 
+              contentLength: normalizedContent.length, 
+              keywordScore: policyScore, 
+              foundKeywords: [],
+              documentType: 'resume'
+            }
+          };
+        }
+      }
+    }
+
+    // Check for personal documents
+    for (const keyword of personalDocKeywords) {
+      if (normalizedContent.includes(keyword)) {
+        personalScore += 2;
+        if (personalScore >= 6) {
+          return {
+            isValid: false,
+            reason: "This seems to be a personal document! While your personal story matters, we're specialized in policy analysis. Maybe save the personal touch for after we help you with compliance? :-)",
+            details: { 
+              contentLength: normalizedContent.length, 
+              keywordScore: policyScore, 
+              foundKeywords: [],
+              documentType: 'personal'
+            }
+          };
+        }
+      }
+    }
+
+    // Check for academic documents
+    for (const keyword of academicKeywords) {
+      if (normalizedContent.includes(keyword)) {
+        academicScore += 2;
+        if (academicScore >= 8) {
+          return {
+            isValid: false,
+            reason: "This appears to be an academic/research document! While we appreciate scholarly work, we're focused on policy compliance analysis. Perhaps your research could inform better policies? :-)",
+            details: { 
+              contentLength: normalizedContent.length, 
+              keywordScore: policyScore, 
+              foundKeywords: [],
+              documentType: 'academic'
+            }
+          };
+        }
+      }
+    }
+
+    // Check for marketing documents
+    for (const keyword of marketingKeywords) {
+      if (normalizedContent.includes(keyword)) {
+        marketingScore += 2;
+        if (marketingScore >= 6) {
+          return {
+            isValid: false,
+            reason: "This looks like marketing material! While your product might be fantastic, we're here to analyze policies, not promote them. Marketing compliance policies, however, are totally our thing! :-)",
+            details: { 
+              contentLength: normalizedContent.length, 
+              keywordScore: policyScore, 
+              foundKeywords: [],
+              documentType: 'marketing'
+            }
+          };
+        }
+      }
+    }
+
+    // Fast string matching for policy content
+    for (const keyword of quickPolicyKeywords) {
+      if (normalizedContent.includes(keyword)) {
+        policyScore += (keyword.length > 8) ? 3 : 2;
+        foundKeywords.push(keyword);
+
+        // Early success - if we find strong indicators, accept quickly
+        if (policyScore >= 12 && (normalizedContent.includes('privacy policy') || 
+            normalizedContent.includes('data protection') || 
+            normalizedContent.includes('code of conduct') ||
+            normalizedContent.includes('compliance'))) {
+          return {
+            isValid: true,
+            reason: '',
+            details: {
+              contentLength: normalizedContent.length,
+              keywordScore: policyScore,
+              foundKeywords,
+              confidence: Math.min(100, policyScore * 8),
+              documentType: 'policy'
+            }
+          };
+        }
+      }
+    }
+
+    // Quick rejection for obvious non-policy content with quirky messages
+    for (const keyword of quickNonPolicyKeywords) {
+      if (normalizedContent.includes(keyword)) {
+        const quirkMessages = {
+          'invoice': "This appears to be an invoice! While we appreciate good bookkeeping, we're here for policy analysis. Maybe after we help with compliance, we can discuss payment policies? :-)",
+          'receipt': "That's a receipt! While we love transparency in transactions, we specialize in policy transparency. How about uploading a financial policy instead? :-)",
+          'menu': "Looks like a menu! While we're hungry for good policies, food menus aren't our appetite. Perhaps a workplace dining policy? :-)",
+          'recipe': "That's a recipe! While we appreciate good ingredients, we're cooking up policy analysis. Maybe a food safety policy would be more our flavor? :-)",
+          'story': "This seems to be a story! While we love a good narrative, we're more into policy plots. Corporate storytelling policies are totally our genre though! :-)",
+          'novel': "That appears to be a novel! While we admire creativity, we're novelists of compliance. How about a creative writing policy for your workplace? :-)",
+          'fiction': "This looks like fiction! While imagination is wonderful, we deal in policy reality. Though fictional scenarios in risk assessments are quite real to us! :-)"
+        };
+        
         return {
           isValid: false,
-          reason: 'Document too short - Policy documents should contain substantial content.',
-          details: { contentLength: normalizedContent.length, keywordScore: 0, foundKeywords: [] }
+          reason: quirkMessages[keyword] || `This appears to be a ${keyword} document rather than a policy document. We're specialists in policy analysis - let's stick to what we do best! :-)`,
+          details: { 
+            contentLength: normalizedContent.length, 
+            keywordScore: policyScore, 
+            foundKeywords,
+            documentType: keyword 
+          }
+        };
+      }
+    }
+
+    // Enhanced final validation with better messaging
+    if (policyScore < 10) {
+      // Check if it might be a legitimate business document that's just not a policy
+      const businessKeywords = ['contract', 'agreement', 'terms', 'conditions', 'legal', 'compliance', 'governance'];
+      let businessScore = 0;
+      
+      for (const keyword of businessKeywords) {
+        if (normalizedContent.includes(keyword)) {
+          businessScore += 2;
+        }
+      }
+      
+      if (businessScore >= 4) {
+        return {
+          isValid: false,
+          reason: "This appears to be a business document but not quite a policy document. We're looking for specific policies like privacy policies, security policies, HR policies, etc. Close, but not quite there yet! :-)",
+          details: {
+            contentLength: normalizedContent.length,
+            keywordScore: policyScore,
+            foundKeywords,
+            suggestion: 'Try uploading documents with terms like: privacy policy, security policy, code of conduct, compliance framework, employee handbook, etc.',
+            documentType: 'business_document'
+          }
         };
       }
 
-      // Fast keyword detection using includes (much faster than regex)
+      return {
+        isValid: false,
+        reason: `Document doesn't contain enough policy-related content. Found: ${foundKeywords.join(', ') || 'none'}. We're quite picky about policies - it's what makes us good at what we do! :-)`,
+        details: {
+          contentLength: normalizedContent.length,
+          keywordScore: policyScore,
+          foundKeywords,
+          suggestion: 'Upload documents containing terms like: policy, privacy, security, compliance, procedure, governance, framework, etc.',
+          documentType: 'unknown'
+        }
+      };
+    }
+
+    return {
+      isValid: true,
+      reason: '',
+      details: {
+        contentLength: normalizedContent.length,
+        keywordScore: policyScore,
+        foundKeywords,
+        confidence: Math.min(100, policyScore * 10),
+        documentType: 'policy'
+      }
+    };
+  };
+
+  // ==============================================
+  // ORIGINAL VALIDATION FUNCTION (NOW DEPRECATED)
+  // ==============================================
+
+  // Enhanced content validation with better error handling
+  const validateFileContent = async (file) => {
+    try {
+      console.log(`Starting validation for file: ${file.name} (${Math.round(file.size / 1024)}KB)`);
+      
+      const content = await extractTextContent(file);
+      const normalizedContent = content.toLowerCase();
+
+      console.log(`Extracted ${content.length} characters for validation`);
+
+      // Quick length check with more reasonable minimum
+      if (normalizedContent.length < 200) {
+        return {
+          isValid: false,
+          reason: 'Document too short - Policy documents should contain substantial content (minimum 200 characters).',
+          details: { 
+            contentLength: normalizedContent.length, 
+            keywordScore: 0, 
+            foundKeywords: [],
+            documentType: 'insufficient_content'
+          }
+        };
+      }
+
+      // Enhanced keyword detection for policy documents and official documents
       const quickPolicyKeywords = [
         'policy', 'privacy', 'security', 'compliance', 'procedure', 'regulation',
         'gdpr', 'hipaa', 'data protection', 'information', 'personal information',
-        'google', 'collect', 'use', 'share', 'cookies', 'services'
+        'google', 'collect', 'use', 'share', 'cookies', 'services', 'terms of service',
+        'code of conduct', 'governance', 'framework', 'standard', 'guideline',
+        'sox', 'pci dss', 'iso 27001', 'ccpa', 'ferpa', 'glba', 'audit',
+        'risk management', 'incident response', 'business continuity', 'disaster recovery',
+        'employee handbook', 'hr policy', 'it policy', 'security policy'
       ];
 
+      // Enhanced detection for inappropriate documents
       const quickNonPolicyKeywords = [
         'invoice', 'receipt', 'menu', 'recipe', 'story', 'novel', 'fiction'
       ];
 
+      // Resume and CV detection keywords
+      const resumeKeywords = [
+        'resume', 'curriculum vitae', 'cv', 'experience:', 'education:', 
+        'skills:', 'achievements:', 'references:', 'objective:', 'career summary',
+        'work experience', 'professional experience', 'employment history',
+        'phone:', 'email:', 'address:', 'linkedin', 'github', 'portfolio',
+        'bachelor', 'master', 'degree', 'university', 'college', 'gpa',
+        'intern', 'internship', 'volunteer', 'certification', 'award'
+      ];
+
+      // Personal document keywords
+      const personalDocKeywords = [
+        'dear hiring manager', 'cover letter', 'application for', 'i am writing to',
+        'personal statement', 'autobiography', 'diary', 'journal', 'letter to',
+        'birth certificate', 'passport', 'driver license', 'social security'
+      ];
+
+      // Academic/research document keywords  
+      const academicKeywords = [
+        'abstract', 'introduction', 'methodology', 'results', 'conclusion',
+        'bibliography', 'references cited', 'thesis', 'dissertation', 'research paper',
+        'literature review', 'hypothesis', 'experiment', 'data analysis'
+      ];
+
+      // Marketing/sales document keywords
+      const marketingKeywords = [
+        'brochure', 'flyer', 'advertisement', 'promotional', 'marketing campaign',
+        'product catalog', 'price list', 'sales pitch', 'marketing strategy'
+      ];
+
       let policyScore = 0;
       let foundKeywords = [];
+      let resumeScore = 0;
+      let personalScore = 0;
+      let academicScore = 0;
+      let marketingScore = 0;
 
-      // Fast string matching
+      // Check for resume/CV content
+      for (const keyword of resumeKeywords) {
+        if (normalizedContent.includes(keyword)) {
+          resumeScore += 2;
+          if (resumeScore >= 8) {
+            return {
+              isValid: false,
+              reason: "Looks like you've uploaded your resume! While we're sure you're amazing, we're here to analyze policy documents. We hope that your resume would also be something we could speak about :-)",
+              details: { 
+                contentLength: normalizedContent.length, 
+                keywordScore: policyScore, 
+                foundKeywords: [],
+                documentType: 'resume'
+              }
+            };
+          }
+        }
+      }
+
+      // Check for personal documents
+      for (const keyword of personalDocKeywords) {
+        if (normalizedContent.includes(keyword)) {
+          personalScore += 2;
+          if (personalScore >= 6) {
+            return {
+              isValid: false,
+              reason: "This seems to be a personal document! While your personal story matters, we're specialized in policy analysis. Maybe save the personal touch for after we help you with compliance? :-)",
+              details: { 
+                contentLength: normalizedContent.length, 
+                keywordScore: policyScore, 
+                foundKeywords: [],
+                documentType: 'personal'
+              }
+            };
+          }
+        }
+      }
+
+      // Check for academic documents
+      for (const keyword of academicKeywords) {
+        if (normalizedContent.includes(keyword)) {
+          academicScore += 2;
+          if (academicScore >= 8) {
+            return {
+              isValid: false,
+              reason: "This appears to be an academic/research document! While we appreciate scholarly work, we're focused on policy compliance analysis. Perhaps your research could inform better policies? :-)",
+              details: { 
+                contentLength: normalizedContent.length, 
+                keywordScore: policyScore, 
+                foundKeywords: [],
+                documentType: 'academic'
+              }
+            };
+          }
+        }
+      }
+
+      // Check for marketing documents
+      for (const keyword of marketingKeywords) {
+        if (normalizedContent.includes(keyword)) {
+          marketingScore += 2;
+          if (marketingScore >= 6) {
+            return {
+              isValid: false,
+              reason: "This looks like marketing material! While your product might be fantastic, we're here to analyze policies, not promote them. Marketing compliance policies, however, are totally our thing! :-)",
+              details: { 
+                contentLength: normalizedContent.length, 
+                keywordScore: policyScore, 
+                foundKeywords: [],
+                documentType: 'marketing'
+              }
+            };
+          }
+        }
+      }
+
+      // Fast string matching for policy content
       for (const keyword of quickPolicyKeywords) {
         if (normalizedContent.includes(keyword)) {
           policyScore += (keyword.length > 8) ? 3 : 2; // Longer keywords get higher weight
           foundKeywords.push(keyword);
 
           // Early success - if we find strong indicators, accept quickly
-          if (policyScore >= 10 && (normalizedContent.includes('privacy policy') || normalizedContent.includes('data protection'))) {
+          if (policyScore >= 12 && (normalizedContent.includes('privacy policy') || 
+              normalizedContent.includes('data protection') || 
+              normalizedContent.includes('code of conduct') ||
+              normalizedContent.includes('compliance'))) {
             return {
               isValid: true,
               reason: '',
@@ -203,34 +751,75 @@ function DocumentUpload({ onUpload, uploading, progress, error }) {
                 contentLength: normalizedContent.length,
                 keywordScore: policyScore,
                 foundKeywords,
-                confidence: Math.min(100, policyScore * 8)
+                confidence: Math.min(100, policyScore * 8),
+                documentType: 'policy'
               }
             };
           }
         }
       }
 
-      // Quick rejection for obvious non-policy content
+      // Quick rejection for obvious non-policy content with quirky messages
       for (const keyword of quickNonPolicyKeywords) {
         if (normalizedContent.includes(keyword)) {
+          const quirkMessages = {
+            'invoice': "This appears to be an invoice! While we appreciate good bookkeeping, we're here for policy analysis. Maybe after we help with compliance, we can discuss payment policies? :-)",
+            'receipt': "That's a receipt! While we love transparency in transactions, we specialize in policy transparency. How about uploading a financial policy instead? :-)",
+            'menu': "Looks like a menu! While we're hungry for good policies, food menus aren't our appetite. Perhaps a workplace dining policy? :-)",
+            'recipe': "That's a recipe! While we appreciate good ingredients, we're cooking up policy analysis. Maybe a food safety policy would be more our flavor? :-)",
+            'story': "This seems to be a story! While we love a good narrative, we're more into policy plots. Corporate storytelling policies are totally our genre though! :-)",
+            'novel': "That appears to be a novel! While we admire creativity, we're novelists of compliance. How about a creative writing policy for your workplace? :-)",
+            'fiction': "This looks like fiction! While imagination is wonderful, we deal in policy reality. Though fictional scenarios in risk assessments are quite real to us! :-)"
+          };
+          
           return {
             isValid: false,
-            reason: `This appears to be a ${keyword} document rather than a policy document.`,
-            details: { contentLength: normalizedContent.length, keywordScore: policyScore, foundKeywords }
+            reason: quirkMessages[keyword] || `This appears to be a ${keyword} document rather than a policy document. We're specialists in policy analysis - let's stick to what we do best! :-)`,
+            details: { 
+              contentLength: normalizedContent.length, 
+              keywordScore: policyScore, 
+              foundKeywords,
+              documentType: keyword 
+            }
           };
         }
       }
 
-      // Final validation
-      if (policyScore < 8) {
+      // Enhanced final validation with better messaging
+      if (policyScore < 10) {
+        // Check if it might be a legitimate business document that's just not a policy
+        const businessKeywords = ['contract', 'agreement', 'terms', 'conditions', 'legal', 'compliance', 'governance'];
+        let businessScore = 0;
+        
+        for (const keyword of businessKeywords) {
+          if (normalizedContent.includes(keyword)) {
+            businessScore += 2;
+          }
+        }
+        
+        if (businessScore >= 4) {
+          return {
+            isValid: false,
+            reason: "This appears to be a business document but not quite a policy document. We're looking for specific policies like privacy policies, security policies, HR policies, etc. Close, but not quite there yet! :-)",
+            details: {
+              contentLength: normalizedContent.length,
+              keywordScore: policyScore,
+              foundKeywords,
+              suggestion: 'Try uploading documents with terms like: privacy policy, security policy, code of conduct, compliance framework, employee handbook, etc.',
+              documentType: 'business_document'
+            }
+          };
+        }
+
         return {
           isValid: false,
-          reason: `Document doesn't contain enough policy-related terms. Found: ${foundKeywords.join(', ') || 'none'}.`,
+          reason: `Document doesn't contain enough policy-related content. Found: ${foundKeywords.join(', ') || 'none'}. We're quite picky about policies - it's what makes us good at what we do! :-)`,
           details: {
             contentLength: normalizedContent.length,
             keywordScore: policyScore,
             foundKeywords,
-            suggestion: 'Upload documents containing terms like: policy, privacy, security, compliance, procedure, etc.'
+            suggestion: 'Upload documents containing terms like: policy, privacy, security, compliance, procedure, governance, framework, etc.',
+            documentType: 'unknown'
           }
         };
       }
@@ -242,14 +831,43 @@ function DocumentUpload({ onUpload, uploading, progress, error }) {
           contentLength: normalizedContent.length,
           keywordScore: policyScore,
           foundKeywords,
-          confidence: Math.min(100, policyScore * 10)
+          confidence: Math.min(100, policyScore * 10),
+          documentType: 'policy'
         }
       };
     } catch (error) {
       console.error('Content validation error:', error);
+      
+      // Provide specific error messages based on the error type
+      let userMessage = 'Error analyzing document';
+      let documentType = 'error';
+      
+      if (error.message.includes('timeout')) {
+        userMessage = 'File processing took too long. Please try a smaller file or different format.';
+        documentType = 'timeout_error';
+      } else if (error.message.includes('PDF')) {
+        userMessage = 'Unable to process PDF file. Please ensure it\'s not password-protected and contains readable text.';
+        documentType = 'pdf_error';
+      } else if (error.message.includes('too large')) {
+        userMessage = 'File is too large. Please upload files smaller than 10MB.';
+        documentType = 'size_error';
+      } else if (error.message.includes('Unsupported file type')) {
+        userMessage = 'Unsupported file format. Please upload PDF, Word (.docx), or text (.txt) files.';
+        documentType = 'format_error';
+      } else {
+        userMessage = `Unable to process file: ${error.message}`;
+      }
+      
       return {
         isValid: false,
-        reason: `Error analyzing document: ${error.message}`
+        reason: userMessage,
+        details: {
+          contentLength: 0,
+          keywordScore: 0,
+          foundKeywords: [],
+          documentType: documentType,
+          originalError: error.message
+        }
       };
     }
   };
@@ -360,16 +978,39 @@ function DocumentUpload({ onUpload, uploading, progress, error }) {
     }
 
     try {
+      console.log('🚀 Starting multi-step document processing...');
+      
+      // STEP 1: Extract text content
+      const extractionResult = await performTextExtraction(file);
+      
+      // STEP 2: Validate content
+      const validationResult = await performContentValidation(extractionResult.content, extractionResult.details);
+      
+      if (!validationResult.isValid) {
+        // Validation failed - error already shown by performContentValidation
+        return;
+      }
+      
+      // STEP 3: Perform AI analysis
+      const analysisResult = await performAIAnalysis(extractionResult.content, selectedIndustry, frameworksToUse);
+      
+      // Pass results to parent component
       await onUpload({
         file,
         industry: selectedIndustry,
-        frameworks: frameworksToUse
+        frameworks: frameworksToUse,
+        extractionDetails: extractionResult.details,
+        analysisResults: analysisResult
       });
       
       // Reset form
       setFile(null);
       setSelectedIndustry('');
       setSelectedFrameworks([]);
+      setProcessingStep(null);
+      setExtractedContent(null);
+      setExtractionDetails(null);
+      setExtractionProgress('');
       
       const fileInput = document.querySelector('input[type="file"]');
       if (fileInput) fileInput.value = '';
@@ -630,8 +1271,49 @@ function DocumentUpload({ onUpload, uploading, progress, error }) {
         )}
       </button>
 
-      {/* Progress Indicator */}
-      {progress && (
+      {/* Multi-Step Progress Indicator */}
+      {(processingStep || extractionProgress) && (
+        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-2xl">
+          <div className="flex items-start">
+            <div className="w-5 h-5 bg-blue-500 rounded-full mr-3 mt-0.5 animate-ai-pulse"></div>
+            <div className="flex-1">
+              <p className="text-blue-800 font-medium">{extractionProgress}</p>
+              
+              {/* Step Progress Indicators */}
+              <div className="mt-3 flex space-x-2">
+                <div className={`px-2 py-1 rounded text-xs ${
+                  processingStep === 'extracting' || processingStep === 'extracted' || processingStep === 'validating' || processingStep === 'validated' || processingStep === 'analyzing' || processingStep === 'complete'
+                    ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
+                }`}>
+                  {processingStep === 'extracting' ? '🔄' : '✅'} Step 1: Extract
+                </div>
+                <div className={`px-2 py-1 rounded text-xs ${
+                  processingStep === 'validating' || processingStep === 'validated' || processingStep === 'analyzing' || processingStep === 'complete'
+                    ? 'bg-green-100 text-green-700' : processingStep === 'extracted' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'
+                }`}>
+                  {processingStep === 'validating' ? '🔄' : processingStep === 'validated' || processingStep === 'analyzing' || processingStep === 'complete' ? '✅' : '⏳'} Step 2: Validate
+                </div>
+                <div className={`px-2 py-1 rounded text-xs ${
+                  processingStep === 'analyzing' || processingStep === 'complete'
+                    ? 'bg-green-100 text-green-700' : processingStep === 'validated' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'
+                }`}>
+                  {processingStep === 'analyzing' ? '🔄' : processingStep === 'complete' ? '✅' : '⏳'} Step 3: Analyze
+                </div>
+              </div>
+
+              {/* Extraction Details */}
+              {extractionDetails && (
+                <div className="mt-3 text-xs text-blue-600 bg-blue-25 border border-blue-100 rounded p-2">
+                  <strong>Extraction Details:</strong> {extractionDetails.fileSize}KB file • {extractionDetails.wordsCount} words • {extractionDetails.linesCount} lines • {extractionDetails.extractionTime}ms
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Legacy Progress Indicator */}
+      {progress && !processingStep && (
         <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-2xl">
           <div className="flex items-center">
             <div className="w-5 h-5 bg-blue-500 rounded-full mr-3 animate-ai-pulse"></div>
@@ -670,6 +1352,12 @@ function DocumentUpload({ onUpload, uploading, progress, error }) {
                 <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 mb-4 text-left">
                   <h4 className="font-semibold text-gray-700 mb-2">📊 Analysis Results:</h4>
                   <div className="grid grid-cols-2 gap-3 text-sm">
+                    {validationDetails.documentType && (
+                      <div className="col-span-2">
+                        <span className="text-gray-600">Detected Document Type:</span>
+                        <span className="ml-2 font-medium capitalize text-red-600">{validationDetails.documentType.replace('_', ' ')}</span>
+                      </div>
+                    )}
                     <div>
                       <span className="text-gray-600">Content Length:</span>
                       <span className="ml-2 font-medium">{validationDetails.contentLength} chars</span>

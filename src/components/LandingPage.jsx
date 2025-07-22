@@ -1,34 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 
 function LandingPage({ onNavigate }) {
-  const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [showProductTour, setShowProductTour] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
-
-  const testimonials = [
-    {
-      quote: "Cut our compliance prep from 3 months to 2 weeks. The AI caught gaps our lawyers missed!",
-      author: "Sarah Chen",
-      role: "CTO, HealthTech SaaS",
-      company: "MedFlow Solutions"
-    },
-    {
-      quote: "Finally, compliance software that doesn't require a PhD to operate. Our whole team can use it.",
-      author: "Michael Rodriguez", 
-      role: "Compliance Director",
-      company: "FinanceFirst"
-    },
-    {
-      quote: "The quantitative scoring changed everything. We can now prove compliance improvements to the board.",
-      author: "Dr. Amanda Foster",
-      role: "Chief Privacy Officer",
-      company: "Global Healthcare Corp"
-    }
-  ];
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -61,57 +39,60 @@ function LandingPage({ onNavigate }) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Cyberpunk Header */}
-      <header className="sticky top-0 z-50 bg-gradient-to-r from-slate-900 via-gray-900 to-slate-900 border-b border-cyan-500/30 shadow-lg">
-        {/* Neon glow effect */}
-        <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-purple-500/5 to-cyan-500/5"></div>
+      {/* Glassmorphism Header */}
+      <header className="sticky top-0 z-50 bg-white/20 backdrop-blur-md border-b border-white/20 shadow-lg">
+        {/* Subtle gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-50/10 via-white/10 to-purple-50/10"></div>
 
-        <div className="relative max-w-7xl mx-auto px-6 py-4">
+        <div className="relative max-w-none mx-auto px-4 py-2">
           <div className="flex items-center justify-between">
 
             {/* Left Side - Logo + Main CTAs */}
-            <div className="flex items-center space-x-8">
+            <div className="flex items-center space-x-6">
               {/* Logo */}
-              <div className="flex items-center space-x-3 group">
+              <div className="flex items-center space-x-2 group">
                 <div className="relative">
-                  <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-purple-600 rounded-2xl flex items-center justify-center shadow-glow-accent">
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg backdrop-blur-sm">
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
                   </div>
-                  <div className="absolute inset-0 bg-cyan-400 rounded-2xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                  <div className="absolute inset-0 bg-blue-400 rounded-xl blur-lg opacity-20 group-hover:opacity-30 transition-opacity"></div>
                 </div>
                 <div>
-                  <h1 className="text-2xl font-black text-white tracking-wider" style={{fontFamily: 'Space Grotesk, sans-serif'}}>POLIGAP</h1>
-                  <p className="text-xs text-cyan-300 font-medium">Policy Gap Analyzer</p>
+                  <h1 className="text-xl font-black text-gray-800 tracking-wider" style={{fontFamily: 'Space Grotesk, sans-serif'}}>POLIGAP</h1>
+                  <p className="text-xs text-gray-600 font-medium">Policy Gap Analyzer</p>
                 </div>
               </div>
 
               {/* Main CTAs */}
-              <div className="hidden lg:flex items-center space-x-4">
+              <div className="hidden lg:flex items-center space-x-3">
                 <button
                   onMouseEnter={() => setShowProductTour(true)}
                   onMouseLeave={() => setShowProductTour(false)}
-                  className="relative px-4 py-2 text-cyan-300 hover:text-cyan-100 transition-colors font-medium border border-cyan-500/30 rounded-xl hover:border-cyan-400/50"
+                  className="relative px-3 py-1.5 text-blue-600 hover:text-blue-800 transition-colors font-medium border border-blue-200/50 rounded-lg hover:border-blue-300/70 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-sm"
                 >
                   Product Tour
                   {showProductTour && (
-                    <div className="absolute top-full left-0 mt-2 w-80 bg-slate-800 border border-cyan-500/30 rounded-2xl p-4 shadow-glow z-50">
-                      <div className="bg-slate-700 rounded-xl h-32 mb-3 flex items-center justify-center">
+                    <div className="absolute top-full left-0 mt-2 w-80 bg-white/90 backdrop-blur-md border border-gray-200 rounded-2xl p-4 shadow-xl z-50">
+                      <div className="bg-gray-100 rounded-xl h-32 mb-3 flex items-center justify-center">
                         <div className="text-center">
-                          <div className="w-12 h-12 bg-cyan-500/20 rounded-xl flex items-center justify-center mx-auto mb-2">
-                            <svg className="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-2">
+                            <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.01M15 10h1.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                           </div>
-                          <p className="text-cyan-300 text-sm">30-sec Demo Video</p>
+                          <p className="text-blue-600 text-sm">30-sec Demo Video</p>
                         </div>
                       </div>
-                      <p className="text-white text-sm font-medium">See how PoliGap analyzes policies in real-time</p>
+                      <p className="text-gray-800 text-sm font-medium">See how PoliGap analyzes policies in real-time</p>
                     </div>
                   )}
                 </button>
-                <button className="px-4 py-2 text-purple-300 hover:text-purple-100 transition-colors font-medium">
+                <button 
+                  onClick={() => onNavigate('pricing')}
+                  className="px-3 py-1.5 text-purple-600 hover:text-purple-800 transition-colors font-medium bg-white/20 backdrop-blur-sm hover:bg-white/30 rounded-lg text-sm"
+                >
                   Pricing
                 </button>
               </div>
@@ -124,7 +105,7 @@ function LandingPage({ onNavigate }) {
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setActiveDropdown(activeDropdown === 'features' ? null : 'features')}
-                  className="flex items-center space-x-2 px-4 py-2 text-white hover:text-cyan-300 transition-colors font-medium"
+                  className="flex items-center space-x-2 px-3 py-1.5 text-gray-700 hover:text-blue-600 transition-colors font-medium bg-white/20 backdrop-blur-sm hover:bg-white/30 rounded-lg text-sm"
                 >
                   <span>⚡</span>
                   <span>Features</span>
@@ -134,50 +115,50 @@ function LandingPage({ onNavigate }) {
                 </button>
 
                 {activeDropdown === 'features' && (
-                  <div className="absolute top-full left-0 mt-2 w-96 bg-slate-800 border border-cyan-500/30 rounded-2xl p-6 shadow-glow z-50 animate-fadeInUp">
+                  <div className="absolute top-full left-0 mt-2 w-96 bg-white/90 backdrop-blur-md border border-gray-200 rounded-2xl p-6 shadow-xl z-50 animate-fadeInUp">
                     <div className="grid grid-cols-1 gap-4">
                       <button
                         onClick={() => onNavigate('analyzer')}
-                        className="flex items-start p-4 bg-slate-700/50 rounded-xl hover:bg-slate-700 transition-colors text-left group"
+                        className="flex items-start p-4 bg-gray-50/80 rounded-xl hover:bg-gray-100/80 transition-colors text-left group"
                       >
-                        <div className="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center mr-4 group-hover:bg-blue-500/30 transition-colors">
-                          <span className="text-blue-400">🔍</span>
+                        <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mr-4 group-hover:bg-blue-200 transition-colors">
+                          <span className="text-blue-600">🔍</span>
                         </div>
                         <div>
-                          <h3 className="text-white font-semibold mb-1">Policy Gap Analyzer</h3>
-                          <p className="text-gray-400 text-sm">Upload policies, get instant compliance scores</p>
+                          <h3 className="text-gray-800 font-semibold mb-1">Policy Gap Analyzer</h3>
+                          <p className="text-gray-600 text-sm">Upload policies, get instant compliance scores</p>
                         </div>
                       </button>
 
                       <button
                         onClick={() => onNavigate('generator')}
-                        className="flex items-start p-4 bg-slate-700/50 rounded-xl hover:bg-slate-700 transition-colors text-left group"
+                        className="flex items-start p-4 bg-gray-50/80 rounded-xl hover:bg-gray-100/80 transition-colors text-left group"
                       >
-                        <div className="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center mr-4 group-hover:bg-purple-500/30 transition-colors">
-                          <span className="text-purple-400">⚡</span>
+                        <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center mr-4 group-hover:bg-purple-200 transition-colors">
+                          <span className="text-purple-600">⚡</span>
                         </div>
                         <div>
-                          <h3 className="text-white font-semibold mb-1">AI Policy Generator</h3>
-                          <p className="text-gray-400 text-sm">Generate GDPR/HIPAA docs in 1 click</p>
+                          <h3 className="text-gray-800 font-semibold mb-1">AI Policy Generator</h3>
+                          <p className="text-gray-600 text-sm">Generate GDPR/HIPAA docs in 1 click</p>
                         </div>
                       </button>
 
                       <button
                         onClick={() => onNavigate('assessment')}
-                        className="flex items-start p-4 bg-slate-700/50 rounded-xl hover:bg-slate-700 transition-colors text-left group"
+                        className="flex items-start p-4 bg-gray-50/80 rounded-xl hover:bg-gray-100/80 transition-colors text-left group"
                       >
-                        <div className="w-10 h-10 bg-red-500/20 rounded-xl flex items-center justify-center mr-4 group-hover:bg-red-500/30 transition-colors">
-                          <span className="text-red-400">🛡️</span>
+                        <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center mr-4 group-hover:bg-red-200 transition-colors">
+                          <span className="text-red-600">🛡️</span>
                         </div>
                         <div>
-                          <h3 className="text-white font-semibold mb-1">Risk Assessment</h3>
-                          <p className="text-gray-400 text-sm">AI-powered vulnerability scoring</p>
+                          <h3 className="text-gray-800 font-semibold mb-1">Risk Assessment</h3>
+                          <p className="text-gray-600 text-sm">AI-powered vulnerability scoring</p>
                         </div>
                       </button>
 
-                      <div className="flex items-start p-4 bg-slate-700/50 rounded-xl hover:bg-slate-700 transition-colors text-left group">
-                        <div className="w-10 h-10 bg-green-500/20 rounded-xl flex items-center justify-center mr-4 group-hover:bg-green-500/30 transition-colors">
-                          <span className="text-green-400">🤖</span>
+                      <div className="flex items-start p-4 bg-gray-50/80 rounded-xl hover:bg-gray-100/80 transition-colors text-left group">
+                        <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center mr-4 group-hover:bg-green-200 transition-colors">
+                          <span className="text-green-600">🤖</span>
                         </div>
                         <div>
                           <h3 className="text-white font-semibold mb-1">AI Expert Chat</h3>
@@ -193,7 +174,7 @@ function LandingPage({ onNavigate }) {
               <div className="relative">
                 <button
                   onClick={() => setActiveDropdown(activeDropdown === 'frameworks' ? null : 'frameworks')}
-                  className="flex items-center space-x-2 px-4 py-2 text-white hover:text-cyan-300 transition-colors font-medium"
+                  className="flex items-center space-x-2 px-3 py-1.5 text-gray-700 hover:text-blue-600 transition-colors font-medium bg-white/20 backdrop-blur-sm hover:bg-white/30 rounded-lg text-sm"
                 >
                   <span>🛡️</span>
                   <span>Frameworks</span>
@@ -203,39 +184,39 @@ function LandingPage({ onNavigate }) {
                 </button>
 
                 {activeDropdown === 'frameworks' && (
-                  <div className="absolute top-full left-0 mt-2 w-80 bg-slate-800 border border-cyan-500/30 rounded-2xl p-6 shadow-glow z-50 animate-fadeInUp">
+                  <div className="absolute top-full left-0 mt-2 w-80 bg-white/90 backdrop-blur-md border border-gray-200 rounded-2xl p-6 shadow-xl z-50 animate-fadeInUp">
                     <div className="grid grid-cols-2 gap-3 mb-4">
-                      <div className="flex items-center p-3 bg-slate-700/50 rounded-xl hover:bg-slate-700 transition-colors group">
+                      <div className="flex items-center p-3 bg-blue-50/80 rounded-xl hover:bg-blue-100/80 transition-colors group border border-blue-100">
                         <span className="text-lg mr-3">🇪🇺</span>
                         <div>
-                          <div className="text-white font-medium text-sm">GDPR</div>
-                          <div className="text-gray-400 text-xs">EU Privacy</div>
+                          <div className="text-blue-800 font-medium text-sm">GDPR</div>
+                          <div className="text-blue-600 text-xs">EU Privacy</div>
                         </div>
                       </div>
-                      <div className="flex items-center p-3 bg-slate-700/50 rounded-xl hover:bg-slate-700 transition-colors group">
+                      <div className="flex items-center p-3 bg-green-50/80 rounded-xl hover:bg-green-100/80 transition-colors group border border-green-100">
                         <span className="text-lg mr-3">🏥</span>
                         <div>
-                          <div className="text-white font-medium text-sm">HIPAA</div>
-                          <div className="text-gray-400 text-xs">US Healthcare</div>
+                          <div className="text-green-800 font-medium text-sm">HIPAA</div>
+                          <div className="text-green-600 text-xs">US Healthcare</div>
                         </div>
                       </div>
-                      <div className="flex items-center p-3 bg-slate-700/50 rounded-xl hover:bg-slate-700 transition-colors group">
+                      <div className="flex items-center p-3 bg-purple-50/80 rounded-xl hover:bg-purple-100/80 transition-colors group border border-purple-100">
                         <span className="text-lg mr-3">📊</span>
                         <div>
-                          <div className="text-white font-medium text-sm">SOX</div>
-                          <div className="text-gray-400 text-xs">Financial</div>
+                          <div className="text-purple-800 font-medium text-sm">SOX</div>
+                          <div className="text-purple-600 text-xs">Financial</div>
                         </div>
                       </div>
-                      <div className="flex items-center p-3 bg-slate-700/50 rounded-xl hover:bg-slate-700 transition-colors group">
+                      <div className="flex items-center p-3 bg-orange-50/80 rounded-xl hover:bg-orange-100/80 transition-colors group border border-orange-100">
                         <span className="text-lg mr-3">💳</span>
                         <div>
-                          <div className="text-white font-medium text-sm">PCI DSS</div>
-                          <div className="text-gray-400 text-xs">Payments</div>
+                          <div className="text-orange-800 font-medium text-sm">PCI DSS</div>
+                          <div className="text-orange-600 text-xs">Payments</div>
                         </div>
                       </div>
                     </div>
-                    <button className="w-full text-cyan-400 hover:text-cyan-300 transition-colors font-medium text-sm border border-cyan-500/30 rounded-xl py-2">
-                      See all 50+ supported frameworks →
+                    <button className="w-full text-blue-600 hover:text-blue-700 transition-colors font-medium text-sm border border-blue-200 rounded-xl py-2 bg-white/50 hover:bg-white/70">
+                      See all supported frameworks →
                     </button>
                   </div>
                 )}
@@ -245,7 +226,7 @@ function LandingPage({ onNavigate }) {
               <div className="relative">
                 <button
                   onClick={() => setActiveDropdown(activeDropdown === 'resources' ? null : 'resources')}
-                  className="flex items-center space-x-2 px-4 py-2 text-white hover:text-cyan-300 transition-colors font-medium"
+                  className="flex items-center space-x-2 px-3 py-1.5 text-gray-700 hover:text-blue-600 transition-colors font-medium bg-white/20 backdrop-blur-sm hover:bg-white/30 rounded-lg text-sm"
                 >
                   <span>📚</span>
                   <span>Resources</span>
@@ -255,18 +236,18 @@ function LandingPage({ onNavigate }) {
                 </button>
 
                 {activeDropdown === 'resources' && (
-                  <div className="absolute top-full left-0 mt-2 w-64 bg-slate-800 border border-cyan-500/30 rounded-2xl p-4 shadow-glow z-50 animate-fadeInUp">
+                  <div className="absolute top-full left-0 mt-2 w-64 bg-white/90 backdrop-blur-md border border-gray-200 rounded-2xl p-4 shadow-xl z-50 animate-fadeInUp">
                     <div className="space-y-2">
                       <button
                         onClick={() => onNavigate('compliances')}
-                        className="w-full text-left p-3 text-white hover:bg-slate-700/50 rounded-xl transition-colors"
+                        className="w-full text-left p-3 text-gray-700 hover:bg-gray-50/80 rounded-xl transition-colors"
                       >
                         📋 Compliance Guides
                       </button>
-                      <button className="w-full text-left p-3 text-white hover:bg-slate-700/50 rounded-xl transition-colors">
+                      <button className="w-full text-left p-3 text-gray-700 hover:bg-gray-50/80 rounded-xl transition-colors">
                         🎥 Webinars
                       </button>
-                      <button className="w-full text-left p-3 text-white hover:bg-slate-700/50 rounded-xl transition-colors">
+                      <button className="w-full text-left p-3 text-gray-700 hover:bg-gray-50/80 rounded-xl transition-colors">
                         🔌 API Docs
                       </button>
                     </div>
@@ -375,7 +356,7 @@ function LandingPage({ onNavigate }) {
       </header>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 pt-20 pb-32">
+      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen flex items-center group">
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-32 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-float"></div>
@@ -383,7 +364,37 @@ function LandingPage({ onNavigate }) {
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-indigo-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-float" style={{animationDelay: '4s'}}></div>
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-6 text-center">
+        {/* Interactive Wave Overlay */}
+        <div className="absolute inset-0 opacity-30 group-hover:opacity-60 transition-opacity duration-1000">
+          <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+            <path 
+              className="animate-wave" 
+              d="M0,400 Q300,300 600,400 T1200,400 L1200,800 L0,800 Z" 
+              fill="rgba(139, 92, 246, 0.1)"
+            />
+            <path 
+              className="animate-wave-delayed" 
+              d="M0,450 Q300,350 600,450 T1200,450 L1200,800 L0,800 Z" 
+              fill="rgba(168, 85, 247, 0.1)"
+            />
+            <path 
+              className="animate-wave-slow" 
+              d="M0,500 Q300,400 600,500 T1200,500 L1200,800 L0,800 Z" 
+              fill="rgba(147, 51, 234, 0.1)"
+            />
+          </svg>
+        </div>
+
+        {/* Floating Particles */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-purple-300 rounded-full opacity-60 animate-ping" style={{animationDelay: '1s', animationDuration: '3s'}}></div>
+          <div className="absolute top-1/3 right-1/4 w-1 h-1 bg-blue-300 rounded-full opacity-40 animate-ping" style={{animationDelay: '2s', animationDuration: '4s'}}></div>
+          <div className="absolute bottom-1/3 left-1/3 w-3 h-3 bg-indigo-300 rounded-full opacity-50 animate-ping" style={{animationDelay: '0.5s', animationDuration: '5s'}}></div>
+          <div className="absolute bottom-1/4 right-1/3 w-1.5 h-1.5 bg-violet-300 rounded-full opacity-70 animate-ping" style={{animationDelay: '3s', animationDuration: '3.5s'}}></div>
+          <div className="absolute top-1/2 left-1/5 w-2 h-2 bg-purple-200 rounded-full opacity-30 animate-ping" style={{animationDelay: '1.5s', animationDuration: '6s'}}></div>
+        </div>
+
+        <div className="relative max-w-none mx-auto px-4 text-center">
           <div className="animate-fadeInUp">
             {/* Market Stats Banner */}
             <div className="inline-flex items-center px-6 py-3 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 mb-8">
@@ -401,9 +412,9 @@ function LandingPage({ onNavigate }) {
               </span>
             </h1>
             
-            <p className="text-xl md:text-2xl text-white/80 max-w-4xl mx-auto mb-12 leading-relaxed">
-              Stop drowning in manual audits. Our AI scores your policies, identifies gaps, 
-              and generates audit-ready documents. <span className="text-blue-300 font-semibold">No experts needed.</span>
+            <p className="text-xl md:text-2xl text-white/80 max-w-6xl mx-auto mb-12 leading-relaxed">
+              Transform manual compliance audits with AI-powered analysis. Our platform helps identify policy gaps, 
+              generates compliance documentation, and streamlines regulatory processes. <span className="text-blue-300 font-semibold">Built for modern compliance teams.</span>
             </p>
             
             {/* Hero CTAs */}
@@ -430,7 +441,7 @@ function LandingPage({ onNavigate }) {
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <span className="font-semibold">40% Fewer Breaches</span>
+                <span className="font-semibold">AI-Powered Analysis</span>
               </div>
               <div className="flex items-center space-x-3">
                 <div className="w-6 h-6 bg-blue-400 rounded-full flex items-center justify-center">
@@ -438,7 +449,7 @@ function LandingPage({ onNavigate }) {
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <span className="font-semibold">Weeks to Hours</span>
+                <span className="font-semibold">Automated Processing</span>
               </div>
               <div className="flex items-center space-x-3">
                 <div className="w-6 h-6 bg-purple-400 rounded-full flex items-center justify-center">
@@ -446,7 +457,7 @@ function LandingPage({ onNavigate }) {
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <span className="font-semibold">Fortune 500 Trusted</span>
+                <span className="font-semibold">Enterprise Ready</span>
               </div>
             </div>
           </div>
@@ -454,8 +465,8 @@ function LandingPage({ onNavigate }) {
       </section>
 
       {/* The Problem Section */}
-      <section className="py-20 px-6 bg-red-50 border-t-4 border-red-500">
-        <div className="max-w-6xl mx-auto">
+      <section className="py-16 px-4 bg-red-50 border-t-4 border-red-500">
+        <div className="max-w-none mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="animate-fadeInUp">
               <div className="flex items-center mb-6">
@@ -552,8 +563,8 @@ function LandingPage({ onNavigate }) {
       </section>
 
       {/* Market Opportunity */}
-      <section className="py-20 px-6 bg-gradient-to-br from-blue-900 to-purple-900 text-white">
-        <div className="max-w-6xl mx-auto text-center">
+      <section className="py-16 px-4 bg-gradient-to-br from-blue-900 to-purple-900 text-white">
+        <div className="max-w-none mx-auto px-4 text-center">
           <div className="animate-fadeInUp">
             <h2 className="text-4xl font-black mb-8">Massive Market Opportunity</h2>
             <p className="text-xl text-blue-100 max-w-3xl mx-auto mb-12">
@@ -584,8 +595,8 @@ function LandingPage({ onNavigate }) {
       </section>
 
       {/* The Solution */}
-      <section id="solution" className="py-20 px-6 bg-white">
-        <div className="max-w-7xl mx-auto">
+      <section id="solution" className="py-16 px-4 bg-white">
+        <div className="max-w-none mx-auto px-4">
           <div className="text-center mb-16 animate-fadeInUp">
             <h2 className="text-5xl font-black text-gray-900 mb-6">The PoliGap Solution</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
@@ -698,7 +709,7 @@ function LandingPage({ onNavigate }) {
       </section>
 
       {/* AI Expert Chat Demo */}
-      <section className="py-20 px-6 bg-gradient-to-br from-indigo-50 to-purple-50">
+      <section className="py-16 px-4 bg-gradient-to-br from-indigo-50 to-purple-50">
         <div className="max-w-4xl mx-auto text-center">
           <div className="animate-fadeInUp">
             <div className="inline-flex items-center px-6 py-3 bg-gradient-primary rounded-2xl text-white font-semibold mb-8 shadow-glow">
@@ -740,7 +751,7 @@ function LandingPage({ onNavigate }) {
       </section>
 
       {/* What Sets Us Apart */}
-      <section className="py-20 px-6 bg-white">
+      <section className="py-16 px-4 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">What Sets PoliGap Apart</h2>
@@ -785,95 +796,32 @@ function LandingPage({ onNavigate }) {
         </div>
       </section>
 
-      {/* Social Proof & Testimonials */}
-      <section className="py-20 px-6 bg-gray-900 text-white">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Trusted by Industry Leaders</h2>
-            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-              Fortune 500 companies, startups, and compliance professionals rely on PoliGap
-            </p>
-          </div>
-
-          {/* Trust Badges */}
-          <div className="flex flex-wrap justify-center items-center gap-12 mb-16 opacity-70">
-            <div className="bg-white/10 px-6 py-3 rounded-2xl border border-white/20">
-              <span className="font-semibold">SOC 2 Compliant</span>
-            </div>
-            <div className="bg-white/10 px-6 py-3 rounded-2xl border border-white/20">
-              <span className="font-semibold">ISO 27001 Certified</span>
-            </div>
-            <div className="bg-white/10 px-6 py-3 rounded-2xl border border-white/20">
-              <span className="font-semibold">GDPR Ready</span>
-            </div>
-            <div className="bg-white/10 px-6 py-3 rounded-2xl border border-white/20">
-              <span className="font-semibold">Enterprise Security</span>
-            </div>
-          </div>
-
-          {/* Testimonial Carousel */}
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20">
-              <div className="text-center">
-                <div className="text-6xl mb-6">"</div>
-                <blockquote className="text-2xl font-medium mb-8 leading-relaxed">
-                  {testimonials[activeTestimonial].quote}
-                </blockquote>
-                <div className="flex items-center justify-center">
-                  <div className="w-12 h-12 bg-gradient-primary rounded-2xl flex items-center justify-center mr-4">
-                    <span className="text-white font-bold">{testimonials[activeTestimonial].author.charAt(0)}</span>
-                  </div>
-                  <div className="text-left">
-                    <div className="font-bold">{testimonials[activeTestimonial].author}</div>
-                    <div className="text-gray-300 text-sm">{testimonials[activeTestimonial].role}</div>
-                    <div className="text-gray-400 text-sm">{testimonials[activeTestimonial].company}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            {/* Testimonial Navigation */}
-            <div className="flex justify-center space-x-2 mt-6">
-              {testimonials.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setActiveTestimonial(index)}
-                  className={`w-3 h-3 rounded-full transition-all ${
-                    index === activeTestimonial ? 'bg-white' : 'bg-white/30'
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Proof of Impact */}
-      <section className="py-20 px-6 bg-green-50 border-t-4 border-green-500">
-        <div className="max-w-6xl mx-auto text-center">
+      {/* Technology Benefits */}
+      <section className="py-16 px-4 bg-green-50 border-t-4 border-green-500">
+        <div className="max-w-none mx-auto px-4 text-center">
           <div className="animate-fadeInUp">
-            <h2 className="text-4xl font-black text-gray-900 mb-8">Proven Results in the Real World</h2>
+            <h2 className="text-4xl font-black text-gray-900 mb-8">AI-Powered Compliance Benefits</h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-12">
-              Organizations using AI-powered compliance tools are seeing dramatic improvements in efficiency and security
+              Modern AI technology is transforming how organizations approach compliance management
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="bg-white rounded-3xl p-8 shadow-soft border border-gray-200">
-                <div className="text-5xl font-black text-green-600 mb-4">40%</div>
-                <div className="text-xl font-bold text-gray-900 mb-3">Breach Reduction</div>
-                <p className="text-gray-700">Standard Chartered Bank reduced regulatory breaches by 40% after implementing AI-powered compliance monitoring</p>
+                <div className="text-5xl font-black text-green-600 mb-4">AI</div>
+                <div className="text-xl font-bold text-gray-900 mb-3">Automated Analysis</div>
+                <p className="text-gray-700">AI technology can process and analyze compliance documents faster than traditional manual methods</p>
               </div>
               
               <div className="bg-white rounded-3xl p-8 shadow-soft border border-gray-200">
-                <div className="text-5xl font-black text-blue-600 mb-4">20-40%</div>
-                <div className="text-xl font-bold text-gray-900 mb-3">Fewer False Positives</div>
-                <p className="text-gray-700">AI-driven tools reduce false positives in alerts, saving millions in investigation costs</p>
+                <div className="text-5xl font-black text-blue-600 mb-4">Fast</div>
+                <div className="text-xl font-bold text-gray-900 mb-3">Quick Processing</div>
+                <p className="text-gray-700">Automated systems can significantly reduce the time needed for compliance reviews and audits</p>
               </div>
               
               <div className="bg-white rounded-3xl p-8 shadow-soft border border-gray-200">
-                <div className="text-5xl font-black text-purple-600 mb-4">WEEKS</div>
-                <div className="text-xl font-bold text-gray-900 mb-3">Faster Audits</div>
-                <p className="text-gray-700">Automation speeds up audit processes from months to weeks, reducing operational costs</p>
+                <div className="text-5xl font-black text-purple-600 mb-4">Scale</div>
+                <div className="text-xl font-bold text-gray-900 mb-3">Scalable Solutions</div>
+                <p className="text-gray-700">Digital tools can handle increasing volumes of compliance requirements as organizations grow</p>
               </div>
             </div>
           </div>
@@ -881,11 +829,11 @@ function LandingPage({ onNavigate }) {
       </section>
 
       {/* Why Now - Urgency Section */}
-      <section className="py-20 px-6 bg-gradient-to-br from-red-900 to-orange-900 text-white">
-        <div className="max-w-6xl mx-auto">
+      <section className="py-16 px-4 bg-gradient-to-br from-red-900 to-orange-900 text-white">
+        <div className="max-w-none mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-black mb-6">Why Now? The Window is Closing</h2>
-            <p className="text-xl text-red-100 max-w-3xl mx-auto">
+            <p className="text-xl text-red-100 max-w-5xl mx-auto">
               Regulatory complexity is exploding. Organizations that don't adopt AI-powered compliance now will be left behind.
             </p>
           </div>

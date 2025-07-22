@@ -1,10 +1,16 @@
 {
   "name": "policy-gap-analyzer",
   "version": "1.0.0",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "test:gemini": "node testGemini.js",
+    "test:analyze": "node testGemini.js analyze",
+    "test:chat": "node testGemini.js chat",
+    "test:policy": "node testGemini.js policy",
+    "test:local": "node testGemini.js local"
   },
   "dependencies": {
     "@json2csv/plainjs": "^7.0.6",

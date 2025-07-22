@@ -197,6 +197,27 @@ Based on extensive testing documented in `PERFORMANCE_OPTIMIZATIONS.md`:
 - **Content Limits**: 60% faster for large documents
 - **Smart Caching**: Reduced API calls and improved response times
 
+## 🧪 Testing
+
+PoliGap includes comprehensive testing tools to validate functionality:
+
+### Gemini API Integration Testing
+
+Test the Google Gemini AI integration with various scenarios:
+
+```bash
+# Run all Gemini API tests
+npm run test:gemini
+
+# Test specific features
+npm run test:analyze  # Document analysis only
+npm run test:chat     # Chat feature only
+npm run test:policy   # Policy generation only
+npm run test:local    # Local benchmarking (no API call)
+```
+
+For detailed information about testing the Gemini integration, see [GEMINI_TESTING.md](./GEMINI_TESTING.md).
+
 ## 🛡️ Security & Validation
 
 Advanced document validation system (detailed in `VALIDATION_IMPROVEMENTS.md`):

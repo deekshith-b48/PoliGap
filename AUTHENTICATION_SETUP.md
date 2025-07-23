@@ -100,8 +100,10 @@ src/
 │   └── AuthContext.jsx           # Auth state provider
 ├── components/
 │   ├── auth/
-│   │   ├── AuthModal.jsx        # Sign-in modal
-│   │   ├── GoogleSignIn.jsx     # Sign-in button
+│   │   ├── AuthModal.jsx        # Multi-option sign-in modal
+│   │   ├── GoogleSignIn.jsx     # Google OAuth component
+│   │   ├── EmailSignIn.jsx      # Email authentication component
+│   │   ├── ResetPassword.jsx    # Password reset page
 │   │   └── AuthCallback.jsx     # Handles OAuth redirect
 │   ├── dashboard/
 │   │   └── UserDashboard.jsx    # Regular user dashboard

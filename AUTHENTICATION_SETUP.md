@@ -127,6 +127,7 @@ src/
 | `/profile` | Authenticated users | Profile editor |
 | `/admin` | Admins only | Admin control panel |
 | `/auth/callback` | Internal | OAuth handler |
+| `/auth/reset-password` | Internal | Password reset handler |
 | `/analyzer` | Public | Policy analyzer |
 | `/generator` | Public | Policy generator |
 | `/compliances` | Public | Compliance viewer |

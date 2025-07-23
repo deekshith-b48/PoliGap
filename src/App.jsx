@@ -29,6 +29,8 @@ function AppContent() {
     
     if (path === '/auth/callback') {
       setCurrentPage('auth-callback');
+    } else if (path === '/auth/reset-password') {
+      setCurrentPage('reset-password');
     } else if (path === '/dashboard' && user) {
       setCurrentPage('dashboard');
     } else if (path === '/admin' && user && isAdmin()) {

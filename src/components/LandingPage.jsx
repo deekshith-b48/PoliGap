@@ -243,18 +243,20 @@ function LandingPage({ onNavigate }) {
             
             {/* Hero CTAs */}
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center mb-16 px-4">
-              <button 
-                onClick={() => onNavigate('analyzer')}
+              <button
+                onClick={() => user ? onNavigate('dashboard') : onNavigate('analyzer')}
                 className="group relative px-6 sm:px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
               >
-                <span className="relative z-10">Start Free Analysis</span>
+                <span className="relative z-10">
+                  {user ? 'Go to Dashboard' : 'Start Free Analysis'}
+                </span>
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-purple-700 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </button>
-              <button 
+              <button
                 onClick={() => onNavigate('generator')}
                 className="px-6 sm:px-8 py-4 bg-white/60 backdrop-blur-xl text-gray-900 rounded-2xl font-semibold text-lg border border-gray-200/50 transition-all duration-300 hover:bg-white/80 hover:shadow-lg"
               >
-                Watch Demo
+                {user ? 'Policy Generator' : 'Watch Demo'}
               </button>
             </div>
 

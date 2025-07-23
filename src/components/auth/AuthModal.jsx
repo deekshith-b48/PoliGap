@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import GoogleSignIn from './GoogleSignIn';
+import EmailSignIn from './EmailSignIn';
 
 const AuthModal = ({ isOpen, onClose, title = "Welcome to POLIGAP" }) => {
   useEffect(() => {

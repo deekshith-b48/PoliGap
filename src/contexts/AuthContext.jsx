@@ -145,6 +145,14 @@ export const AuthProvider = ({ children }) => {
 
   const signOut = async () => {
     try {
+      if (!supabase || !supabase.auth) {
+        // If supabase is not configured, just clear local state
+        setUser(null);
+        setSession(null);
+        setProfile(null);
+        return;
+      }
+
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error('Error signing out:', error);

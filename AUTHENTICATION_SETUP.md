@@ -74,7 +74,8 @@ VITE_GEMINI_API_KEY=your-gemini-api-key
 ## 🎯 Key Features
 
 ### User
-- 🔐 **Google Sign-In**
+- 🔐 **Google Sign-In** — quick OAuth authentication
+- 📧 **Email Sign-In/Sign-Up** — traditional authentication with password reset
 - 📊 **Dashboard** with activity tracking
 - ✏️ **Profile editing**
 - 🔄 **Session persistence**

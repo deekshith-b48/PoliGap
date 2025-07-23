@@ -143,6 +143,77 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const signInWithEmail = async (email, password) => {
+    try {
+      if (!supabase || !supabase.auth) {
+        throw new Error('Authentication is not configured. Please check your Supabase settings.');
+      }
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        console.error('Error signing in with email:', error);
+        throw error;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error in signInWithEmail:', error);
+      throw error;
+    }
+  };
+
+  const signUpWithEmail = async (email, password, additionalData = {}) => {
+    try {
+      if (!supabase || !supabase.auth) {
+        throw new Error('Authentication is not configured. Please check your Supabase settings.');
+      }
+
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: additionalData,
+        },
+      });
+
+      if (error) {
+        console.error('Error signing up with email:', error);
+        throw error;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error in signUpWithEmail:', error);
+      throw error;
+    }
+  };
+
+  const resetPassword = async (email) => {
+    try {
+      if (!supabase || !supabase.auth) {
+        throw new Error('Authentication is not configured. Please check your Supabase settings.');
+      }
+
+      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/reset-password`,
+      });
+
+      if (error) {
+        console.error('Error resetting password:', error);
+        throw error;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error in resetPassword:', error);
+      throw error;
+    }
+  };
+
   const signOut = async () => {
     try {
       if (!supabase || !supabase.auth) {

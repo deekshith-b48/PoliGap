@@ -111,6 +111,8 @@ function AppContent() {
         return <RiskAssessment onNavigate={navigate} />;
       case 'auth-callback':
         return <AuthCallback />;
+      case 'reset-password':
+        return <ResetPassword />;
       default:
         return <LandingPage onNavigate={navigate} />;
     }

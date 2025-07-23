@@ -12,6 +12,7 @@ import ChatExpert from './components/ChatExpert';
 function AppContent() {
   const [uploadedDocument, setUploadedDocument] = useState(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -20,6 +21,20 @@ function AppContent() {
     navigate(`/${page === 'home' ? '' : page}`);
     // Scroll to top when navigating to a new page
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Handle search from navbar
+  const handleSearch = (query) => {
+    if (query.trim()) {
+      setSearchQuery(query.trim());
+      setIsChatOpen(true);
+    }
+  };
+
+  // Reset search query when chat is closed
+  const handleChatClose = () => {
+    setIsChatOpen(false);
+    setSearchQuery(null);
   };
 
   const handleDocumentUpload = (document) => {
@@ -32,7 +47,7 @@ function AppContent() {
         <Routes>
           <Route 
             path="/" 
-            element={<LandingPage onNavigate={handleNavigate} />} 
+            element={<LandingPage onNavigate={handleNavigate} onSearch={handleSearch} />} 
           />
           <Route 
             path="/analyzer" 
@@ -78,7 +93,8 @@ function AppContent() {
         policyDocument={uploadedDocument}
         isOpen={isChatOpen}
         onToggle={() => setIsChatOpen(!isChatOpen)}
-        onClose={() => setIsChatOpen(false)}
+        onClose={handleChatClose}
+        initialQuery={searchQuery}
       />
     </div>
   );

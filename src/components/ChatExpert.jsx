@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { analyzeWithGemini } from '../lib/gemini';
+import { analyzeSearchQuery, generateSearchResponse } from '../utils/searchAnalysis';
 
-function ChatExpert({ policyDocument, isOpen, onToggle, onClose }) {
+function ChatExpert({ policyDocument, isOpen, onToggle, onClose, initialQuery = null }) {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -9,22 +11,118 @@ function ChatExpert({ policyDocument, isOpen, onToggle, onClose }) {
   const inputRef = useRef(null);
 
   useEffect(() => {
-    if (policyDocument && messages.length === 0) {
+    // Handle initial query from search - reset messages for new search
+    if (initialQuery) {
+      const analysis = analyzeSearchQuery(initialQuery);
+      const response = generateSearchResponse(analysis);
+      
+      // Add user message
+      const userMessage = {
+        type: 'user',
+        content: initialQuery,
+        timestamp: new Date()
+      };
+      
+      // Add assistant response
+      const assistantMessage = {
+        type: 'assistant',
+        content: response.message,
+        timestamp: new Date(),
+        suggestedAction: response.suggestedAction
+      };
+      
+      setMessages([userMessage, assistantMessage]);
+      return;
+    }
+
+    // Default welcome messages when no search query
+    if (messages.length === 0) {
+      if (policyDocument) {
+        const welcomeMessage = {
+          type: 'assistant',
+          content: `## Hi! I'm your AI Policy Expert 👋
+
+I can see you've uploaded **"${policyDocument.fileName}"** for analysis.
+
+### I can help you with:
+- **Compliance gap analysis** - Find missing requirements
+- **Regulatory framework guidance** - GDPR, HIPAA, SOX alignment  
+- **Best practice recommendations** - Industry-proven approaches
+- **Risk assessment questions** - Identify vulnerabilities
+- **Implementation strategies** - Step-by-step action plans
+
+### Try asking me:
+- *"What are the main compliance risks in my document?"*
+- *"How can I improve GDPR compliance?"*
+- *"What security controls should I implement?"*
+
+How can I assist you today?`,
+          timestamp: new Date()
+        };
+        setMessages([welcomeMessage]);
+      } else {
+        const genericWelcome = {
+          type: 'assistant',
+          content: `## Hi! I'm your AI Policy Expert 👋
+
+Please **upload a policy document** first using the Policy Analyzer, and then I can provide specific guidance based on your document. 
+
+### I'm here to help with:
+- **Compliance questions** - Understand regulations and requirements
+- **Risk assessments** - Identify potential vulnerabilities  
+- **Best practices** - Learn industry-proven approaches
+
+Ready to get started?`,
+          timestamp: new Date()
+        };
+        setMessages([genericWelcome]);
+      }
+    }
+  }, [initialQuery]); // Only depend on initialQuery to reset when new search comes in
+
+  // Separate useEffect for document changes
+  useEffect(() => {
+    if (!initialQuery && policyDocument && messages.length === 0) {
       const welcomeMessage = {
         type: 'assistant',
-        content: `Hi! I'm your AI Policy Expert. I can see you've uploaded "${policyDocument.fileName}" for analysis.\n\n**I can help you with:**\n• Compliance gap analysis\n• Regulatory framework guidance\n• Best practice recommendations\n• Risk assessment questions\n• Implementation strategies\n\n**Try asking me:**\n• "What are the main compliance risks in my document?"\n• "How can I improve GDPR compliance?"\n• "What security controls should I implement?"\n\nHow can I assist you today?`,
+        content: `## Hi! I'm your AI Policy Expert 👋
+
+I can see you've uploaded **"${policyDocument.fileName}"** for analysis.
+
+### I can help you with:
+- **Compliance gap analysis** - Find missing requirements
+- **Regulatory framework guidance** - GDPR, HIPAA, SOX alignment  
+- **Best practice recommendations** - Industry-proven approaches
+- **Risk assessment questions** - Identify vulnerabilities
+- **Implementation strategies** - Step-by-step action plans
+
+### Try asking me:
+- *"What are the main compliance risks in my document?"*
+- *"How can I improve GDPR compliance?"*
+- *"What security controls should I implement?"*
+
+How can I assist you today?`,
         timestamp: new Date()
       };
       setMessages([welcomeMessage]);
     } else if (!policyDocument && messages.length === 0) {
       const genericWelcome = {
         type: 'assistant',
-        content: 'Hi! I\'m your AI Policy Expert. Please upload a policy document first using the Policy Analyzer, and then I can provide specific guidance based on your document. I\'m here to help with compliance questions, risk assessments, and best practices!',
+        content: `## Hi! I'm your AI Policy Expert 👋
+
+Please **upload a policy document** first using the Policy Analyzer, and then I can provide specific guidance based on your document. 
+
+### I'm here to help with:
+- **Compliance questions** - Understand regulations and requirements
+- **Risk assessments** - Identify potential vulnerabilities  
+- **Best practices** - Learn industry-proven approaches
+
+Ready to get started?`,
         timestamp: new Date()
       };
       setMessages([genericWelcome]);
     }
-  }, [policyDocument, messages.length]);
+  }, [policyDocument, messages.length, initialQuery]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -165,9 +263,76 @@ function ChatExpert({ policyDocument, isOpen, onToggle, onClose }) {
                     <span className="text-sm font-medium text-gray-600">AI Assistant</span>
                   </div>
                 )}
-                <div className="whitespace-pre-wrap text-sm leading-relaxed">
-                  {message.content}
+                <div className="text-sm leading-relaxed">
+                  {message.type === 'assistant' ? (
+                    <ReactMarkdown
+                      className="prose prose-sm max-w-none prose-gray"
+                      components={{
+                        // Custom styling for different markdown elements
+                        h1: ({children}) => <h1 className="text-lg font-bold text-gray-900 mb-3 mt-2">{children}</h1>,
+                        h2: ({children}) => <h2 className="text-base font-semibold text-gray-800 mb-2 mt-3">{children}</h2>,
+                        h3: ({children}) => <h3 className="text-sm font-semibold text-gray-700 mb-2 mt-2">{children}</h3>,
+                        p: ({children}) => <p className="text-gray-700 mb-2 leading-relaxed">{children}</p>,
+                        ul: ({children}) => <ul className="list-none space-y-1 my-2">{children}</ul>,
+                        ol: ({children}) => <ol className="list-decimal list-inside space-y-1 my-2 ml-2">{children}</ol>,
+                        li: ({children}) => (
+                          <li className="text-gray-700 flex items-start">
+                            <span className="text-blue-600 mr-2 mt-0.5">•</span>
+                            <span>{children}</span>
+                          </li>
+                        ),
+                        strong: ({children}) => <strong className="font-semibold text-gray-900">{children}</strong>,
+                        em: ({children}) => <em className="italic text-gray-600">{children}</em>,
+                        code: ({children}) => (
+                          <code className="bg-gray-100 text-gray-800 px-1.5 py-0.5 rounded text-xs font-mono">
+                            {children}
+                          </code>
+                        ),
+                        blockquote: ({children}) => (
+                          <blockquote className="border-l-4 border-blue-200 pl-3 py-1 bg-blue-50 my-2 rounded-r">
+                            {children}
+                          </blockquote>
+                        )
+                      }}
+                    >
+                      {message.content}
+                    </ReactMarkdown>
+                  ) : (
+                    <div className="whitespace-pre-wrap text-gray-100">
+                      {message.content}
+                    </div>
+                  )}
                 </div>
+                
+                {/* Action buttons for suggested actions */}
+                {message.type === 'assistant' && message.suggestedAction && (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {message.suggestedAction === 'upload-document' && (
+                      <button
+                        onClick={() => {
+                          onClose();
+                          // Navigate to analyzer for document upload
+                          window.location.href = '/analyzer';
+                        }}
+                        className="px-3 py-1.5 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        📄 Upload Document
+                      </button>
+                    )}
+                    {message.suggestedAction === 'continue-chat' && (
+                      <button
+                        onClick={() => {
+                          setInputMessage("Can you provide more details?");
+                          inputRef.current?.focus();
+                        }}
+                        className="px-3 py-1.5 bg-gray-600 text-white text-xs rounded-lg hover:bg-gray-700 transition-colors"
+                      >
+                        💬 Continue Chat
+                      </button>
+                    )}
+                  </div>
+                )}
+                
                 <div className={`text-xs mt-2 ${
                   message.type === 'user' ? 'text-blue-100' : 'text-gray-500'
                 }`}>

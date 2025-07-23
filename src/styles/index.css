@@ -350,3 +350,48 @@
 .animate-wave-reverse {
   animation: wave-reverse 10s ease-in-out infinite;
 }
+
+/* Custom Chat Markdown Styling */
+.prose h1, .prose h2, .prose h3 {
+  @apply font-semibold text-gray-800;
+}
+
+.prose h1 {
+  @apply text-lg mb-3 mt-2;
+}
+
+.prose h2 {
+  @apply text-base mb-2 mt-3;
+}
+
+.prose h3 {
+  @apply text-sm mb-2 mt-2;
+}
+
+.prose p {
+  @apply text-gray-700 mb-2 leading-relaxed text-sm;
+}
+
+.prose ul {
+  @apply space-y-1 my-2;
+}
+
+.prose li {
+  @apply text-gray-700 text-sm flex items-start;
+}
+
+.prose strong {
+  @apply font-semibold text-gray-900;
+}
+
+.prose em {
+  @apply italic text-gray-600;
+}
+
+.prose code {
+  @apply bg-gray-100 text-gray-800 px-1.5 py-0.5 rounded text-xs font-mono;
+}
+
+.prose blockquote {
+  @apply border-l-4 border-blue-200 pl-3 py-1 bg-blue-50 my-2 rounded-r;
+}

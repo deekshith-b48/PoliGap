@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
-function LandingPage({ onNavigate }) {
+function LandingPage({ onNavigate, onSearch }) {
   const navigate = useNavigate();
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -188,6 +188,21 @@ function LandingPage({ onNavigate }) {
     return () => document.removeEventListener('keydown', handleEscape);
   }, []);
 
+  // Handle search functionality
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim() && onSearch) {
+      onSearch(searchQuery);
+      setSearchQuery(''); // Clear search after submission
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleSearch(e);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       {/* Modern Minimalist Header */}
@@ -288,22 +303,34 @@ function LandingPage({ onNavigate }) {
             <div className="flex items-center space-x-3 sm:space-x-4">
               {/* Search */}
               <div className="hidden md:block relative">
-                <div className={`relative transition-all duration-300 ${isSearchFocused ? 'w-72' : 'w-60'}`}>
+                <form onSubmit={handleSearch} className={`relative transition-all duration-300 ${isSearchFocused ? 'w-72' : 'w-60'}`}>
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onFocus={() => setIsSearchFocused(true)}
                     onBlur={() => setIsSearchFocused(false)}
-                    placeholder="Ask compliance questions..."
-                    className="w-full bg-gray-50/50 border border-gray-200/50 rounded-2xl px-4 py-2.5 pl-10 text-gray-900 placeholder-gray-500 focus:border-blue-300 focus:ring-2 focus:ring-blue-100 transition-all text-sm backdrop-blur-sm"
+                    onKeyDown={handleKeyDown}
+                    placeholder="Ask compliance questions... (Press Enter to chat)"
+                    className="w-full bg-gray-50/50 border border-gray-200/50 rounded-2xl px-4 py-2.5 pl-10 pr-10 text-gray-900 placeholder-gray-500 focus:border-blue-300 focus:ring-2 focus:ring-blue-100 transition-all text-sm backdrop-blur-sm"
                   />
                   <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
                     <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                   </div>
-                </div>
+                  {/* Search button */}
+                  {searchQuery.trim() && (
+                    <button
+                      type="submit"
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-blue-600 rounded-lg flex items-center justify-center hover:bg-blue-700 transition-colors"
+                    >
+                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                      </svg>
+                    </button>
+                  )}
+                </form>
               </div>
 
               {/* CTA Button */}
@@ -331,7 +358,36 @@ function LandingPage({ onNavigate }) {
           {/* Mobile Menu */}
           {isMobileMenuOpen && (
             <div className="lg:hidden mt-4 pb-4 border-t border-gray-200/50 animate-slideDown">
-              <div className="flex flex-col space-y-3 pt-4">
+              {/* Mobile Search */}
+              <div className="px-4 py-3">
+                <form onSubmit={handleSearch} className="relative">
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Ask compliance questions..."
+                    className="w-full bg-gray-50/50 border border-gray-200/50 rounded-2xl px-4 py-2.5 pl-10 pr-10 text-gray-900 placeholder-gray-500 focus:border-blue-300 focus:ring-2 focus:ring-blue-100 transition-all text-sm"
+                  />
+                  <div className="absolute left-3 top-1/2 transform -translate-y-1/2">
+                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </div>
+                  {searchQuery.trim() && (
+                    <button
+                      type="submit"
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 w-6 h-6 bg-blue-600 rounded-lg flex items-center justify-center hover:bg-blue-700 transition-colors"
+                    >
+                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                      </svg>
+                    </button>
+                  )}
+                </form>
+              </div>
+              
+              <div className="flex flex-col space-y-3 pt-4 px-4">
                 <Link
                   to="/analyzer"
                   className="text-left text-gray-700 hover:text-gray-900 transition-colors font-medium text-sm py-2"

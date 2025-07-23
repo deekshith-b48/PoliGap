@@ -1,189 +1,184 @@
 # 🔐 Authentication System Setup Guide
 
-Welcome to your new authentication system! This guide will help you set up Google OAuth authentication with Supabase for your POLIGAP application.
+Welcome to your authentication system setup for POLIGAP! This guide walks you through integrating Google OAuth with Supabase.
 
-## ✅ What's Been Implemented
+## ✅ What's Already Implemented
 
-Your application now includes a **complete modern authentication system** with:
+Your application now includes a complete, secure, and modern authentication stack with:
 
-- **Google-only OAuth authentication** (secure, no passwords needed)
-- **User profile management** with detailed profiles
-- **Admin dashboard** with user management capabilities
-- **Row-Level Security (RLS)** policies for data protection
-- **Real-time subscriptions** for live updates
-- **Protected routes** and authentication-aware navigation
+- 🔐 **Google OAuth** — no passwords, just secure sign-in
+- 👤 **User profile management**
+- 🛠️ **Admin dashboard** for user control
+- 🔒 **Row-Level Security (RLS)** for data protection
+- 📡 **Real-time subscriptions**
+- 🚫 **Protected routes** and authentication-aware navigation
 
-## 🚀 Quick Setup Steps
+## ⚡ Quick Setup Instructions
 
-### 1. Set Up Google OAuth in Google Cloud Console
+### 1. Configure Google OAuth
 
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project or select an existing one
-3. Navigate to **APIs & Services > Credentials**
-4. Click **Create Credentials > OAuth Client ID**
-5. Select **Web Application** as the type
-6. Add your **Authorized JavaScript Origins**:
-   - Development: `http://localhost:5173` (or your dev port)
-   - Production: `https://yourdomain.com`
-7. Add **Authorized Redirect URIs**:
-   - Development: `http://localhost:5173/auth/callback`
-   - Production: `https://yourdomain.com/auth/callback`
-8. Copy the **Client ID** and **Client Secret**
+Go to [Google Cloud Console](https://console.cloud.google.com/)
 
-### 2. Configure Supabase Project
+- Create or select a project.
+- Navigate to: **APIs & Services > Credentials**
+- Click **Create Credentials > OAuth Client ID**
+- Select **Web Application** as the type.
+- Set **Authorized JavaScript Origins**:
+  - Development: `http://localhost:5173`
+  - Production: `https://yourdomain.com`
+- Set **Authorized Redirect URIs**:
+  - Dev: `http://localhost:5173/auth/callback`
+  - Prod: `https://yourdomain.com/auth/callback`
+- Copy the **Client ID** and **Client Secret**.
 
-1. Go to [Supabase Dashboard](https://supabase.com/dashboard)
-2. Create a new project or select your existing one
-3. Navigate to **Authentication > Providers**
-4. Enable **Google OAuth**
-5. Paste your Google **Client ID** and **Client Secret**
-6. Set the **Redirect URL**: `https://your-project.supabase.co/auth/v1/callback`
+### 2. Configure Supabase OAuth
 
-### 3. Set Up Database Tables & RLS
+Go to [Supabase Dashboard](https://supabase.com/dashboard)
 
-1. Open the **SQL Editor** in your Supabase dashboard
-2. Copy and run the entire contents of `src/lib/database-setup.sql`
-3. This will create:
-   - `profiles` table for user data
-   - `user_activities` table for activity tracking
-   - `policy_analyses` table for analysis results
-   - `document_uploads` table for file management
-   - All necessary RLS policies
-   - Triggers for automatic profile creation
+- Open your project or create one.
+- Go to **Authentication > Providers**
+- Enable **Google**
+- Paste the **Client ID** and **Client Secret**
+- Set **Redirect URL**: `https://your-project.supabase.co/auth/v1/callback`
+
+### 3. Set Up Database & RLS
+
+- Open the **SQL Editor** in Supabase
+- Run `src/lib/database-setup.sql`
+- This creates:
+  - `profiles`, `user_activities`, `policy_analyses`, `document_uploads`
+  - Required RLS policies
+  - Triggers for automatic profile creation
 
 ### 4. Configure Environment Variables
 
-Update your `.env` file (create if it doesn't exist):
+Create or update your `.env`:
 
 ```env
-# Supabase Configuration
+# Supabase
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-key
 
-# Optional: Gemini API Key (already configured)
+# Optional: Gemini API
 VITE_GEMINI_API_KEY=your-gemini-api-key
 ```
 
-### 5. Create Your First Admin User
+### 5. Set Admin Role
 
-1. Sign in to your application using Google OAuth
-2. Go to your Supabase dashboard > **Table Editor > profiles**
-3. Find your user record and update the `role` field from `user` to `admin`
-4. You now have admin access!
+- Sign in via Google OAuth
+- Go to **Table Editor > profiles**
+- Change your user's `role` from `user` to `admin`
 
 ## 🎯 Key Features
 
-### User Features
-- **Google Sign-In**: One-click authentication
-- **User Dashboard**: Activity tracking and quick actions
-- **Profile Management**: Complete profile editing
-- **Secure Sessions**: Automatic session management
+### User
+- 🔐 **Google Sign-In**
+- 📊 **Dashboard** with activity tracking
+- ✏️ **Profile editing**
+- 🔄 **Session persistence**
 
-### Admin Features
-- **Admin Dashboard**: User management and system overview
-- **User Role Management**: Promote users to admin
-- **System Analytics**: Track platform usage
-- **Security Controls**: Monitor compliance activities
+### Admin
+- 📋 **Admin dashboard**
+- 🚀 **Promote users** to admin
+- 📈 **System usage** analytics
+- 🛡️ **Security monitoring**
 
-### Security Features
-- **Row-Level Security (RLS)**: Users only see their own data
-- **OAuth 2.0**: Industry-standard authentication
-- **GDPR Compliant**: Privacy-first data handling
-- **Session Management**: Secure token handling
+### Security
+- 🔒 **RLS** on all tables
+- ✅ **OAuth 2.0** compliance
+- 🌐 **GDPR-ready**
+- 🔁 **Secure token/session** handling
 
-## 🧩 Application Structure
+## 🧭 Application Structure
 
 ```
 src/
 ├── contexts/
-│   └── AuthContext.jsx          # Authentication state management
+│   └── AuthContext.jsx           # Auth state provider
 ├── components/
 │   ├── auth/
 │   │   ├── AuthModal.jsx        # Sign-in modal
-│   │   ├── GoogleSignIn.jsx     # Google sign-in button
-│   │   └── AuthCallback.jsx     # OAuth callback handler
+│   │   ├── GoogleSignIn.jsx     # Sign-in button
+│   │   └── AuthCallback.jsx     # Handles OAuth redirect
 │   ├── dashboard/
-│   │   └── UserDashboard.jsx    # User dashboard
+│   │   └── UserDashboard.jsx    # Regular user dashboard
 │   ├── admin/
 │   │   └── AdminDashboard.jsx   # Admin panel
 │   ├── profile/
 │   │   └── UserProfile.jsx      # Profile management
-│   └── Navigation.jsx           # Auth-aware navigation
+│   └── Navigation.jsx           # Route-aware navigation
 ├── lib/
-│   ├── supabase.js              # Supabase client
-│   ├── supabaseHelpers.js       # Database helpers
-│   └── database-setup.sql       # Database schema & RLS
+│   ├─��� supabase.js              # Supabase client
+│   ├── supabaseHelpers.js       # DB utilities
+│   └── database-setup.sql       # SQL schema and RLS
 └── hooks/
-    └── useAuth.js               # Authentication hook
+    └── useAuth.js               # Auth hook
 ```
 
-## 🔄 Navigation Routes
+## 🌐 Available Routes
 
-Your application now supports these routes:
-
-- `/` - Landing page
-- `/dashboard` - User dashboard (authenticated users)
-- `/profile` - User profile management (authenticated users)
-- `/admin` - Admin panel (admin users only)
-- `/auth/callback` - OAuth callback handler
-- `/analyzer` - Policy analyzer (public)
-- `/generator` - Policy generator (public)
-- `/compliances` - Compliance information (public)
-- `/assessment` - Risk assessment (public)
+| Route | Access | Description |
+|-------|--------|-------------|
+| `/` | Public | Landing page |
+| `/dashboard` | Authenticated users | User dashboard |
+| `/profile` | Authenticated users | Profile editor |
+| `/admin` | Admins only | Admin control panel |
+| `/auth/callback` | Internal | OAuth handler |
+| `/analyzer` | Public | Policy analyzer |
+| `/generator` | Public | Policy generator |
+| `/compliances` | Public | Compliance viewer |
+| `/assessment` | Public | Risk assessment |
 
 ## 🛡️ Security Best Practices
 
-✅ **Row-Level Security**: Enabled on all tables
-✅ **OAuth 2.0**: Secure Google authentication
-✅ **Environment Variables**: Sensitive data protection
-✅ **HTTPS Only**: Production redirects (configure in Supabase)
-✅ **Session Management**: Automatic token refresh
-✅ **Admin Controls**: Role-based access control
+- ✅ **RLS Enabled** on all tables
+- ✅ **OAuth 2.0** Authentication
+- ✅ **.env Variables** for sensitive configs
+- ✅ **HTTPS Only** for production
+- ✅ **Token Refresh** via Supabase
+- ✅ **Role-Based Access Control**
 
-## 🔧 Testing Your Setup
+## 🧪 Testing the Setup
 
-1. **Start your development server**: `npm run dev`
-2. **Visit your application**: Usually `http://localhost:5173`
-3. **Click "Sign In"** in the navigation
-4. **Sign in with Google** - you should be redirected back to the app
-5. **Check your profile** - navigate to the profile page
-6. **Test admin features** - make yourself admin and check the admin panel
+1. Run your dev server: `npm run dev`
+2. Visit: `http://localhost:5173`
+3. Click **Sign In** and use Google OAuth
+4. Check `/profile` to confirm your data
+5. Make yourself admin in Supabase and test `/admin`
 
-## 🐛 Troubleshooting
-
-### Common Issues:
+## 🐞 Troubleshooting
 
 **"Invalid redirect URI"**
-- Check your Google Cloud Console redirect URIs match exactly
-- Ensure no trailing slashes in URLs
+- Make sure redirect URIs match exactly
+- No trailing slashes
 
-**"User not found in profiles table"**
-- Check if the trigger is working in Supabase
-- Manually run the `handle_new_user()` function if needed
+**"User not found in profiles"**
+- Ensure trigger ran correctly
+- Run `handle_new_user()` manually if needed
 
 **"RLS policy error"**
-- Verify all RLS policies are created
-- Check user roles in the profiles table
+- Confirm all policies are created
+- Check roles in the profiles table
 
-**Authentication not persisting**
-- Check your environment variables
-- Verify Supabase URL and keys are correct
+**Session not persisting**
+- Recheck your `.env` variables
+- Verify Supabase keys and URL
 
 ## 📚 Next Steps
 
-1. **Customize User Profiles**: Add more fields to the profiles table
-2. **Extend Admin Features**: Add more management capabilities
-3. **Integrate with Existing Features**: Connect user data to policy analysis
-4. **Add Email Notifications**: Set up transactional emails
-5. **Implement Analytics**: Track user behavior and engagement
+- 🔧 Customize profiles with more fields
+- 🧩 Extend admin dashboard
+- 🔗 Link user data to analysis features
+- 📬 Add transactional email alerts
+- 📊 Integrate user analytics
 
-## 🤝 Support
+## 🤝 Need Help?
 
-If you encounter any issues:
+- Check browser console errors
+- View Supabase logs
+- Reverify Google Cloud setup
+- Double-check `.env` values
 
-1. Check the browser console for error messages
-2. Review the Supabase logs in your dashboard
-3. Verify your Google Cloud Console settings
-4. Ensure all environment variables are set correctly
+---
 
 Your authentication system is now ready to use! 🎉

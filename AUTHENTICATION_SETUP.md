@@ -6,7 +6,8 @@ Welcome to your authentication system setup for POLIGAP! This guide walks you th
 
 Your application now includes a complete, secure, and modern authentication stack with:
 
-- 🔐 **Google OAuth** — no passwords, just secure sign-in
+- 🔐 **Google OAuth** — one-click secure sign-in
+- 📧 **Email Authentication** — traditional email/password with password reset
 - 👤 **User profile management**
 - 🛠️ **Admin dashboard** for user control
 - 🔒 **Row-Level Security (RLS)** for data protection
@@ -108,7 +109,7 @@ src/
 │   │   └── UserProfile.jsx      # Profile management
 │   └── Navigation.jsx           # Route-aware navigation
 ├── lib/
-│   ├─��� supabase.js              # Supabase client
+│   ├── supabase.js              # Supabase client
 │   ├── supabaseHelpers.js       # DB utilities
 │   └── database-setup.sql       # SQL schema and RLS
 └── hooks/

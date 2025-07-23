@@ -10,6 +10,7 @@ import UserDashboard from './components/dashboard/UserDashboard';
 import AdminDashboard from './components/admin/AdminDashboard';
 import UserProfile from './components/profile/UserProfile';
 import AuthCallback from './components/auth/AuthCallback';
+import ConfigurationWarning from './components/ConfigurationWarning';
 import ChatButton from './components/ChatButton';
 import ChatExpert from './components/ChatExpert';
 

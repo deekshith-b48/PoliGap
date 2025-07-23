@@ -32,7 +32,7 @@ const Navigation = ({ onNavigate, currentPage = 'home' }) => {
   const authenticatedNavLinks = user ? [
     { id: 'dashboard', label: 'Dashboard', icon: '🏠' },
     ...navLinks,
-    ...(isAdmin() ? [{ id: 'admin', label: 'Admin Panel', icon: '⚙️' }] : []),
+    ...(isAdmin && isAdmin() ? [{ id: 'admin', label: 'Admin Panel', icon: '⚙️' }] : []),
   ] : navLinks;
 
   return (

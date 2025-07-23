@@ -3,6 +3,7 @@ import Navigation from './Navigation';
 import { useAuth } from '../contexts/AuthContext';
 
 function LandingPage({ onNavigate }) {
+  const { user } = useAuth();
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');

@@ -18,6 +18,13 @@ export const AuthProvider = ({ children }) => {
   const [profile, setProfile] = useState(null);
 
   useEffect(() => {
+    // Check if supabase is properly initialized
+    if (!supabase || !supabase.auth) {
+      console.warn('Supabase is not properly configured. Authentication features will be limited.');
+      setLoading(false);
+      return;
+    }
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -25,6 +32,9 @@ export const AuthProvider = ({ children }) => {
       if (session?.user) {
         fetchUserProfile(session.user.id);
       }
+      setLoading(false);
+    }).catch(error => {
+      console.error('Error getting session:', error);
       setLoading(false);
     });
 
@@ -35,7 +45,7 @@ export const AuthProvider = ({ children }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
-      
+
       if (session?.user) {
         await fetchUserProfile(session.user.id);
       } else {
@@ -43,7 +53,11 @@ export const AuthProvider = ({ children }) => {
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      if (subscription && subscription.unsubscribe) {
+        subscription.unsubscribe();
+      }
+    };
   }, []);
 
   const fetchUserProfile = async (userId) => {

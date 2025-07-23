@@ -134,7 +134,7 @@ const Navigation = ({ onNavigate, currentPage = 'home' }) => {
                         <span>Profile</span>
                       </button>
 
-                      {isAdmin() && (
+                      {isAdmin && isAdmin() && (
                         <button
                           onClick={() => {
                             onNavigate && onNavigate('admin');

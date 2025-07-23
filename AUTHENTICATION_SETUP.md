@@ -52,7 +52,16 @@ Go to [Supabase Dashboard](https://supabase.com/dashboard)
   - Required RLS policies
   - Triggers for automatic profile creation
 
-### 4. Configure Environment Variables
+### 4. Configure Email Templates (Optional)
+
+For a professional experience, customize your email templates in Supabase:
+
+- Go to **Authentication > Email Templates**
+- Customize **Confirm signup** and **Reset password** templates
+- Update the redirect URLs to match your domain
+- Add your branding and styling
+
+### 5. Configure Environment Variables
 
 Create or update your `.env`:
 
@@ -111,7 +120,7 @@ src/
 │   │   └── AdminDashboard.jsx   # Admin panel
 │   ├── profile/
 │   │   └── UserProfile.jsx      # Profile management
-│   └��─ Navigation.jsx           # Route-aware navigation
+│   └── Navigation.jsx           # Route-aware navigation
 ├── lib/
 │   ├── supabase.js              # Supabase client
 │   ├── supabaseHelpers.js       # DB utilities

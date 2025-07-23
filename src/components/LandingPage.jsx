@@ -12,133 +12,130 @@ function LandingPage({ onNavigate }) {
   const [activeFeature, setActiveFeature] = useState(0);
   const dropdownRef = useRef(null);
 
-  const testimonials = [
+  const complianceFrameworks = [
     {
-      quote: "Cut our compliance prep from 3 months to 2 weeks. The AI caught gaps our lawyers missed!",
-      author: "Sarah Chen",
-      role: "CTO, HealthTech SaaS",
-      company: "MedFlow Solutions",
-      industry: "Healthcare",
-      savings: "$250K annually"
+      name: "GDPR (General Data Protection Regulation)",
+      description: "EU regulation for data protection and privacy affecting all companies processing EU citizens' data",
+      scope: "Global reach",
+      sector: "All sectors processing personal data",
+      keyRequirements: "Data minimization, consent, right to erasure"
     },
     {
-      quote: "Finally, compliance software that doesn't require a PhD to operate. Our whole team can use it.",
-      author: "Michael Rodriguez", 
-      role: "Compliance Director",
-      company: "FinanceFirst",
-      industry: "Financial Services",
-      savings: "83% time reduction"
+      name: "HIPAA (Health Insurance Portability and Accountability Act)", 
+      description: "US federal law protecting sensitive patient health information in healthcare organizations",
+      scope: "US Healthcare",
+      sector: "Healthcare providers, insurers, business associates",
+      keyRequirements: "Administrative, physical, technical safeguards"
     },
     {
-      quote: "The quantitative scoring changed everything. We can now prove compliance improvements to the board.",
-      author: "Dr. Amanda Foster",
-      role: "Chief Privacy Officer",
-      company: "Global Healthcare Corp",
-      industry: "Healthcare",
-      savings: "Zero penalties in 2 years"
+      name: "SOX (Sarbanes-Oxley Act)",
+      description: "US federal law enhancing corporate disclosure and financial transparency for public companies",
+      scope: "US Public Companies",
+      sector: "Publicly traded companies",
+      keyRequirements: "Internal controls, financial reporting accuracy"
     }
   ];
 
   const problems = [
     {
-      title: "Manual Compliance is Overwhelming",
-      description: "Organizations spend 100+ hours per month on manual compliance checks, leading to human errors and missed deadlines.",
-      impact: "$10M+ in potential fines",
+      title: "Complex Regulatory Landscape",
+      description: "Organizations must navigate multiple overlapping regulations like GDPR, HIPAA, SOX, and industry-specific requirements that frequently change.",
+      impact: "Compliance complexity",
       icon: "⏰",
-      stats: "73% of companies miss compliance deadlines"
+      stats: "Multiple frameworks to track"
     },
     {
-      title: "Scattered Regulations & Updates",
-      description: "Keeping track of GDPR, HIPAA, SOX, PCI DSS, and 300+ other frameworks is impossible without automation.",
-      impact: "Legal liability exposure",
+      title: "Manual Review Processes",
+      description: "Traditional compliance reviews rely on manual document analysis, which is time-intensive and prone to human oversight.",
+      impact: "Resource intensive",
       icon: "📚",
-      stats: "150+ regulation updates per quarter"
+      stats: "Time-consuming analysis"
     },
     {
-      title: "No Quantitative Visibility",
-      description: "Traditional tools provide checklists but no scoring. Boards need numbers to make informed decisions.",
-      impact: "Strategic blindness",
+      title: "Lack of Standardized Scoring",
+      description: "Most compliance tools provide checklists without quantitative metrics, making it difficult to measure progress and compare against standards.",
+      impact: "Limited visibility",
       icon: "📊",
-      stats: "85% lack compliance visibility"
+      stats: "Difficult to measure progress"
     },
     {
-      title: "Expert Dependency Bottleneck",
-      description: "Compliance expertise is expensive and scarce. Organizations wait months for consultants and lawyers.",
-      impact: "$500K+ consultant costs",
+      title: "Expert Knowledge Requirements",
+      description: "Compliance analysis traditionally requires specialized legal and regulatory expertise that may not be readily available in all organizations.",
+      impact: "Knowledge dependency",
       icon: "👥",
-      stats: "6-month average expert wait time"
+      stats: "Specialized expertise needed"
     }
   ];
 
   const solutions = [
     {
-      title: "AI-Powered Instant Analysis",
-      description: "Upload any policy document and get instant compliance scores with gap identification in under 60 seconds.",
-      benefit: "99.2% accuracy, 1000x faster than manual review",
+      title: "AI-Powered Document Analysis",
+      description: "Upload policy documents and receive automated analysis against major compliance frameworks with detailed gap identification.",
+      benefit: "Streamlined analysis process with systematic approach",
       icon: "🤖",
-      features: ["Real-time analysis", "Multi-framework support", "Instant results"]
+      features: ["Document scanning", "Framework comparison", "Gap identification"]
     },
     {
-      title: "Comprehensive Framework Coverage",
-      description: "Pre-built support for 50+ compliance frameworks with automatic updates when regulations change.",
-      benefit: "Always up-to-date, never miss changes",
+      title: "Comprehensive Framework Support",
+      description: "Built-in support for major compliance frameworks including GDPR, HIPAA, SOX, and other widely-adopted standards.",
+      benefit: "Standardized approach to compliance assessment",
       icon: "🛡️",
-      features: ["GDPR, HIPAA, SOX, PCI DSS", "Auto-updates", "Global coverage"]
+      features: ["GDPR, HIPAA, SOX", "Standard frameworks", "Best practices"]
     },
     {
-      title: "Executive Dashboard & Scoring",
-      description: "Clear compliance scores (0-100%) with industry benchmarking and trend analysis for board presentations.",
-      benefit: "Data-driven compliance decisions",
+      title: "Scoring and Assessment Dashboard",
+      description: "Visual compliance scoring system that provides clear metrics and progress tracking for organizational assessment.",
+      benefit: "Quantifiable compliance metrics and progress tracking",
       icon: "📈",
-      features: ["Industry benchmarks", "Trend analysis", "Executive reports"]
+      features: ["Visual scoring", "Progress tracking", "Assessment reports"]
     },
     {
-      title: "No-Code Implementation",
-      description: "Designed for business users, not just legal teams. Anyone can perform compliance analysis without training.",
-      benefit: "Democratized compliance expertise",
+      title: "User-Friendly Interface",
+      description: "Designed for business users with intuitive workflows that don't require specialized compliance training to operate effectively.",
+      benefit: "Accessible compliance analysis for all team members",
       icon: "✨",
-      features: ["Intuitive interface", "No training required", "Team collaboration"]
+      features: ["Intuitive design", "Clear workflows", "Team accessibility"]
     }
   ];
 
   const keyFeatures = [
     {
-      title: "Intelligent Document Analysis",
-      description: "Advanced NLP engine analyzes policy documents in multiple formats (PDF, DOCX, TXT) with 99.2% accuracy.",
-      techDetails: "Built on Google's Gemini AI with custom compliance training",
-      demo: "Try with any policy document",
+      title: "Document Analysis Engine",
+      description: "Advanced text processing engine that analyzes policy documents in multiple formats (PDF, DOCX, TXT) for compliance assessment.",
+      techDetails: "Built using modern NLP techniques with compliance rule matching",
+      demo: "Upload your policy document to test",
       icon: "🧠"
     },
     {
-      title: "Real-Time Compliance Scoring",
-      description: "Get instant numerical scores (0-100%) for each framework with detailed gap analysis and remediation steps.",
-      techDetails: "Proprietary scoring algorithm with 10,000+ compliance rules",
-      demo: "See live scoring demo",
-      icon: "⚡"
+      title: "Learn Frameworks",
+      description: "Comprehensive guide to major compliance frameworks with simple explanations, requirements, and practical implementation guidance.",
+      techDetails: "Educational content covering GDPR, HIPAA, SOX and other frameworks",
+      demo: "Explore framework guides",
+      icon: "�"
     },
     {
-      title: "Automated Policy Generation",
-      description: "Generate professional, audit-ready policies in minutes using AI-powered templates and industry best practices.",
-      techDetails: "Templates for 50+ industries with legal review integration",
+      title: "Policy Generation Assistant",
+      description: "AI-assisted policy generation using established templates and industry best practices for common compliance requirements.",
+      techDetails: "Template-based generation with compliance framework integration",
       demo: "Generate sample policy",
       icon: "📝"
     },
     {
-      title: "Intelligent Remediation Plans",
-      description: "Receive prioritized action plans with timelines, effort estimates, and business impact analysis.",
-      techDetails: "Risk-based prioritization with resource allocation recommendations",
-      demo: "View sample plan",
+      title: "Risk Assessment",
+      description: "Comprehensive organizational risk assessment that analyzes your company's location, industry, data handling practices, and regulatory exposure to provide tailored compliance recommendations.",
+      techDetails: "Multi-factor risk analysis considering geography, industry, data types, and regulatory requirements",
+      demo: "Start organizational risk assessment",
       icon: "🎯"
     }
   ];
 
   const industries = [
-    { name: "Healthcare", icon: "🏥", compliance: "HIPAA, HITECH", companies: "500+" },
-    { name: "Financial Services", icon: "🏦", compliance: "SOX, PCI DSS", companies: "300+" },
-    { name: "Technology", icon: "💻", compliance: "GDPR, CCPA", companies: "750+" },
-    { name: "Manufacturing", icon: "🏭", compliance: "ISO 27001", companies: "200+" },
-    { name: "Retail", icon: "🛍️", compliance: "PCI DSS, GDPR", companies: "400+" },
-    { name: "Education", icon: "🎓", compliance: "FERPA, GDPR", companies: "150+" }
+    { name: "Healthcare", icon: "🏥", compliance: "HIPAA, HITECH", description: "Patient data protection" },
+    { name: "Financial Services", icon: "🏦", compliance: "SOX, PCI DSS", description: "Financial data security" },
+    { name: "Technology", icon: "💻", compliance: "GDPR, CCPA", description: "Data privacy compliance" },
+    { name: "Manufacturing", icon: "🏭", compliance: "ISO 27001", description: "Quality management" },
+    { name: "Retail", icon: "🛍️", compliance: "PCI DSS, GDPR", description: "Customer data protection" },
+    { name: "Education", icon: "🎓", compliance: "FERPA, GDPR", description: "Student data privacy" }
   ];
 
   // Mouse tracking for dynamic effects
@@ -150,10 +147,10 @@ function LandingPage({ onNavigate }) {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // Auto-rotate testimonials
+  // Auto-rotate compliance frameworks
   useEffect(() => {
     const interval = setInterval(() => {
-      setActiveTestimonial((prev) => (prev + 1) % testimonials.length);
+      setActiveTestimonial((prev) => (prev + 1) % complianceFrameworks.length);
     }, 5000);
     return () => clearInterval(interval);
   }, []);
@@ -380,7 +377,7 @@ function LandingPage({ onNavigate }) {
             <div className="inline-flex items-center px-4 sm:px-6 py-3 bg-white/60 backdrop-blur-xl rounded-full border border-gray-200/50 mb-8 shadow-sm">
               <div className="w-2 h-2 bg-green-500 rounded-full mr-3 animate-pulse"></div>
               <span className="text-gray-700 font-medium text-sm">
-                🚀 Trusted by 1,500+ companies • 99.9% accuracy • $50M+ in fines prevented
+                🚀 AI-powered compliance analysis • Framework-based assessment • Policy gap identification
               </span>
             </div>
 
@@ -421,7 +418,7 @@ function LandingPage({ onNavigate }) {
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <span className="font-medium text-sm">40% Fewer Breaches</span>
+                <span className="font-medium text-sm">AI-Powered Analysis</span>
               </div>
               <div className="flex items-center space-x-2">
                 <div className="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center">
@@ -429,7 +426,7 @@ function LandingPage({ onNavigate }) {
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <span className="font-medium text-sm">Weeks to Hours</span>
+                <span className="font-medium text-sm">Framework Support</span>
               </div>
               <div className="flex items-center space-x-2">
                 <div className="w-5 h-5 bg-purple-100 rounded-full flex items-center justify-center">
@@ -437,7 +434,7 @@ function LandingPage({ onNavigate }) {
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <span className="font-medium text-sm">Enterprise Grade</span>
+                <span className="font-medium text-sm">Easy to Use</span>
               </div>
             </div>
           </div>
@@ -487,45 +484,45 @@ function LandingPage({ onNavigate }) {
             {/* Problem Impact Visualization */}
             <div className="space-y-8">
               <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-gray-200/50 shadow-lg">
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">The Hidden Costs</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-6">Compliance Challenges</h3>
                 <div className="space-y-6">
                   <div className="flex justify-between items-center p-4 bg-red-50 rounded-2xl">
-                    <span className="font-semibold text-red-800">Manual Review Time</span>
-                    <span className="text-red-600 font-bold">100+ hours/month</span>
+                    <span className="font-semibold text-red-800">Manual Review Process</span>
+                    <span className="text-red-600 font-bold">Time-intensive</span>
                   </div>
                   <div className="flex justify-between items-center p-4 bg-orange-50 rounded-2xl">
-                    <span className="font-semibold text-orange-800">Average Fine per Violation</span>
-                    <span className="text-orange-600 font-bold">$4.4M</span>
+                    <span className="font-semibold text-orange-800">Multiple Frameworks</span>
+                    <span className="text-orange-600 font-bold">Complex tracking</span>
                   </div>
                   <div className="flex justify-between items-center p-4 bg-yellow-50 rounded-2xl">
-                    <span className="font-semibold text-yellow-800">Consultant Costs</span>
-                    <span className="text-yellow-600 font-bold">$500K+ annually</span>
+                    <span className="font-semibold text-yellow-800">Expert Knowledge</span>
+                    <span className="text-yellow-600 font-bold">Specialized skills needed</span>
                   </div>
                   <div className="flex justify-between items-center p-4 bg-red-100 rounded-2xl border-2 border-red-300">
-                    <span className="font-semibold text-red-900">Total Business Risk</span>
-                    <span className="text-red-700 font-bold text-lg">$50M+ exposure</span>
+                    <span className="font-semibold text-red-900">Compliance Complexity</span>
+                    <span className="text-red-700 font-bold text-lg">Growing challenge</span>
                   </div>
                 </div>
               </div>
 
               <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl p-6 sm:p-8 text-white shadow-xl">
-                <h3 className="text-xl font-bold mb-4">PoliGap Solution Impact</h3>
+                <h3 className="text-xl font-bold mb-4">PoliGap Features</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center">
-                    <div className="text-2xl font-bold">99.2%</div>
-                    <div className="text-blue-100 text-sm">Accuracy Rate</div>
+                    <div className="text-2xl font-bold">AI</div>
+                    <div className="text-blue-100 text-sm">Powered Analysis</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold">60 sec</div>
-                    <div className="text-blue-100 text-sm">Analysis Time</div>
+                    <div className="text-2xl font-bold">Multi</div>
+                    <div className="text-blue-100 text-sm">Framework Support</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold">83%</div>
-                    <div className="text-blue-100 text-sm">Time Savings</div>
+                    <div className="text-2xl font-bold">Visual</div>
+                    <div className="text-blue-100 text-sm">Scoring System</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold">$0</div>
-                    <div className="text-blue-100 text-sm">Setup Cost</div>
+                    <div className="text-2xl font-bold">Easy</div>
+                    <div className="text-blue-100 text-sm">To Use Interface</div>
                   </div>
                 </div>
               </div>
@@ -577,70 +574,266 @@ function LandingPage({ onNavigate }) {
       </section>
 
       {/* Advanced Features Deep Dive */}
-      <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-50 to-blue-50">
-        <div className="max-w-7xl mx-auto">
+      <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 relative overflow-hidden">
+        {/* Animated Wavy Background */}
+        <div className="absolute inset-0 opacity-20">
+          <svg className="absolute w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+            <path 
+              fill="url(#wave-gradient)" 
+              fillOpacity="0.3" 
+              d="M0,96L48,112C96,128,192,160,288,165.3C384,171,480,149,576,122.7C672,96,768,64,864,85.3C960,107,1056,181,1152,197.3C1248,213,1344,171,1392,149.3L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+              className="animate-wave"
+            />
+            <defs>
+              <linearGradient id="wave-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#f59e0b" />
+                <stop offset="50%" stopColor="#d97706" />
+                <stop offset="100%" stopColor="#b45309" />
+              </linearGradient>
+            </defs>
+          </svg>
+          
+          <svg className="absolute w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+            <path 
+              fill="url(#wave-gradient-2)" 
+              fillOpacity="0.2" 
+              d="M0,224L48,213.3C96,203,192,181,288,181.3C384,181,480,203,576,213.3C672,224,768,224,864,208C960,192,1056,160,1152,154.7C1248,149,1344,171,1392,181.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+              className="animate-wave-reverse"
+            />
+            <defs>
+              <linearGradient id="wave-gradient-2" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#3b82f6" />
+                <stop offset="50%" stopColor="#1d4ed8" />
+                <stop offset="100%" stopColor="#1e40af" />
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        
+        <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Enterprise-Grade Features</h2>
-            <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
+            {/* Eye-catching badge */}
+            <div className="inline-flex items-center bg-gradient-to-r from-amber-400 to-orange-500 text-white px-6 py-2 rounded-full text-sm font-bold mb-6 shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300">
+              <span className="mr-2">�️</span>
+              MAIN TOOLS & FEATURES
+              <span className="ml-2">�️</span>
+            </div>
+            
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-gray-800 via-orange-700 to-amber-800 bg-clip-text text-transparent mb-6">
+              Enterprise-Grade Tools
+            </h2>
+            <p className="text-lg sm:text-xl text-gray-700 max-w-3xl mx-auto mb-8">
               Built for scale with enterprise security, accuracy, and reliability at every level
             </p>
+            
+            {/* Interactive indicator */}
+            <div className="flex items-center justify-center space-x-2 text-orange-600 text-sm font-medium bg-white/60 backdrop-blur-sm px-4 py-2 rounded-full shadow-md">
+              <span className="hover:animate-bounce cursor-pointer">👆</span>
+              <span>Click any tool below to start using it instantly</span>
+              <span className="hover:animate-bounce cursor-pointer">👆</span>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Feature Tabs */}
             <div className="lg:col-span-1">
-              <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 border border-gray-200/50 shadow-lg">
-                <h3 className="text-lg font-bold text-gray-900 mb-6">Core Capabilities</h3>
-                <div className="space-y-3">
-                  {keyFeatures.map((feature, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setActiveFeature(index)}
-                      className={`w-full text-left p-4 rounded-2xl transition-all duration-300 ${
-                        activeFeature === index
-                          ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
-                          : 'bg-gray-50 text-gray-700 hover:bg-gray-100'
-                      }`}
-                    >
-                      <div className="flex items-center">
-                        <span className="text-xl mr-3">{feature.icon}</span>
-                        <span className="font-semibold text-sm">{feature.title}</span>
-                      </div>
-                    </button>
-                  ))}
+              <div className="bg-white/90 backdrop-blur-xl rounded-3xl p-6 border border-orange-200/50 shadow-xl relative overflow-hidden hover:shadow-2xl transition-all duration-500">
+                {/* Subtle glow effect */}
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-100/30 to-orange-100/30 rounded-3xl"></div>
+                
+                <div className="relative z-10">
+                  {/* Tools header with icon */}
+                  <div className="flex items-center mb-6">
+                    <div className="w-12 h-12 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl flex items-center justify-center mr-3 shadow-lg hover:scale-110 transition-transform duration-300">
+                      <span className="text-white text-xl">🛠️</span>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-gray-800">Available Tools</h3>
+                      <p className="text-xs text-gray-600">Click to explore each tool</p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    {keyFeatures.map((feature, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setActiveFeature(index)}
+                        className={`w-full text-left p-4 rounded-2xl transition-all duration-300 transform hover:scale-[1.02] relative overflow-hidden group ${
+                          activeFeature === index
+                            ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-xl border border-orange-300'
+                            : 'bg-gradient-to-r from-white to-cream-50 text-gray-700 hover:from-amber-50 hover:to-orange-50 border border-orange-200 hover:border-orange-300 hover:shadow-lg'
+                        }`}
+                      >
+                        {/* Hover glyph */}
+                        <div className={`absolute top-2 right-2 transition-all duration-300 ${
+                          activeFeature === index 
+                            ? 'opacity-100 scale-100' 
+                            : 'opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100'
+                        }`}>
+                          <span className={`text-lg ${
+                            activeFeature === index ? 'text-white' : 'text-orange-500'
+                          }`}>
+                            ✨
+                          </span>
+                        </div>
+                        
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center">
+                            <div className={`w-10 h-10 rounded-2xl flex items-center justify-center mr-3 transition-all duration-300 ${
+                              activeFeature === index 
+                                ? 'bg-white/20' 
+                                : 'bg-gradient-to-r from-amber-100 to-orange-100 group-hover:from-amber-200 group-hover:to-orange-200'
+                            }`}>
+                              <span className="text-xl">{feature.icon}</span>
+                            </div>
+                            <div>
+                              <span className={`font-semibold text-sm block ${
+                                activeFeature === index ? 'text-white' : 'text-gray-800'
+                              }`}>
+                                {feature.title}
+                              </span>
+                              <span className={`text-xs ${
+                                activeFeature === index ? 'text-orange-100' : 'text-gray-500'
+                              }`}>
+                                {activeFeature === index ? 'Currently active' : 'Click to view'}
+                              </span>
+                            </div>
+                          </div>
+                          
+                          {/* Arrow indicator */}
+                          <div className={`transition-transform duration-300 ${
+                            activeFeature === index ? 'transform rotate-90' : ''
+                          }`}>
+                            <span className={activeFeature === index ? 'text-white' : 'text-orange-400'}>▶</span>
+                          </div>
+                        </div>
+                        
+                        {/* Shimmer effect on hover */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                      </button>
+                    ))}
+                  </div>
+                  
+                  {/* Quick access hint */}
+                  <div className="mt-4 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200/50 shadow-sm">
+                    <div className="flex items-center text-green-700 text-xs">
+                      <span className="mr-2 hover:animate-spin cursor-pointer">💡</span>
+                      <span className="font-medium">Pro Tip: Each tool opens in a specialized interface for optimal workflow</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Feature Details */}
             <div className="lg:col-span-2">
-              <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-gray-200/50 shadow-lg">
-                <div className="flex items-center mb-6">
-                  <span className="text-3xl mr-4">{keyFeatures[activeFeature].icon}</span>
-                  <h3 className="text-2xl font-bold text-gray-900">{keyFeatures[activeFeature].title}</h3>
-                </div>
+              <div className="bg-white/95 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-orange-200/50 shadow-xl relative overflow-hidden hover:shadow-2xl transition-all duration-500">
+                {/* Subtle background gradient */}
+                <div className="absolute inset-0 bg-gradient-to-br from-amber-50/30 to-orange-50/30 rounded-3xl"></div>
                 
-                <p className="text-gray-700 text-lg mb-6 leading-relaxed">
-                  {keyFeatures[activeFeature].description}
-                </p>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-                  <div className="bg-blue-50 rounded-2xl p-4">
-                    <h4 className="font-semibold text-blue-900 mb-2">🔧 Technical Details</h4>
-                    <p className="text-blue-800 text-sm">{keyFeatures[activeFeature].techDetails}</p>
+                <div className="relative z-10">
+                  {/* Tool header with status */}
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center">
+                      <div className="w-14 h-14 bg-gradient-to-r from-amber-500 to-orange-500 rounded-3xl flex items-center justify-center mr-4 shadow-lg hover:scale-110 transition-transform duration-300">
+                        <span className="text-2xl text-white">{keyFeatures[activeFeature].icon}</span>
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-bold text-gray-800">{keyFeatures[activeFeature].title}</h3>
+                        <div className="flex items-center mt-1">
+                          <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
+                          <span className="text-sm text-green-600 font-medium">Ready to use</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Tool type badge with hover glyph */}
+                    <div className="bg-gradient-to-r from-amber-400 to-orange-500 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 group cursor-pointer">
+                      <span className="group-hover:hidden">AI TOOL</span>
+                      <span className="hidden group-hover:inline">🚀 LAUNCH</span>
+                    </div>
                   </div>
-                  <div className="bg-green-50 rounded-2xl p-4">
-                    <h4 className="font-semibold text-green-900 mb-2">🎯 Try It Now</h4>
-                    <p className="text-green-800 text-sm">{keyFeatures[activeFeature].demo}</p>
+                  
+                  {/* Description with emphasis */}
+                  <div className="bg-white/90 rounded-2xl p-6 mb-6 border border-orange-100 shadow-sm hover:shadow-md transition-shadow duration-300">
+                    <p className="text-gray-700 text-lg leading-relaxed">
+                      {keyFeatures[activeFeature].description}
+                    </p>
+                  </div>
+
+                  {/* Enhanced info cards */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+                    <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-5 border border-blue-200 hover:shadow-lg hover:scale-[1.02] transition-all duration-300 group">
+                      <div className="flex items-center mb-3">
+                        <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
+                          <span className="text-white text-sm">🔧</span>
+                        </div>
+                        <h4 className="font-bold text-blue-900">Technical Specs</h4>
+                        <span className="ml-auto text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300">⚡</span>
+                      </div>
+                      <p className="text-blue-800 text-sm leading-relaxed">{keyFeatures[activeFeature].techDetails}</p>
+                    </div>
+                    
+                    <div className="bg-gradient-to-br from-green-50 to-emerald-100 rounded-2xl p-5 border border-green-200 hover:shadow-lg hover:scale-[1.02] transition-all duration-300 group">
+                      <div className="flex items-center mb-3">
+                        <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
+                          <span className="text-white text-sm">🎯</span>
+                        </div>
+                        <h4 className="font-bold text-green-900">What You Can Do</h4>
+                        <span className="ml-auto text-green-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300">✨</span>
+                      </div>
+                      <p className="text-green-800 text-sm leading-relaxed">{keyFeatures[activeFeature].demo}</p>
+                    </div>
+                  </div>
+
+                  {/* Enhanced action button */}
+                  <div className="flex flex-col sm:flex-row gap-4 items-center">
+                    <button 
+                      onClick={() => {
+                        switch(activeFeature) {
+                          case 0: // Document Analysis Engine
+                            onNavigate('analyzer');
+                            break;
+                          case 1: // Learn Frameworks
+                            onNavigate('compliances');
+                            break;
+                          case 2: // Policy Generation Assistant
+                            onNavigate('generator');
+                            break;
+                          case 3: // Risk Assessment
+                            onNavigate('assessment');
+                            break;
+                          default:
+                            onNavigate('analyzer');
+                        }
+                      }}
+                      className="w-full sm:w-auto bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 text-white px-8 py-4 rounded-2xl font-bold text-lg hover:from-amber-600 hover:via-orange-600 hover:to-red-600 transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl relative overflow-hidden group"
+                    >
+                      {/* Button wave effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+                      
+                      <div className="flex items-center justify-center relative z-10">
+                        <span className="mr-2 group-hover:animate-bounce">🚀</span>
+                        <span>Launch {keyFeatures[activeFeature].title}</span>
+                        <span className="ml-2 group-hover:animate-pulse">→</span>
+                      </div>
+                    </button>
+                    
+                    {/* Quick stats with hover glyphs */}
+                    <div className="flex items-center space-x-4 text-sm text-gray-600">
+                      <div className="flex items-center group cursor-pointer">
+                        <span className="w-2 h-2 bg-amber-400 rounded-full mr-2 group-hover:animate-ping"></span>
+                        <span className="group-hover:text-amber-600 transition-colors duration-300">Enterprise Ready</span>
+                        <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">🏢</span>
+                      </div>
+                      <div className="flex items-center group cursor-pointer">
+                        <span className="w-2 h-2 bg-green-400 rounded-full mr-2 group-hover:animate-ping"></span>
+                        <span className="group-hover:text-green-600 transition-colors duration-300">Instant Access</span>
+                        <span className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">⚡</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-
-                <button 
-                  onClick={() => onNavigate('analyzer')}
-                  className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-2xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105"
-                >
-                  Try This Feature →
-                </button>
               </div>
             </div>
           </div>
@@ -651,9 +844,9 @@ function LandingPage({ onNavigate }) {
       <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Trusted Across Industries</h2>
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Built for Multiple Industries</h2>
             <p className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto">
-              From startups to Fortune 500 companies, organizations across every industry rely on PoliGap for compliance excellence
+              PoliGap supports compliance analysis across various industries, each with their own specific regulatory requirements and frameworks
             </p>
           </div>
 
@@ -666,7 +859,7 @@ function LandingPage({ onNavigate }) {
                 <div className="text-3xl mb-3">{industry.icon}</div>
                 <h3 className="font-semibold text-gray-900 text-sm mb-2">{industry.name}</h3>
                 <p className="text-gray-600 text-xs mb-2">{industry.compliance}</p>
-                <div className="text-blue-600 font-bold text-xs">{industry.companies}</div>
+                <div className="text-blue-600 font-medium text-xs">{industry.description}</div>
               </div>
             ))}
           </div>
@@ -690,66 +883,66 @@ function LandingPage({ onNavigate }) {
       <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-white/40 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Proven Results & Happy Customers</h2>
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Compliance Framework Information</h2>
             <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
-              Real companies, real results. See how PoliGap transforms compliance operations.
+              Learn about major compliance frameworks and how they apply to modern organizations.
             </p>
           </div>
 
-          {/* Success Metrics */}
+          {/* Key Features Overview */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
             <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 text-center border border-gray-200/50 shadow-lg">
-              <div className="text-3xl font-bold text-blue-600 mb-2">1,500+</div>
-              <div className="text-gray-700 font-medium">Companies Trust Us</div>
+              <div className="text-3xl font-bold text-blue-600 mb-2">GDPR</div>
+              <div className="text-gray-700 font-medium">EU Data Protection</div>
             </div>
             <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 text-center border border-gray-200/50 shadow-lg">
-              <div className="text-3xl font-bold text-green-600 mb-2">$50M+</div>
-              <div className="text-gray-700 font-medium">Fines Prevented</div>
+              <div className="text-3xl font-bold text-green-600 mb-2">HIPAA</div>
+              <div className="text-gray-700 font-medium">Healthcare Privacy</div>
             </div>
             <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 text-center border border-gray-200/50 shadow-lg">
-              <div className="text-3xl font-bold text-purple-600 mb-2">99.2%</div>
-              <div className="text-gray-700 font-medium">Accuracy Rate</div>
+              <div className="text-3xl font-bold text-purple-600 mb-2">SOX</div>
+              <div className="text-gray-700 font-medium">Financial Controls</div>
             </div>
             <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-6 text-center border border-gray-200/50 shadow-lg">
-              <div className="text-3xl font-bold text-orange-600 mb-2">24/7</div>
-              <div className="text-gray-700 font-medium">AI Monitoring</div>
+              <div className="text-3xl font-bold text-orange-600 mb-2">AI</div>
+              <div className="text-gray-700 font-medium">Powered Analysis</div>
             </div>
           </div>
 
-          {/* Enhanced Testimonial */}
+          {/* Compliance Framework Information */}
           <div className="max-w-4xl mx-auto">
             <div className="bg-white/60 backdrop-blur-xl rounded-3xl p-6 sm:p-8 border border-gray-200/50 shadow-lg">
               <div className="text-center">
                 <div className="text-5xl mb-6 text-gray-300">"</div>
                 <blockquote className="text-lg sm:text-xl font-medium mb-8 leading-relaxed text-gray-800">
-                  {testimonials[activeTestimonial].quote}
+                  {complianceFrameworks[activeTestimonial].description}
                 </blockquote>
                 <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6">
                   <div className="flex items-center">
                     <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mr-4 shadow-lg">
-                      <span className="text-white font-bold">{testimonials[activeTestimonial].author.charAt(0)}</span>
+                      <span className="text-white font-bold text-lg">📋</span>
                     </div>
                     <div className="text-left">
-                      <div className="font-bold text-gray-900">{testimonials[activeTestimonial].author}</div>
-                      <div className="text-gray-600 text-sm">{testimonials[activeTestimonial].role}</div>
-                      <div className="text-gray-500 text-sm">{testimonials[activeTestimonial].company}</div>
+                      <div className="font-bold text-gray-900">{complianceFrameworks[activeTestimonial].name}</div>
+                      <div className="text-gray-600 text-sm">{complianceFrameworks[activeTestimonial].scope}</div>
+                      <div className="text-gray-500 text-sm">{complianceFrameworks[activeTestimonial].sector}</div>
                     </div>
                   </div>
                   <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                     <div className="bg-blue-50 px-4 py-2 rounded-xl">
-                      <div className="text-blue-600 font-semibold text-sm">{testimonials[activeTestimonial].industry}</div>
+                      <div className="text-blue-600 font-semibold text-sm">Key Requirements</div>
                     </div>
                     <div className="bg-green-50 px-4 py-2 rounded-xl">
-                      <div className="text-green-600 font-semibold text-sm">{testimonials[activeTestimonial].savings}</div>
+                      <div className="text-green-600 font-semibold text-sm">{complianceFrameworks[activeTestimonial].keyRequirements}</div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
             
-            {/* Testimonial Navigation */}
+            {/* Framework Navigation */}
             <div className="flex justify-center space-x-2 mt-6">
-              {testimonials.map((_, index) => (
+              {complianceFrameworks.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setActiveTestimonial(index)}
@@ -771,7 +964,7 @@ function LandingPage({ onNavigate }) {
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl p-8 sm:p-12 text-white shadow-2xl">
             <h3 className="text-2xl sm:text-3xl font-bold mb-4">Ready to Transform Your Compliance?</h3>
             <p className="text-lg sm:text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-              Join 1,500+ companies using AI-powered compliance. Start your free analysis today and see gaps in under 60 seconds.
+              Experience AI-powered compliance analysis. Start analyzing your policies against major frameworks and identify areas for improvement.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center">
               <button 
@@ -785,7 +978,7 @@ function LandingPage({ onNavigate }) {
               </button>
             </div>
             <div className="mt-6 text-blue-200 text-sm">
-              ✅ No credit card required • ✅ 2-minute setup • ✅ Instant results
+              ✅ Free to try • ✅ Easy setup • ✅ Framework analysis
             </div>
           </div>
         </div>

@@ -3,6 +3,7 @@ import GoogleSignIn from './GoogleSignIn';
 import EmailSignIn from './EmailSignIn';
 
 const AuthModal = ({ isOpen, onClose, title = "Welcome to POLIGAP" }) => {
+  const [authMode, setAuthMode] = useState('google'); // 'google', 'email', 'signup'
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';

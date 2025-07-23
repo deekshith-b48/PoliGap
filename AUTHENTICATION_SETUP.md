@@ -32,15 +32,16 @@ Go to [Google Cloud Console](https://console.cloud.google.com/)
   - Prod: `https://yourdomain.com/auth/callback`
 - Copy the **Client ID** and **Client Secret**.
 
-### 2. Configure Supabase OAuth
+### 2. Configure Supabase Authentication
 
 Go to [Supabase Dashboard](https://supabase.com/dashboard)
 
 - Open your project or create one.
 - Go to **Authentication > Providers**
-- Enable **Google**
-- Paste the **Client ID** and **Client Secret**
-- Set **Redirect URL**: `https://your-project.supabase.co/auth/v1/callback`
+- **Email** is enabled by default ✅
+- Enable **Google** for OAuth:
+  - Paste the **Client ID** and **Client Secret**
+  - Set **Redirect URL**: `https://your-project.supabase.co/auth/v1/callback`
 
 ### 3. Set Up Database & RLS
 

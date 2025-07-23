@@ -8,19 +8,92 @@ console.log('Supabase Key:', supabaseAnonKey ? 'configured' : 'not configured');
 
 // Create a mock client if Supabase is not configured
 const createMockSupabaseClient = () => ({
+  auth: {
+    getSession: async () => ({
+      data: { session: null },
+      error: null
+    }),
+    onAuthStateChange: (callback) => ({
+      data: { subscription: { unsubscribe: () => {} } }
+    }),
+    signInWithOAuth: async (config) => ({
+      data: null,
+      error: new Error('Supabase not configured. Please add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your environment variables.')
+    }),
+    signOut: async () => ({
+      error: null
+    }),
+    getUser: async () => ({
+      data: { user: null },
+      error: null
+    })
+  },
   storage: {
     from: () => ({
-      upload: async () => ({ 
-        data: { path: 'mock/path' }, 
-        error: null 
+      upload: async () => ({
+        data: { path: 'mock/path' },
+        error: null
+      }),
+      getPublicUrl: () => ({
+        data: { publicUrl: 'mock-url' }
       })
     })
   },
-  from: () => ({
-    insert: async () => ({ 
-      data: null, 
-      error: null 
+  from: (table) => ({
+    select: () => ({
+      eq: () => ({
+        single: async () => ({
+          data: null,
+          error: { code: 'PGRST116', message: 'Mock: No rows returned' }
+        }),
+        limit: () => ({
+          then: async (callback) => callback({ data: [], error: null })
+        })
+      }),
+      order: () => ({
+        limit: () => ({
+          then: async (callback) => callback({ data: [], error: null })
+        })
+      }),
+      then: async (callback) => callback({ data: [], error: null })
+    }),
+    insert: () => ({
+      select: () => ({
+        single: async () => ({
+          data: null,
+          error: new Error('Supabase not configured. Database operations disabled.')
+        })
+      }),
+      then: async (callback) => callback({
+        data: null,
+        error: new Error('Supabase not configured. Database operations disabled.')
+      })
+    }),
+    update: () => ({
+      eq: () => ({
+        select: () => ({
+          single: async () => ({
+            data: null,
+            error: new Error('Supabase not configured. Database operations disabled.')
+          })
+        })
+      })
+    }),
+    delete: () => ({
+      eq: async () => ({
+        data: null,
+        error: new Error('Supabase not configured. Database operations disabled.')
+      })
     })
+  }),
+  channel: () => ({
+    on: () => ({
+      subscribe: () => ({ unsubscribe: () => {} })
+    })
+  }),
+  rpc: async () => ({
+    data: false,
+    error: new Error('Supabase not configured. RPC calls disabled.')
   })
 });
 

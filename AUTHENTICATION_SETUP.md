@@ -111,7 +111,7 @@ src/
 │   │   └── AdminDashboard.jsx   # Admin panel
 │   ├── profile/
 │   │   └── UserProfile.jsx      # Profile management
-│   └── Navigation.jsx           # Route-aware navigation
+│   └��─ Navigation.jsx           # Route-aware navigation
 ├── lib/
 │   ├── supabase.js              # Supabase client
 │   ├── supabaseHelpers.js       # DB utilities
@@ -148,7 +148,11 @@ src/
 
 1. Run your dev server: `npm run dev`
 2. Visit: `http://localhost:5173`
-3. Click **Sign In** and use Google OAuth
+3. Click **Sign In** and test both authentication methods:
+   - **Google OAuth** for quick sign-in
+   - **Email Sign-Up** to create new accounts
+   - **Email Sign-In** for existing accounts
+   - **Password Reset** functionality
 4. Check `/profile` to confirm your data
 5. Make yourself admin in Supabase and test `/admin`
 

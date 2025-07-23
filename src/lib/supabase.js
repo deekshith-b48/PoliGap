@@ -20,6 +20,18 @@ const createMockSupabaseClient = () => ({
       data: null,
       error: new Error('Supabase not configured. Please add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your environment variables.')
     }),
+    signInWithPassword: async (credentials) => ({
+      data: null,
+      error: new Error('Supabase not configured. Email authentication disabled.')
+    }),
+    signUp: async (credentials) => ({
+      data: null,
+      error: new Error('Supabase not configured. Email registration disabled.')
+    }),
+    resetPasswordForEmail: async (email, options) => ({
+      data: null,
+      error: new Error('Supabase not configured. Password reset disabled.')
+    }),
     signOut: async () => ({
       error: null
     }),

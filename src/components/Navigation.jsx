@@ -3,7 +3,9 @@ import { useAuth } from '../contexts/AuthContext';
 import AuthModal from './auth/AuthModal';
 
 const Navigation = ({ onNavigate, currentPage = 'home' }) => {
-  const { user, profile, signOut, isAdmin } = useAuth();
+  // Use optional chaining and default values in case auth context is not available
+  const authContext = useAuth();
+  const { user, profile, signOut, isAdmin } = authContext || {};
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);

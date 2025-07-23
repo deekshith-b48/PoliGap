@@ -198,7 +198,7 @@ function LandingPage({ onNavigate }) {
       <Navigation onNavigate={onNavigate} currentPage="home" />
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 overflow-hidden">
+      <section className="relative pt-20 pb-20 overflow-hidden">
         {/* Dynamic Background */}
         <div className="absolute inset-0 overflow-hidden">
           <div 

@@ -74,7 +74,7 @@ VITE_SUPABASE_ANON_KEY=your-anon-key
 VITE_GEMINI_API_KEY=your-gemini-api-key
 ```
 
-### 5. Set Admin Role
+### 6. Set Admin Role
 
 - Sign in via Google OAuth
 - Go to **Table Editor > profiles**

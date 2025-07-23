@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import LandingPage from './components/LandingPage';
 import PolicyAnalyzer from './components/PolicyAnalyzer';
 import PolicyGenerator from './components/PolicyGenerator';
@@ -7,40 +8,59 @@ import RiskAssessment from './components/RiskAssessment';
 import ChatButton from './components/ChatButton';
 import ChatExpert from './components/ChatExpert';
 
-function App() {
-  const [currentPage, setCurrentPage] = useState('home');
+// Wrapper component to handle navigation and shared state
+function AppContent() {
   const [uploadedDocument, setUploadedDocument] = useState(null);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const navigate = (page) => {
-    setCurrentPage(page);
+  // Navigation function that uses React Router
+  const handleNavigate = (page) => {
+    navigate(`/${page === 'home' ? '' : page}`);
+    // Scroll to top when navigating to a new page
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleDocumentUpload = (document) => {
     setUploadedDocument(document);
   };
 
-  const renderPage = () => {
-    switch (currentPage) {
-      case 'home':
-        return <LandingPage onNavigate={navigate} />;
-      case 'analyzer':
-        return <PolicyAnalyzer onNavigate={navigate} onDocumentUpload={handleDocumentUpload} />;
-      case 'generator':
-        return <PolicyGenerator onNavigate={navigate} />;
-      case 'compliances':
-        return <KnowCompliances onNavigate={navigate} />;
-      case 'assessment':
-        return <RiskAssessment onNavigate={navigate} />;
-      default:
-        return <LandingPage onNavigate={navigate} />;
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 font-sans antialiased">
       <main className="relative">
-        {renderPage()}
+        <Routes>
+          <Route 
+            path="/" 
+            element={<LandingPage onNavigate={handleNavigate} />} 
+          />
+          <Route 
+            path="/analyzer" 
+            element={
+              <PolicyAnalyzer 
+                onNavigate={handleNavigate} 
+                onDocumentUpload={handleDocumentUpload} 
+              />
+            } 
+          />
+          <Route 
+            path="/generator" 
+            element={<PolicyGenerator onNavigate={handleNavigate} />} 
+          />
+          <Route 
+            path="/compliances" 
+            element={<KnowCompliances onNavigate={handleNavigate} />} 
+          />
+          <Route 
+            path="/assessment" 
+            element={<RiskAssessment onNavigate={handleNavigate} />} 
+          />
+          {/* Fallback to home page for any unmatched routes */}
+          <Route 
+            path="*" 
+            element={<LandingPage onNavigate={handleNavigate} />} 
+          />
+        </Routes>
       </main>
 
       {/* AI Chat Assistant - Enhanced styling */}
@@ -61,6 +81,14 @@ function App() {
         onClose={() => setIsChatOpen(false)}
       />
     </div>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
   );
 }
 

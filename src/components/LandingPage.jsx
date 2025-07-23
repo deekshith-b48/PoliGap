@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 function LandingPage({ onNavigate }) {
+  const navigate = useNavigate();
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -224,9 +226,10 @@ function LandingPage({ onNavigate }) {
                 {activeDropdown === 'features' && (
                   <div className="absolute top-full left-0 mt-2 w-80 bg-white/95 backdrop-blur-xl border border-gray-200/50 rounded-3xl p-6 shadow-xl animate-slideDown">
                     <div className="space-y-4">
-                      <button
-                        onClick={() => onNavigate('analyzer')}
+                      <Link
+                        to="/analyzer"
                         className="w-full flex items-start p-4 bg-gray-50/50 rounded-2xl hover:bg-blue-50 transition-all duration-300 text-left group hover:scale-[1.02]"
+                        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                       >
                         <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mr-4 group-hover:bg-blue-200 transition-colors">
                           <span className="text-blue-600 text-lg">🔍</span>
@@ -235,11 +238,12 @@ function LandingPage({ onNavigate }) {
                           <h3 className="text-gray-900 font-semibold mb-1 text-sm">Policy Gap Analyzer</h3>
                           <p className="text-gray-600 text-xs">Upload policies, get instant compliance scores</p>
                         </div>
-                      </button>
+                      </Link>
 
-                      <button
-                        onClick={() => onNavigate('generator')}
+                      <Link
+                        to="/generator"
                         className="w-full flex items-start p-4 bg-gray-50/50 rounded-2xl hover:bg-purple-50 transition-all duration-300 text-left group hover:scale-[1.02]"
+                        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                       >
                         <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center mr-4 group-hover:bg-purple-200 transition-colors">
                           <span className="text-purple-600 text-lg">⚡</span>
@@ -248,11 +252,12 @@ function LandingPage({ onNavigate }) {
                           <h3 className="text-gray-900 font-semibold mb-1 text-sm">AI Policy Generator</h3>
                           <p className="text-gray-600 text-xs">Generate GDPR/HIPAA docs in 1 click</p>
                         </div>
-                      </button>
+                      </Link>
 
-                      <button
-                        onClick={() => onNavigate('assessment')}
+                      <Link
+                        to="/assessment"
                         className="w-full flex items-start p-4 bg-gray-50/50 rounded-2xl hover:bg-orange-50 transition-all duration-300 text-left group hover:scale-[1.02]"
+                        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                       >
                         <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center mr-4 group-hover:bg-orange-200 transition-colors">
                           <span className="text-orange-600 text-lg">🛡️</span>
@@ -261,7 +266,7 @@ function LandingPage({ onNavigate }) {
                           <h3 className="text-gray-900 font-semibold mb-1 text-sm">Risk Assessment</h3>
                           <p className="text-gray-600 text-xs">AI-powered vulnerability scoring</p>
                         </div>
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 )}
@@ -270,12 +275,13 @@ function LandingPage({ onNavigate }) {
               <button className="px-3 py-2 text-gray-700 hover:text-gray-900 transition-colors font-medium text-sm">
                 Pricing
               </button>
-              <button 
-                onClick={() => onNavigate('compliances')}
+              <Link 
+                to="/compliances"
                 className="px-3 py-2 text-gray-700 hover:text-gray-900 transition-colors font-medium text-sm"
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
               >
                 Resources
-              </button>
+              </Link>
             </nav>
 
             {/* Right Side Actions */}
@@ -301,13 +307,14 @@ function LandingPage({ onNavigate }) {
               </div>
 
               {/* CTA Button */}
-              <button
-                onClick={() => onNavigate('analyzer')}
+              <Link
+                to="/analyzer"
                 className="relative px-4 sm:px-6 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-2xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm"
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
               >
                 Try Demo
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl blur-lg opacity-30 -z-10 group-hover:opacity-50 transition-opacity"></div>
-              </button>
+              </Link>
 
               {/* Mobile Menu Button */}
               <button
@@ -325,24 +332,27 @@ function LandingPage({ onNavigate }) {
           {isMobileMenuOpen && (
             <div className="lg:hidden mt-4 pb-4 border-t border-gray-200/50 animate-slideDown">
               <div className="flex flex-col space-y-3 pt-4">
-                <button
-                  onClick={() => onNavigate('analyzer')}
+                <Link
+                  to="/analyzer"
                   className="text-left text-gray-700 hover:text-gray-900 transition-colors font-medium text-sm py-2"
+                  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                 >
                   🔍 Policy Analyzer
-                </button>
-                <button
-                  onClick={() => onNavigate('generator')}
+                </Link>
+                <Link
+                  to="/generator"
                   className="text-left text-gray-700 hover:text-gray-900 transition-colors font-medium text-sm py-2"
+                  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                 >
                   ⚡ AI Generator
-                </button>
-                <button
-                  onClick={() => onNavigate('compliances')}
+                </Link>
+                <Link
+                  to="/compliances"
                   className="text-left text-gray-700 hover:text-gray-900 transition-colors font-medium text-sm py-2"
+                  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                 >
                   📚 Learn Frameworks
-                </button>
+                </Link>
               </div>
             </div>
           )}
@@ -395,19 +405,21 @@ function LandingPage({ onNavigate }) {
             
             {/* Hero CTAs */}
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center mb-16 px-4">
-              <button 
-                onClick={() => onNavigate('analyzer')}
+              <Link 
+                to="/analyzer"
                 className="group relative px-6 sm:px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
               >
                 <span className="relative z-10">Start Free Analysis</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-purple-700 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </button>
-              <button 
-                onClick={() => onNavigate('generator')}
+              </Link>
+              <Link 
+                to="/generator"
                 className="px-6 sm:px-8 py-4 bg-white/60 backdrop-blur-xl text-gray-900 rounded-2xl font-semibold text-lg border border-gray-200/50 transition-all duration-300 hover:bg-white/80 hover:shadow-lg"
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
               >
                 Watch Demo
-              </button>
+              </Link>
             </div>
 
             {/* Trust Indicators */}

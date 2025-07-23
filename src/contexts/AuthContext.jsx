@@ -116,6 +116,10 @@ export const AuthProvider = ({ children }) => {
 
   const signInWithGoogle = async () => {
     try {
+      if (!supabase || !supabase.auth) {
+        throw new Error('Authentication is not configured. Please check your Supabase settings.');
+      }
+
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {

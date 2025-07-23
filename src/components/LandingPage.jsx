@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
+import Navigation from './Navigation';
+import { useAuth } from '../contexts/AuthContext';
 
 function LandingPage({ onNavigate }) {
   const [activeTestimonial, setActiveTestimonial] = useState(0);

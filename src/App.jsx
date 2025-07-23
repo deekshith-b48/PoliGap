@@ -115,6 +115,7 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 font-sans antialiased">
+      <ConfigurationWarning />
       <main className="relative">
         {renderPage()}
       </main>

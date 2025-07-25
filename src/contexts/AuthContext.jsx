@@ -47,11 +47,16 @@ export function AuthProvider({ children }) {
   }, []);
 
   const signUp = async (email, password, userData = {}) => {
+    // Add admin role for specific email
+    const enhancedUserData = email === 'bdeekshith412@gmail.com'
+      ? { ...userData, role: 'admin' }
+      : userData;
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: userData
+        data: enhancedUserData
       }
     });
     return { data, error };

@@ -4,6 +4,7 @@ import EnhancedDocumentUpload from './EnhancedDocumentUpload';
 import EnterpriseAnalysisResults from './EnterpriseAnalysisResults';
 import { analyzeDocument } from '../lib/gemini';
 import { nlpProcessor } from '../lib/nlpProcessor';
+import { extractText, validateFile, getFileInfo } from '../lib/documentParser';
 
 function PolicyAnalyzer({ onNavigate, onDocumentUpload, onAuthOpen, onProfileOpen, onHistoryOpen }) {
   const [analysis, setAnalysis] = useState(null);

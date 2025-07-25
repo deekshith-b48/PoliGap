@@ -46,7 +46,12 @@ function AuthModal({ isOpen, onClose, initialMode = 'signin' }) {
         setMessage('Check your email for the reset link!');
       }
     } catch (error) {
-      setError(error.message);
+      // Show more user-friendly error messages
+      if (error.message.includes('Supabase not configured')) {
+        setError('Authentication is currently running in demo mode. Please configure Supabase to enable full functionality.');
+      } else {
+        setError(error.message);
+      }
     } finally {
       setLoading(false);
     }

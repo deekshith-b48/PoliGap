@@ -23,7 +23,13 @@ function PolicyAnalyzer({ onNavigate, onDocumentUpload, onAuthOpen, onProfileOpe
     
     try {
       const { file, industry, frameworks } = uploadData;
-      
+
+      // Validate file before processing
+      validateFile(file);
+
+      // Get detailed file information
+      const fileInfo = getFileInfo(file);
+
       const docInfo = {
         file,
         fileName: file.name,
@@ -31,7 +37,8 @@ function PolicyAnalyzer({ onNavigate, onDocumentUpload, onAuthOpen, onProfileOpe
         uploadDate: new Date(),
         industry,
         frameworks,
-        size: file.size
+        size: file.size,
+        ...fileInfo
       };
 
       setDocumentInfo(docInfo);
@@ -39,19 +46,11 @@ function PolicyAnalyzer({ onNavigate, onDocumentUpload, onAuthOpen, onProfileOpe
       if (onDocumentUpload) {
         onDocumentUpload(docInfo);
       }
-      
+
       setProgress('📄 Extracting text from document...');
-      
-      let text;
-      let isPdfFile = false;
-      
-      if (file.type === 'application/pdf') {
-        isPdfFile = true;
-        text = await extractTextFromPDF(file);
-      } else {
-        const fileText = await file.text();
-        text = fileText;
-      }
+
+      // Use advanced document parser
+      const text = await extractText(file);
 
       if (!text || text.trim().length === 0) {
         throw new Error('No text content found in the document');

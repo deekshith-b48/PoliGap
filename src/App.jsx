@@ -15,6 +15,7 @@ import IntegrationsPanel from './components/IntegrationsPanel';
 import AdminDashboard from './components/AdminDashboard';
 import PrivacyPolicyModal from './components/PrivacyPolicyModal';
 import ModernNavigation from './components/ModernNavigation';
+import ConfigurationNotice from './components/ConfigurationNotice';
 import { PageLoader } from './components/LoadingSpinner';
 import { useAuth } from './contexts/AuthContext';
 
@@ -74,6 +75,9 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 font-sans antialiased">
+      {/* Configuration Notice */}
+      <ConfigurationNotice />
+
       {/* Modern Navigation */}
       <ModernNavigation
         onAuthOpen={(mode) => {

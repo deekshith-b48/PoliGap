@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import LandingPage from './components/LandingPage';
@@ -11,6 +11,11 @@ import ChatExpert from './components/ChatExpert';
 import AuthModal from './components/AuthModal';
 import UserProfile from './components/UserProfile';
 import DocumentHistory from './components/DocumentHistory';
+import IntegrationsPanel from './components/IntegrationsPanel';
+import AdminDashboard from './components/AdminDashboard';
+import PrivacyPolicyModal from './components/PrivacyPolicyModal';
+import ModernNavigation from './components/ModernNavigation';
+import { PageLoader } from './components/LoadingSpinner';
 import { useAuth } from './contexts/AuthContext';
 
 // Wrapper component to handle navigation and shared state
@@ -22,9 +27,25 @@ function AppContent() {
   const [authMode, setAuthMode] = useState('signin');
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [isIntegrationsOpen, setIsIntegrationsOpen] = useState(false);
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+
+  // Handle initial loading
+  useEffect(() => {
+    if (!loading) {
+      setIsLoading(false);
+    }
+  }, [loading]);
+
+  // Show loading screen while initializing
+  if (isLoading) {
+    return <PageLoader />;
+  }
 
   // Navigation function that uses React Router
   const handleNavigate = (page) => {
@@ -53,6 +74,19 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 font-sans antialiased">
+      {/* Modern Navigation */}
+      <ModernNavigation
+        onAuthOpen={(mode) => {
+          setAuthMode(mode);
+          setIsAuthModalOpen(true);
+        }}
+        onProfileOpen={() => setIsProfileOpen(true)}
+        onHistoryOpen={() => setIsHistoryOpen(true)}
+        onIntegrationsOpen={() => setIsIntegrationsOpen(true)}
+        onAdminOpen={() => setIsAdminOpen(true)}
+        onPrivacyOpen={() => setIsPrivacyOpen(true)}
+      />
+      
       <main className="relative">
         <Routes>
           <Route
@@ -172,6 +206,24 @@ function AppContent() {
           console.log('Selected document:', doc);
           // Navigate to analysis results
         }}
+      />
+
+      {/* Integrations Panel */}
+      <IntegrationsPanel
+        isOpen={isIntegrationsOpen}
+        onClose={() => setIsIntegrationsOpen(false)}
+      />
+
+      {/* Admin Dashboard */}
+      <AdminDashboard
+        isOpen={isAdminOpen}
+        onClose={() => setIsAdminOpen(false)}
+      />
+
+      {/* Privacy Policy Modal */}
+      <PrivacyPolicyModal
+        isOpen={isPrivacyOpen}
+        onClose={() => setIsPrivacyOpen(false)}
       />
     </div>
   );

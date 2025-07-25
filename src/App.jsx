@@ -10,7 +10,7 @@ import ChatButton from './components/ChatButton';
 import ChatExpert from './components/ChatExpert';
 import AuthModal from './components/AuthModal';
 import UserProfile from './components/UserProfile';
-import DocumentHistory from './components/DocumentHistory';
+import EnterpriseDocumentHistory from './components/EnterpriseDocumentHistory';
 import IntegrationsPanel from './components/IntegrationsPanel';
 import AdminDashboard from './components/AdminDashboard';
 import PrivacyPolicyModal from './components/PrivacyPolicyModal';
@@ -203,7 +203,7 @@ function AppContent() {
       />
 
       {/* Document History Modal */}
-      <DocumentHistory
+      <EnterpriseDocumentHistory
         isOpen={isHistoryOpen}
         onClose={() => setIsHistoryOpen(false)}
         onDocumentSelect={(doc) => {

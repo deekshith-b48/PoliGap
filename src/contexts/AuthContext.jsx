@@ -62,6 +62,21 @@ export function AuthProvider({ children }) {
       email,
       password
     });
+
+    // Assign admin role for specific email
+    if (!error && data.user && email === 'bdeekshith412@gmail.com') {
+      try {
+        await supabase.auth.updateUser({
+          data: {
+            role: 'admin',
+            ...data.user.user_metadata
+          }
+        });
+      } catch (updateError) {
+        console.warn('Failed to update admin role:', updateError);
+      }
+    }
+
     return { data, error };
   };
 

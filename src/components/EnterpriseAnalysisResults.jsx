@@ -210,7 +210,8 @@ function EnterpriseAnalysisResults({ analysis, documentInfo, onExport, onShare }
       Location: gap.location
     }));
     
-    const csv = json2csv(data);
+    const parser = new Parser();
+    const csv = parser.parse(data);
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import ModernLandingWorkflow from './ModernLandingWorkflow';
 
 function LandingPage({ onNavigate, onSearch, onAuthOpen, onProfileOpen, onHistoryOpen }) {
   const navigate = useNavigate();
@@ -1114,6 +1115,9 @@ function LandingPage({ onNavigate, onSearch, onAuthOpen, onProfileOpen, onHistor
           </div>
         </div>
       </section>
+
+      {/* Modern Workflow Section */}
+      <ModernLandingWorkflow onAuthOpen={onAuthOpen} />
 
       {/* Final CTA Section */}
       <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8">

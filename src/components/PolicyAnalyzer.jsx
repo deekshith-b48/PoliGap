@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import EnhancedDocumentUpload from './EnhancedDocumentUpload';
-import EnhancedAnalysisResults from './EnhancedAnalysisResults';
+import EnterpriseAnalysisResults from './EnterpriseAnalysisResults';
 import { analyzeDocument } from '../lib/gemini';
 
 function PolicyAnalyzer({ onNavigate, onDocumentUpload, onAuthOpen, onProfileOpen, onHistoryOpen }) {
@@ -284,7 +284,12 @@ function PolicyAnalyzer({ onNavigate, onDocumentUpload, onAuthOpen, onProfileOpe
         {/* Results Section */}
         {analysis && (
           <div className="mt-8 animate-fadeInUp">
-            <EnhancedAnalysisResults analysis={analysis} />
+            <EnterpriseAnalysisResults
+              analysis={analysis}
+              documentInfo={uploadedDocument}
+              onExport={(format) => console.log('Export:', format)}
+              onShare={(platform) => console.log('Share:', platform)}
+            />
           </div>
         )}
 

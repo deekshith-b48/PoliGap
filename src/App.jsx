@@ -7,7 +7,7 @@ import PolicyGenerator from './components/PolicyGenerator';
 import KnowCompliances from './components/KnowCompliances';
 import RiskAssessment from './components/RiskAssessment';
 import ChatButton from './components/ChatButton';
-import ChatExpert from './components/ChatExpert';
+import EnterpriseChatExpert from './components/EnterpriseChatExpert';
 import AuthModal from './components/AuthModal';
 import UserProfile from './components/UserProfile';
 import EnterpriseDocumentHistory from './components/EnterpriseDocumentHistory';
@@ -181,12 +181,13 @@ function AppContent() {
       )}
 
       {/* Chat Expert Modal */}
-      <ChatExpert
+      <EnterpriseChatExpert
         policyDocument={uploadedDocument}
         isOpen={isChatOpen}
         onToggle={() => setIsChatOpen(!isChatOpen)}
         onClose={handleChatClose}
         initialQuery={searchQuery}
+        analysisContext={uploadedDocument?.analysis}
       />
 
       {/* Authentication Modal */}

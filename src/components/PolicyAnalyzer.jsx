@@ -14,38 +14,7 @@ function PolicyAnalyzer({ onNavigate, onDocumentUpload, onAuthOpen, onProfileOpe
   const [documentInfo, setDocumentInfo] = useState(null);
   const { user } = useAuth();
 
-  const extractTextFromPDF = async (file) => {
-    try {
-      const reader = new FileReader();
-      return new Promise((resolve, reject) => {
-        reader.onload = function(e) {
-          const mockPolicyText = `
-            PRIVACY POLICY
-            
-            This is a demonstration of policy analysis. The system has detected that this is a ${file.name} file.
-            
-            Data Collection: We collect personal information when you interact with our services.
-            
-            Data Processing: We process your data for legitimate business purposes.
-            
-            Data Sharing: We may share data with third parties under certain circumstances.
-            
-            Security Measures: We implement appropriate security measures to protect your data.
-            
-            User Rights: You have the right to access, modify, and delete your personal information.
-            
-            Contact Information: For privacy concerns, please contact our privacy team.
-          `;
-          resolve(mockPolicyText);
-        };
-        reader.onerror = reject;
-        reader.readAsText(file);
-      });
-    } catch (error) {
-      console.error('PDF extraction error:', error);
-      return `Mock policy content for ${file.name} - demonstrating rules benchmarking functionality`;
-    }
-  };
+  // Document extraction is now handled by the advanced DocumentParser
 
   const handleFileUpload = async (uploadData) => {
     setLoading(true);

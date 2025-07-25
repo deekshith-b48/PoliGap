@@ -102,8 +102,16 @@ function PolicyAnalyzer({ onNavigate, onDocumentUpload, onAuthOpen, onProfileOpe
         fileType: isPdfFile ? 'pdf' : 'text',
         nlpInsights: nlpResults // Pass NLP results to enhance AI analysis
       });
-      
-      setAnalysis(results);
+
+      // Combine AI analysis with NLP insights
+      const enhancedResults = {
+        ...results,
+        nlpAnalysis: nlpResults,
+        documentInfo: docInfo,
+        processingTime: Date.now() - docInfo.uploadDate.getTime()
+      };
+
+      setAnalysis(enhancedResults);
       setProgress('');
       
     } catch (err) {

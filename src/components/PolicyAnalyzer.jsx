@@ -67,8 +67,8 @@ function PolicyAnalyzer({ onNavigate, onDocumentUpload, onAuthOpen, onProfileOpe
       const results = await analyzeDocument(text, {
         industry: industry,
         frameworks: frameworks,
-        isPdfFile: isPdfFile,
-        fileType: isPdfFile ? 'pdf' : 'text',
+        fileType: docInfo.type,
+        fileInfo: docInfo,
         nlpInsights: nlpResults // Pass NLP results to enhance AI analysis
       });
 

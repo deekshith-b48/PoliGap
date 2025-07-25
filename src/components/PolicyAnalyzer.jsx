@@ -9,6 +9,7 @@ function PolicyAnalyzer({ onNavigate, onDocumentUpload, onAuthOpen, onProfileOpe
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [progress, setProgress] = useState('');
+  const [documentInfo, setDocumentInfo] = useState(null);
   const { user } = useAuth();
 
   const extractTextFromPDF = async (file) => {
@@ -52,17 +53,20 @@ function PolicyAnalyzer({ onNavigate, onDocumentUpload, onAuthOpen, onProfileOpe
     try {
       const { file, industry, frameworks } = uploadData;
       
+      const docInfo = {
+        file,
+        fileName: file.name,
+        fileType: file.type,
+        uploadDate: new Date(),
+        industry,
+        frameworks,
+        size: file.size
+      };
+
+      setDocumentInfo(docInfo);
+
       if (onDocumentUpload) {
-        const documentInfo = {
-          file,
-          fileName: file.name,
-          fileType: file.type,
-          uploadDate: new Date(),
-          industry,
-          frameworks,
-          size: file.size
-        };
-        onDocumentUpload(documentInfo);
+        onDocumentUpload(docInfo);
       }
       
       setProgress('📄 Extracting text from document...');
@@ -286,7 +290,7 @@ function PolicyAnalyzer({ onNavigate, onDocumentUpload, onAuthOpen, onProfileOpe
           <div className="mt-8 animate-fadeInUp">
             <EnterpriseAnalysisResults
               analysis={analysis}
-              documentInfo={uploadedDocument}
+              documentInfo={documentInfo}
               onExport={(format) => console.log('Export:', format)}
               onShare={(platform) => console.log('Share:', platform)}
             />

@@ -17,6 +17,13 @@ import PrivacyPolicyModal from './components/PrivacyPolicyModal';
 import ModernNavigation from './components/ModernNavigation';
 import ConfigurationNotice from './components/ConfigurationNotice';
 import { PageLoader } from './components/LoadingSpinner';
+import DashboardLayout from './components/DashboardLayout';
+import DashboardOverview from './components/DashboardOverview';
+import DashboardAnalytics from './components/DashboardAnalytics';
+import DashboardResources from './components/DashboardResources';
+import DashboardAdminPanel from './components/DashboardAdminPanel';
+import DashboardProfile from './components/DashboardProfile';
+import ProtectedRoute from './components/ProtectedRoute';
 import { useAuth } from './contexts/AuthContext';
 
 // Wrapper component to handle navigation and shared state
@@ -36,12 +43,17 @@ function AppContent() {
   const location = useLocation();
   const { user, loading } = useAuth();
 
-  // Handle initial loading
+  // Handle initial loading and auth-based redirects
   useEffect(() => {
     if (!loading) {
       setIsLoading(false);
+
+      // If user is logged in and on landing page, redirect to dashboard
+      if (user && location.pathname === '/') {
+        navigate('/dashboard', { replace: true });
+      }
     }
-  }, [loading]);
+  }, [loading, user, location.pathname, navigate]);
 
   // Show loading screen while initializing
   if (isLoading) {
@@ -73,39 +85,52 @@ function AppContent() {
     setUploadedDocument(document);
   };
 
+  // Show different navigation based on route
+  const showTopNavigation = !location.pathname.startsWith('/dashboard');
+
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 font-sans antialiased">
       {/* Configuration Notice */}
       <ConfigurationNotice />
 
-      {/* Modern Navigation */}
-      <ModernNavigation
-        onAuthOpen={(mode) => {
-          setAuthMode(mode);
-          setIsAuthModalOpen(true);
-        }}
-        onProfileOpen={() => setIsProfileOpen(true)}
-        onHistoryOpen={() => setIsHistoryOpen(true)}
-        onIntegrationsOpen={() => setIsIntegrationsOpen(true)}
-        onAdminOpen={() => setIsAdminOpen(true)}
-        onPrivacyOpen={() => setIsPrivacyOpen(true)}
-      />
+      {/* Modern Navigation - only show on non-dashboard pages */}
+      {showTopNavigation && (
+        <ModernNavigation
+          onAuthOpen={(mode) => {
+            setAuthMode(mode);
+            setIsAuthModalOpen(true);
+          }}
+          onProfileOpen={() => setIsProfileOpen(true)}
+          onHistoryOpen={() => setIsHistoryOpen(true)}
+          onIntegrationsOpen={() => setIsIntegrationsOpen(true)}
+          onAdminOpen={() => setIsAdminOpen(true)}
+          onPrivacyOpen={() => setIsPrivacyOpen(true)}
+        />
+      )}
       
       <main className="relative">
         <Routes>
+          {/* Public Routes */}
           <Route
             path="/"
             element={
-              <LandingPage
-                onNavigate={handleNavigate}
-                onSearch={handleSearch}
-                onAuthOpen={(mode) => {
-                  setAuthMode(mode);
-                  setIsAuthModalOpen(true);
-                }}
-                onProfileOpen={() => setIsProfileOpen(true)}
-                onHistoryOpen={() => setIsHistoryOpen(true)}
-              />
+              user ? (
+                // If logged in, don't show full landing page - redirect will happen in useEffect
+                <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                </div>
+              ) : (
+                <LandingPage
+                  onNavigate={handleNavigate}
+                  onSearch={handleSearch}
+                  onAuthOpen={(mode) => {
+                    setAuthMode(mode);
+                    setIsAuthModalOpen(true);
+                  }}
+                  onProfileOpen={() => setIsProfileOpen(true)}
+                  onHistoryOpen={() => setIsHistoryOpen(true)}
+                />
+              )
             }
           />
           <Route
@@ -162,10 +187,51 @@ function AppContent() {
               />
             }
           />
+
+          {/* Protected Dashboard Routes */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <DashboardLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<DashboardOverview />} />
+            <Route path="analytics" element={<DashboardAnalytics />} />
+            <Route path="resources" element={<DashboardResources />} />
+            <Route path="profile" element={<DashboardProfile />} />
+            <Route
+              path="admin"
+              element={
+                <ProtectedRoute requireAdmin={true}>
+                  <DashboardAdminPanel />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
+
           {/* Fallback to home page for any unmatched routes */}
           <Route
             path="*"
-            element={<LandingPage onNavigate={handleNavigate} />}
+            element={
+              user ? (
+                // Redirect authenticated users to dashboard for unknown routes
+                <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                  <div className="text-center">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-4">Page Not Found</h2>
+                    <button
+                      onClick={() => navigate('/dashboard')}
+                      className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+                    >
+                      Go to Dashboard
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <LandingPage onNavigate={handleNavigate} />
+              )
+            }
           />
         </Routes>
       </main>

@@ -68,6 +68,9 @@ function AuthModal({ isOpen, onClose, initialMode = 'signin' }) {
     try {
       const { error } = await signInWithProvider(provider);
       if (error) throw error;
+      onClose();
+      // Redirect to dashboard after successful OAuth login
+      navigate('/dashboard');
     } catch (error) {
       // Show more user-friendly error messages
       if (error.message.includes('Supabase not configured')) {

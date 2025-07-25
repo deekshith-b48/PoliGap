@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import { json2csv } from '@json2csv/plainjs';
+import { Parser } from '@json2csv/plainjs';
 
 function EnterpriseAnalysisResults({ analysis, documentInfo, onExport, onShare }) {
   const [activeTab, setActiveTab] = useState('overview');

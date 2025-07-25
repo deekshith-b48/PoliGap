@@ -11,7 +11,7 @@ function ConfigurationNotice() {
   }
 
   return (
-    <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 fixed top-16 left-4 right-4 z-50 shadow-lg rounded-lg">
+    <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 fixed top-20 left-4 right-4 z-30 shadow-lg rounded-lg max-w-4xl mx-auto">
       <div className="flex">
         <div className="flex-shrink-0">
           <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">

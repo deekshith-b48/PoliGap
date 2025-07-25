@@ -55,12 +55,17 @@ function AuthModal({ isOpen, onClose, initialMode = 'signin' }) {
   const handleProviderSignIn = async (provider) => {
     setLoading(true);
     setError('');
-    
+
     try {
       const { error } = await signInWithProvider(provider);
       if (error) throw error;
     } catch (error) {
-      setError(error.message);
+      // Show more user-friendly error messages
+      if (error.message.includes('Supabase not configured')) {
+        setError('Social sign-in is currently unavailable in demo mode. Please configure Supabase to enable this feature.');
+      } else {
+        setError(error.message);
+      }
     } finally {
       setLoading(false);
     }

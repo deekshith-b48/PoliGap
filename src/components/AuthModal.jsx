@@ -35,6 +35,8 @@ function AuthModal({ isOpen, onClose, initialMode = 'signin' }) {
         const { error } = await signIn(email, password);
         if (error) throw error;
         onClose();
+        // Redirect to dashboard after successful login
+        navigate('/dashboard');
       } else if (mode === 'signup') {
         const { error } = await signUp(email, password, {
           full_name: name,

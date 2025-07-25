@@ -1,13 +1,15 @@
 import { useState } from 'react';
-import DocumentUpload from './DocumentUpload';
-import AnalysisResults from './AnalysisResults';
+import { useAuth } from '../contexts/AuthContext';
+import EnhancedDocumentUpload from './EnhancedDocumentUpload';
+import EnhancedAnalysisResults from './EnhancedAnalysisResults';
 import { analyzeDocument } from '../lib/gemini';
 
-function PolicyAnalyzer({ onNavigate, onDocumentUpload }) {
+function PolicyAnalyzer({ onNavigate, onDocumentUpload, onAuthOpen, onProfileOpen, onHistoryOpen }) {
   const [analysis, setAnalysis] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [progress, setProgress] = useState('');
+  const { user } = useAuth();
 
   const extractTextFromPDF = async (file) => {
     try {
@@ -137,7 +139,50 @@ function PolicyAnalyzer({ onNavigate, onDocumentUpload }) {
               <p className="text-gray-600 mt-1 text-sm lg:text-base">AI-powered compliance analysis with smart validation</p>
             </div>
 
-            <div className="w-24 lg:w-32 hidden lg:block"></div>
+            {/* User Actions */}
+            <div className="flex items-center space-x-3">
+              {user ? (
+                <>
+                  <button
+                    onClick={onHistoryOpen}
+                    className="flex items-center space-x-2 px-3 py-2 text-gray-600 hover:text-gray-900 transition-colors rounded-lg"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span className="hidden lg:inline">History</span>
+                  </button>
+                  <button
+                    onClick={onProfileOpen}
+                    className="flex items-center space-x-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                  >
+                    <div className="w-6 h-6 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">
+                        {user.user_metadata?.full_name?.[0] || user.email[0].toUpperCase()}
+                      </span>
+                    </div>
+                    <span className="text-gray-700 font-medium text-sm hidden lg:inline">
+                      {user.user_metadata?.full_name || 'User'}
+                    </span>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => onAuthOpen('signin')}
+                    className="px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors font-medium text-sm"
+                  >
+                    Sign In
+                  </button>
+                  <button
+                    onClick={() => onAuthOpen('signup')}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm transition-colors"
+                  >
+                    Sign Up
+                  </button>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </header>
@@ -196,7 +241,7 @@ function PolicyAnalyzer({ onNavigate, onDocumentUpload }) {
 
         {/* Upload Section */}
         <div className="animate-fadeInUp" style={{animationDelay: '0.1s'}}>
-          <DocumentUpload 
+          <EnhancedDocumentUpload
             onUpload={handleFileUpload}
             uploading={loading}
             progress={progress}
@@ -239,7 +284,36 @@ function PolicyAnalyzer({ onNavigate, onDocumentUpload }) {
         {/* Results Section */}
         {analysis && (
           <div className="mt-8 animate-fadeInUp">
-            <AnalysisResults analysis={analysis} />
+            <EnhancedAnalysisResults analysis={analysis} />
+          </div>
+        )}
+
+        {/* Enhanced Authentication Prompt */}
+        {!user && !loading && !analysis && (
+          <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-3xl p-8 mt-8 border border-blue-200">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Save Your Analysis History</h3>
+              <p className="text-gray-600 mb-6">Create a free account to save your compliance analyses, track improvements, and access advanced features.</p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <button
+                  onClick={() => onAuthOpen('signup')}
+                  className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300"
+                >
+                  Create Free Account
+                </button>
+                <button
+                  onClick={() => onAuthOpen('signin')}
+                  className="px-6 py-3 bg-white text-gray-700 rounded-xl font-semibold border border-gray-300 hover:bg-gray-50 transition-colors"
+                >
+                  Sign In
+                </button>
+              </div>
+            </div>
           </div>
         )}
 

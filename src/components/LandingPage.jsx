@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
-function LandingPage({ onNavigate, onSearch }) {
+function LandingPage({ onNavigate, onSearch, onAuthOpen, onProfileOpen, onHistoryOpen }) {
   const navigate = useNavigate();
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -13,6 +14,7 @@ function LandingPage({ onNavigate, onSearch }) {
   const [activeProblem, setActiveProblem] = useState(0);
   const [activeFeature, setActiveFeature] = useState(0);
   const dropdownRef = useRef(null);
+  const { user } = useAuth();
 
   const complianceFrameworks = [
     {
@@ -301,6 +303,48 @@ function LandingPage({ onNavigate, onSearch }) {
 
             {/* Right Side Actions */}
             <div className="flex items-center space-x-3 sm:space-x-4">
+              {/* User Actions */}
+              {user ? (
+                <div className="hidden lg:flex items-center space-x-3">
+                  <button
+                    onClick={onHistoryOpen}
+                    className="flex items-center space-x-2 px-3 py-2 text-gray-700 hover:text-gray-900 transition-colors font-medium text-sm"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span>History</span>
+                  </button>
+                  <button
+                    onClick={onProfileOpen}
+                    className="flex items-center space-x-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-2xl transition-colors"
+                  >
+                    <div className="w-6 h-6 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">
+                        {user.user_metadata?.full_name?.[0] || user.email[0].toUpperCase()}
+                      </span>
+                    </div>
+                    <span className="text-gray-700 font-medium text-sm">
+                      {user.user_metadata?.full_name || 'User'}
+                    </span>
+                  </button>
+                </div>
+              ) : (
+                <div className="hidden lg:flex items-center space-x-3">
+                  <button
+                    onClick={() => onAuthOpen('signin')}
+                    className="px-4 py-2 text-gray-700 hover:text-gray-900 transition-colors font-medium text-sm"
+                  >
+                    Sign In
+                  </button>
+                  <button
+                    onClick={() => onAuthOpen('signup')}
+                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-2xl font-medium text-sm transition-colors"
+                  >
+                    Sign Up
+                  </button>
+                </div>
+              )}
               {/* Search */}
               <div className="hidden md:block relative">
                 <form onSubmit={handleSearch} className={`relative transition-all duration-300 ${isSearchFocused ? 'w-72' : 'w-60'}`}>
@@ -409,6 +453,39 @@ function LandingPage({ onNavigate, onSearch }) {
                 >
                   📚 Learn Frameworks
                 </Link>
+
+                {/* Mobile Auth Buttons */}
+                {user ? (
+                  <>
+                    <button
+                      onClick={onHistoryOpen}
+                      className="text-left text-gray-700 hover:text-gray-900 transition-colors font-medium text-sm py-2"
+                    >
+                      📄 Document History
+                    </button>
+                    <button
+                      onClick={onProfileOpen}
+                      className="text-left text-gray-700 hover:text-gray-900 transition-colors font-medium text-sm py-2"
+                    >
+                      👤 Profile Settings
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => onAuthOpen('signin')}
+                      className="text-left text-blue-600 hover:text-blue-700 transition-colors font-medium text-sm py-2"
+                    >
+                      🔐 Sign In
+                    </button>
+                    <button
+                      onClick={() => onAuthOpen('signup')}
+                      className="text-left text-purple-600 hover:text-purple-700 transition-colors font-medium text-sm py-2"
+                    >
+                      ✨ Sign Up
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           )}
@@ -443,7 +520,11 @@ function LandingPage({ onNavigate, onSearch }) {
             <div className="inline-flex items-center px-4 sm:px-6 py-3 bg-white/60 backdrop-blur-xl rounded-full border border-gray-200/50 mb-8 shadow-sm">
               <div className="w-2 h-2 bg-green-500 rounded-full mr-3 animate-pulse"></div>
               <span className="text-gray-700 font-medium text-sm">
-                🚀 AI-powered compliance analysis • Framework-based assessment • Policy gap identification
+                {user ? (
+                  <>👋 Welcome back, {user.user_metadata?.full_name || 'User'}! • Ready for analysis</>
+                ) : (
+                  <>🚀 AI-powered compliance analysis • Framework-based assessment • Policy gap identification</>
+                )}
               </span>
             </div>
 
@@ -461,21 +542,29 @@ function LandingPage({ onNavigate, onSearch }) {
             
             {/* Hero CTAs */}
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center mb-16 px-4">
-              <Link 
+              <Link
                 to="/analyzer"
                 className="group relative px-6 sm:px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
               >
-                <span className="relative z-10">Start Free Analysis</span>
+                <span className="relative z-10">{user ? 'Analyze Document' : 'Start Free Analysis'}</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-purple-700 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </Link>
-              <Link 
-                to="/generator"
-                className="px-6 sm:px-8 py-4 bg-white/60 backdrop-blur-xl text-gray-900 rounded-2xl font-semibold text-lg border border-gray-200/50 transition-all duration-300 hover:bg-white/80 hover:shadow-lg"
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              >
-                Watch Demo
-              </Link>
+              {user ? (
+                <button
+                  onClick={onHistoryOpen}
+                  className="px-6 sm:px-8 py-4 bg-white/60 backdrop-blur-xl text-gray-900 rounded-2xl font-semibold text-lg border border-gray-200/50 transition-all duration-300 hover:bg-white/80 hover:shadow-lg"
+                >
+                  View History
+                </button>
+              ) : (
+                <button
+                  onClick={() => onAuthOpen('signup')}
+                  className="px-6 sm:px-8 py-4 bg-white/60 backdrop-blur-xl text-gray-900 rounded-2xl font-semibold text-lg border border-gray-200/50 transition-all duration-300 hover:bg-white/80 hover:shadow-lg"
+                >
+                  Create Account
+                </button>
+              )}
             </div>
 
             {/* Trust Indicators */}

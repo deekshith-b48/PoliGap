@@ -87,13 +87,20 @@ function PolicyAnalyzer({ onNavigate, onDocumentUpload, onAuthOpen, onProfileOpe
         throw new Error('No text content found in the document');
       }
 
+      setProgress('🧠 Processing document with advanced NLP...');
+
+      // First, run our advanced NLP processor
+      const nlpResults = await nlpProcessor.processDocument(text, file.name);
+
       setProgress('🤖 Analyzing document with AI...');
-      
+
+      // Then, run the Gemini AI analysis with NLP insights
       const results = await analyzeDocument(text, {
         industry: industry,
         frameworks: frameworks,
         isPdfFile: isPdfFile,
-        fileType: isPdfFile ? 'pdf' : 'text'
+        fileType: isPdfFile ? 'pdf' : 'text',
+        nlpInsights: nlpResults // Pass NLP results to enhance AI analysis
       });
       
       setAnalysis(results);

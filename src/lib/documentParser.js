@@ -49,14 +49,27 @@ export class DocumentParser {
     try {
       console.log('📄 Attempting PDF text extraction...');
 
-      // Try direct PDF.js import first without complex worker setup
+      // Try direct PDF.js import with inline worker setup
       const pdfjsLib = await import('pdfjs-dist');
 
-      // Set a reliable CDN worker source if not already set
+      // Create inline worker if not already set to avoid CDN issues
       if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
-        const pdfVersion = pdfjsLib.version || '5.3.93';
-        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfVersion}/pdf.worker.min.js`;
-        console.log(`📦 Using PDF.js version ${pdfVersion} with matching worker`);
+        const workerCode = `
+          // Minimal PDF.js worker stub - forces main thread execution
+          self.addEventListener('message', function(e) {
+            // Return error to force fallback to main thread
+            self.postMessage({
+              sourceName: e.data.sourceName,
+              targetName: e.data.targetName,
+              data: { error: 'Use main thread' }
+            });
+          });
+        `;
+
+        const workerBlob = new Blob([workerCode], { type: 'application/javascript' });
+        const workerUrl = URL.createObjectURL(workerBlob);
+        pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
+        console.log('✅ PDF.js configured with inline worker (main thread execution)');
       }
 
       const arrayBuffer = await file.arrayBuffer();

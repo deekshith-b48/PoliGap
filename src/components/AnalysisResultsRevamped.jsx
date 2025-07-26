@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { FiDownload, FiEye, FiFilter, FiGrid, FiList, FiRefreshCw, FiShare2, FiTrendingUp, FiAlertTriangle, FiCheckCircle, FiBarChart3 } from 'react-icons/fi';
+import { FiDownload, FiEye, FiFilter, FiGrid, FiList, FiRefreshCw, FiShare2, FiTrendingUp, FiAlertTriangle, FiCheckCircle, FiBarChart } from 'react-icons/fi';
 import DetailedPlan from './DetailedPlan';
 import ComplianceAnalysisDashboard from './ComplianceAnalysisDashboard';
 import PDFExportUtility from '../utils/pdfExport';

@@ -876,10 +876,15 @@ function ActionPlanView({ analysis, filteredGaps, getSeverityConfig }) {
 
   return (
     <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/50 p-8">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-        <FiCheckCircle className="w-6 h-6 mr-3" />
-        Prioritized Action Plan
-      </h2>
+      <div className="flex items-center mb-8">
+        <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mr-4">
+          <FiClipboard className="w-6 h-6 text-white" />
+        </div>
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">📋 Action Plan</h2>
+          <p className="text-gray-600">Prioritized remediation roadmap with timelines</p>
+        </div>
+      </div>
       
       <div className="space-y-6">
         {prioritizedGaps.slice(0, 10).map((gap, index) => {

@@ -257,6 +257,21 @@ class PDFExportUtility {
     }
   }
 
+  // Check if autoTable plugin is available
+  checkAutoTableAvailability() {
+    try {
+      const testDoc = new jsPDF();
+      const hasAutoTable = testDoc.autoTable && typeof testDoc.autoTable === 'function';
+      if (!hasAutoTable) {
+        console.warn('jsPDF autoTable plugin not properly loaded');
+      }
+      return hasAutoTable;
+    } catch (error) {
+      console.error('Error checking autoTable availability:', error.message);
+      return false;
+    }
+  }
+
   // Fallback method for basic table creation when autoTable is not available
   createBasicTable(doc, data, columns, options = {}) {
     const startY = doc.lastAutoTable?.finalY || 80;

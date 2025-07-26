@@ -225,7 +225,7 @@ function ComplianceAnalysisDashboard({ analysisResults, onClose }) {
                   Compliance Red Flags Detected
                 </h2>
                 
-                {Object.entries(redFlagsByCategory).map(([category, flags]) => (
+                {Object.entries(redFlagsByCategory || {}).map(([category, flags]) => (
                   <div key={category} className="mb-8 last:mb-0">
                     <h3 className="text-lg font-bold text-gray-900 mb-4">{category}</h3>
                     <div className="space-y-4">

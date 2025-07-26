@@ -293,10 +293,20 @@ class PDFExportUtility {
     // Draw data rows
     doc.setFont('helvetica', 'normal');
     data.forEach((row) => {
-      columns.forEach((col, index) => {
-        const value = Array.isArray(row) ? row[index] : (row[col.dataKey] || row[col.key] || '');
-        doc.text(String(value).substring(0, 20), 20 + (index * colWidth), currentY);
-      });
+      if (Array.isArray(row)) {
+        // Row is already an array of values
+        row.forEach((value, index) => {
+          if (index < headers.length) {
+            doc.text(String(value || '').substring(0, 15), 20 + (index * colWidth), currentY);
+          }
+        });
+      } else {
+        // Row is an object, extract values in header order
+        headers.forEach((header, index) => {
+          const value = row[header] || row[header.toLowerCase()] || '';
+          doc.text(String(value).substring(0, 15), 20 + (index * colWidth), currentY);
+        });
+      }
       currentY += rowHeight;
     });
 

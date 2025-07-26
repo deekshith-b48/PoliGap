@@ -485,8 +485,8 @@ function DocumentRejectionView({ analysis }) {
   );
 }
 
-// Overview View Component
-function OverviewView({ analysis, filteredGaps, summaryRef, chartRefs }) {
+// Executive Summary View Component
+function ExecutiveSummaryView({ analysis, filteredGaps, summaryRef, chartRefs }) {
   return (
     <div className="space-y-8">
       {/* Executive Summary */}

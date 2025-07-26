@@ -704,6 +704,104 @@ function GapCard({ gap, index, viewMode, getSeverityConfig }) {
   );
 }
 
+// Framework Analysis View Component
+function FrameworkAnalysisView({ analysis, chartRefs }) {
+  return (
+    <div className="space-y-8">
+      <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/50 p-8">
+        <div className="flex items-center mb-8">
+          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-2xl flex items-center justify-center mr-4">
+            <FiShield className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">🛡️ Framework Analysis</h2>
+            <p className="text-gray-600">Detailed compliance framework assessment and scoring</p>
+          </div>
+        </div>
+
+        {/* Framework Scores */}
+        {analysis.structuredAnalysis?.frameworkScores && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            {Object.entries(analysis.structuredAnalysis.frameworkScores).map(([framework, data]) => (
+              <div key={framework} className="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-6 border border-gray-200 hover:shadow-lg transition-all">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-bold text-gray-900 text-lg">{framework}</h3>
+                  <div className={`px-3 py-1 rounded-xl text-sm font-bold ${
+                    data.score >= 80 ? 'bg-green-100 text-green-700' :
+                    data.score >= 60 ? 'bg-yellow-100 text-yellow-700' :
+                    'bg-red-100 text-red-700'
+                  }`}>
+                    {data.score}%
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600">Requirements Met:</span>
+                    <span className="font-semibold">{data.foundRequirements}/{data.totalRequirements}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600">Maturity Level:</span>
+                    <span className="font-semibold text-blue-600">{data.maturityLevel}</span>
+                  </div>
+
+                  {/* Progress Bar */}
+                  <div className="w-full bg-gray-200 rounded-full h-2 mt-3">
+                    <div
+                      className={`h-2 rounded-full ${
+                        data.score >= 80 ? 'bg-green-500' :
+                        data.score >= 60 ? 'bg-yellow-500' : 'bg-red-500'
+                      }`}
+                      style={{ width: `${data.score}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Detailed Framework Analysis */}
+        {analysis.structuredAnalysis?.sectionAnalysis && (
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">📋 Section-by-Section Analysis</h3>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {Object.entries(analysis.structuredAnalysis.sectionAnalysis).map(([sectionKey, section]) => (
+                <div key={sectionKey} className="bg-gray-50 rounded-2xl p-6 border border-gray-200">
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="font-semibold text-gray-900 capitalize">
+                      {sectionKey.replace(/([A-Z])/g, ' $1').trim()}
+                    </h4>
+                    <div className="flex items-center space-x-2">
+                      <div className={`w-3 h-3 rounded-full ${
+                        section.score >= 80 ? 'bg-green-500' :
+                        section.score >= 60 ? 'bg-yellow-500' :
+                        section.score >= 40 ? 'bg-orange-500' : 'bg-red-500'
+                      }`}></div>
+                      <span className="font-bold text-gray-900">{section.score}%</span>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="text-center p-3 bg-white rounded-lg">
+                      <div className="text-2xl font-bold text-blue-600">{section.keywords?.length || 0}</div>
+                      <div className="text-gray-600">Keywords Found</div>
+                    </div>
+                    <div className="text-center p-3 bg-white rounded-lg">
+                      <div className="text-2xl font-bold text-red-600">{section.redFlags?.length || 0}</div>
+                      <div className="text-gray-600">Red Flags</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // Insights View Component
 function InsightsView({ analysis, chartRefs }) {
   return (

@@ -315,18 +315,10 @@ class PDFExportUtility {
   async exportAnalysisResults(analysis, options = {}) {
     const doc = new jsPDF();
 
-    // Ensure autoTable is available on this specific document instance
-    if (!doc.autoTable && typeof window !== 'undefined' && window.jsPDF) {
-      // Sometimes the plugin attaches to the global jsPDF
-      try {
-        const autoTable = require('jspdf-autotable');
-        if (autoTable && autoTable.default) {
-          // Plugin might export as default
-          doc.autoTable = autoTable.default.bind(doc);
-        }
-      } catch (error) {
-        console.warn('Could not manually attach autoTable:', error.message);
-      }
+    // Debug: Check if autoTable is available
+    if (!doc.autoTable) {
+      console.warn('autoTable method not found on jsPDF instance');
+      console.log('Available methods:', Object.getOwnPropertyNames(doc).filter(name => typeof doc[name] === 'function'));
     }
     const metadata = {
       company: options.company || 'Your Organization',

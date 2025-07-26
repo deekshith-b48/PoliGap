@@ -83,20 +83,31 @@ export class DocumentParser {
 
       const arrayBuffer = await file.arrayBuffer();
 
-      // Optimized PDF loading with performance settings
-      const loadingTask = pdfjsLib.getDocument({
-        data: arrayBuffer,
-        useWorkerFetch: false,
-        isEvalSupported: false,
-        useSystemFonts: false,
-        verbosity: 0,
-        cMapPacked: false,
-        standardFontDataUrl: '',
-        disableFontFace: true,
-        maxImageSize: 1024 * 1024, // 1MB max image size
-        disableRange: true,
-        disableStream: true
-      });
+      // Optimized PDF loading with performance settings and error handling
+      let loadingTask;
+      try {
+        loadingTask = pdfjsLib.getDocument({
+          data: arrayBuffer,
+          useWorkerFetch: false,
+          isEvalSupported: false,
+          useSystemFonts: false,
+          verbosity: 0,
+          cMapPacked: false,
+          standardFontDataUrl: '',
+          disableFontFace: true,
+          maxImageSize: 1024 * 1024, // 1MB max image size
+          disableRange: true,
+          disableStream: true,
+          stopAtErrors: false // Continue processing despite errors
+        });
+      } catch (configError) {
+        console.warn('PDF configuration failed, trying basic setup:', configError.message);
+        // Fallback to minimal configuration
+        loadingTask = pdfjsLib.getDocument({
+          data: arrayBuffer,
+          verbosity: 0
+        });
+      }
 
       const pdf = await loadingTask.promise;
       console.log(`PDF loaded: ${pdf.numPages} pages`);

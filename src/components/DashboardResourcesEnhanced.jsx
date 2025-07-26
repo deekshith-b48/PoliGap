@@ -13,7 +13,7 @@ import {
   HiOutlineClipboardList,
   HiOutlineTemplate,
   HiOutlineDocumentText,
-  HiOutlineShield,
+  HiOutlineShieldCheck,
   HiOutlineGlobe,
   HiOutlineFilter
 } from 'react-icons/hi';

@@ -84,9 +84,40 @@ export class DocumentParser {
       return this.cleanText(fullText);
     } catch (error) {
       console.error('PDF extraction error:', error);
-      
-      // Fallback: return mock content for demonstration
-      return this.generateMockPolicyContent(file.name);
+
+      // Try fallback method without worker for PDF parsing
+      try {
+        console.log('🔄 Attempting fallback PDF parsing without worker...');
+        const pdfjsLib = await import('pdfjs-dist');
+
+        // Disable worker for fallback
+        pdfjsLib.GlobalWorkerOptions.workerSrc = false;
+
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({
+          data: arrayBuffer,
+          useWorkerFetch: false,
+          isEvalSupported: false,
+          disableWorker: true
+        }).promise;
+
+        let fullText = '';
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const textContent = await page.getTextContent();
+          const pageText = textContent.items.map(item => item.str).join(' ');
+          fullText += pageText + '\n';
+        }
+
+        console.log('✅ Fallback PDF extraction successful');
+        return this.cleanText(fullText);
+      } catch (fallbackError) {
+        console.error('❌ Fallback PDF extraction also failed:', fallbackError);
+
+        // Final fallback: return mock content for demonstration
+        console.log('⚠️ Using mock content for PDF analysis');
+        return this.generateMockPolicyContent(file.name);
+      }
     }
   }
 

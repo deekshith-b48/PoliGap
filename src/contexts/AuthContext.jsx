@@ -11,6 +11,18 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Global error handler for auth errors
+  const handleAuthError = (error) => {
+    if (error?.message?.includes('Invalid Refresh Token') ||
+        error?.message?.includes('refresh_token_not_found') ||
+        error?.message?.includes('AuthApiError')) {
+      console.warn('Handling auth error, clearing session:', error.message);
+      clearSession();
+      return true; // Handled
+    }
+    return false; // Not handled
+  };
+
   useEffect(() => {
     // Get initial session with comprehensive error handling
     const initializeAuth = async () => {

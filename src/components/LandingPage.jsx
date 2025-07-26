@@ -293,13 +293,6 @@ function LandingPage({ onNavigate, onSearch, onAuthOpen, onProfileOpen, onHistor
               <button className="px-3 py-2 text-gray-700 hover:text-gray-900 transition-colors font-medium text-sm">
                 Pricing
               </button>
-              <Link 
-                to="/compliances"
-                className="px-3 py-2 text-gray-700 hover:text-gray-900 transition-colors font-medium text-sm"
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              >
-                Resources
-              </Link>
             </nav>
 
             {/* Right Side Actions */}

@@ -254,6 +254,37 @@ class PDFExportUtility {
     }
   }
 
+  // Fallback method for basic table creation when autoTable is not available
+  createBasicTable(doc, data, columns, options = {}) {
+    const startY = doc.lastAutoTable?.finalY || 80;
+    const rowHeight = 20;
+    const colWidth = 50;
+    let currentY = startY + 20;
+
+    // Draw headers
+    doc.setFontSize(this.fonts.medium);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...this.colors.dark);
+
+    columns.forEach((col, index) => {
+      doc.text(col.title || col.header || col, 20 + (index * colWidth), currentY);
+    });
+
+    currentY += rowHeight;
+
+    // Draw data rows
+    doc.setFont('helvetica', 'normal');
+    data.forEach((row) => {
+      columns.forEach((col, index) => {
+        const value = Array.isArray(row) ? row[index] : (row[col.dataKey] || row[col.key] || '');
+        doc.text(String(value).substring(0, 20), 20 + (index * colWidth), currentY);
+      });
+      currentY += rowHeight;
+    });
+
+    return currentY + 10;
+  }
+
   // Get color based on score
   getScoreColor(score) {
     if (score >= 80) return this.colors.success;

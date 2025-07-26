@@ -401,7 +401,7 @@ function ComplianceAnalysisDashboard({ analysisResults, onClose }) {
                       </div>
                     </div>
                     
-                    {frameworkScores[activeFramework].missingElements.length > 0 && (
+                    {(frameworkScores[activeFramework]?.missingElements?.length || 0) > 0 && (
                       <div className="bg-red-50 rounded-2xl p-6 border border-red-200">
                         <h3 className="font-bold text-red-900 mb-4">Missing Requirements</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

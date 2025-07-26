@@ -51,6 +51,7 @@ export class DocumentParser {
 
       // Try direct PDF.js import with inline worker setup
       const pdfjsLib = await import('pdfjs-dist');
+      console.log('✅ PDF.js library loaded successfully');
 
       // Create inline worker if not already set to avoid CDN issues
       if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {

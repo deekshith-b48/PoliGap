@@ -248,12 +248,12 @@ class PDFExportUtility {
         return doc.lastAutoTable ? doc.lastAutoTable.finalY + 10 : 100;
       } catch (autoTableError) {
         console.warn('autoTable execution failed:', autoTableError.message);
-        return this.createBasicTable(doc, data, columns, options);
+        return this.createBasicTable(doc, headers, data, options);
       }
     } else {
       // Fallback: create simple table manually
       console.warn('autoTable not available, using basic table fallback');
-      return this.createBasicTable(doc, data, columns, options);
+      return this.createBasicTable(doc, headers, data, options);
     }
   }
 

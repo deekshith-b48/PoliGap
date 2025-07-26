@@ -5,7 +5,7 @@ import {
   HiOutlineClipboard,
   HiOutlineExternalLink,
   HiOutlineDocumentText,
-  HiOutlineShield,
+  HiOutlineShieldCheck,
   HiOutlineCalendar,
   HiOutlineGlobe
 } from 'react-icons/hi';

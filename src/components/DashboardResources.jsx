@@ -43,6 +43,19 @@ function DashboardResources() {
   // Check if user is admin
   const isAdmin = user?.email === 'bdeekshith412@gmail.com' || user?.user_metadata?.role === 'admin';
 
+  // Framework filtering logic
+  const frameworksByCategory = getFrameworksByCategory();
+  const filteredFrameworks = searchQuery
+    ? searchFrameworks(searchQuery)
+    : selectedCategory === 'all'
+      ? Object.values(complianceFrameworks)
+      : frameworksByCategory[selectedCategory] || [];
+
+  const handleFrameworkView = (framework) => {
+    setSelectedFramework(framework);
+    setShowFrameworkPopup(true);
+  };
+
   // Mock resources data
   useEffect(() => {
     const mockResources = [

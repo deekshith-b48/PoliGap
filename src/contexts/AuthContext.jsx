@@ -134,26 +134,38 @@ export function AuthProvider({ children }) {
   };
 
   const signIn = async (email, password) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
 
-    // Assign admin role for specific email
-    if (!error && data.user && email === 'bdeekshith412@gmail.com') {
-      try {
-        await supabase.auth.updateUser({
-          data: {
-            role: 'admin',
-            ...data.user.user_metadata
-          }
-        });
-      } catch (updateError) {
-        console.warn('Failed to update admin role:', updateError);
+      if (error && handleAuthError(error)) {
+        // Auth error was handled, return the error
+        return { data: null, error };
       }
-    }
 
-    return { data, error };
+      // Assign admin role for specific email
+      if (!error && data.user && email === 'bdeekshith412@gmail.com') {
+        try {
+          await supabase.auth.updateUser({
+            data: {
+              role: 'admin',
+              ...data.user.user_metadata
+            }
+          });
+        } catch (updateError) {
+          console.warn('Failed to update admin role:', updateError);
+        }
+      }
+
+      return { data, error };
+    } catch (error) {
+      if (handleAuthError(error)) {
+        return { data: null, error };
+      }
+      throw error;
+    }
   };
 
   const signOut = async () => {

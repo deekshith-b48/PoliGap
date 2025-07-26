@@ -181,7 +181,7 @@ function AnalysisResultsRevamped({ analysis }) {
               <div className="flex items-center">
                 <div className="relative">
                   <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-xl">
-                    <FiBarChart3 className="w-8 h-8 text-white" />
+                    <FiBarChart className="w-8 h-8 text-white" />
                   </div>
                   <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
                     <FiCheckCircle className="w-3 h-3 text-white" />

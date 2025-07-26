@@ -184,7 +184,9 @@ function EnhancedDocumentUpload({ onUpload, uploading, progress, error }) {
       clearInterval(progressInterval);
 
       setUploadProgress(100);
-      setValidationStep('✅ Analysis complete!');
+      setValidationStep('✅ Analysis complete! Generating results...');
+
+      console.log('🎉 Document analysis completed successfully');
 
       // Small delay to show completion, then reset
       setTimeout(() => {

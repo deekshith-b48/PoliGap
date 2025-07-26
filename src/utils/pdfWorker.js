@@ -12,7 +12,7 @@ export const configurePdfWorker = async () => {
     // Set a reliable CDN worker source
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-    console.log('✅ PDF.js configured to run with disableWorker option (main thread)');
+    console.log('✅ PDF.js configured with CDN worker source');
     isWorkerConfigured = true;
     return;
   } catch (error) {

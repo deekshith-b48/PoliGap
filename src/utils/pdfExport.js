@@ -238,10 +238,15 @@ class PDFExportUtility {
       ...options.tableStyles
     };
     
-    // Check if autoTable is available
-    if (typeof doc.autoTable === 'function') {
-      doc.autoTable(tableOptions);
-      return doc.lastAutoTable.finalY + 10;
+    // Check if autoTable is available on the document instance
+    if (doc.autoTable && typeof doc.autoTable === 'function') {
+      try {
+        doc.autoTable(tableOptions);
+        return doc.lastAutoTable ? doc.lastAutoTable.finalY + 10 : 100;
+      } catch (autoTableError) {
+        console.warn('autoTable execution failed:', autoTableError.message);
+        return this.createBasicTable(doc, data, columns, options);
+      }
     } else {
       // Fallback: create simple table manually
       console.warn('autoTable not available, using basic table fallback');

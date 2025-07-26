@@ -47,24 +47,13 @@ export class DocumentParser {
    */
   static async extractFromPDF(file) {
     try {
-      // Import PDF.js dynamically
-      const pdfjsLib = await import('pdfjs-dist');
-
-      // Set worker source - use CDN for compatibility
-      if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
-        pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
-      }
+      // Import PDF worker utility
+      const { createPdfDocument } = await import('../utils/pdfWorker.js');
 
       const arrayBuffer = await file.arrayBuffer();
 
-      // Configure PDF.js with additional options for better compatibility
-      const loadingTask = pdfjsLib.getDocument({
-        data: arrayBuffer,
-        useWorkerFetch: false,
-        isEvalSupported: false,
-        useSystemFonts: true
-      });
-
+      // Use the robust PDF document creation
+      const loadingTask = await createPdfDocument(arrayBuffer);
       const pdf = await loadingTask.promise;
       
       let fullText = '';

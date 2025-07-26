@@ -273,7 +273,7 @@ class PDFExportUtility {
   }
 
   // Fallback method for basic table creation when autoTable is not available
-  createBasicTable(doc, data, columns, options = {}) {
+  createBasicTable(doc, headers, data, options = {}) {
     const startY = doc.lastAutoTable?.finalY || 80;
     const rowHeight = 20;
     const colWidth = 50;
@@ -284,8 +284,8 @@ class PDFExportUtility {
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(...this.colors.dark);
 
-    columns.forEach((col, index) => {
-      doc.text(col.title || col.header || col, 20 + (index * colWidth), currentY);
+    headers.forEach((header, index) => {
+      doc.text(String(header).substring(0, 15), 20 + (index * colWidth), currentY);
     });
 
     currentY += rowHeight;

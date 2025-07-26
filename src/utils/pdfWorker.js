@@ -48,6 +48,9 @@ export const createPdfDocument = async (data, options = {}) => {
     useWorkerFetch: false,
     isEvalSupported: false,
     useSystemFonts: true,
+    verbosity: 0, // Reduce logging
+    cMapPacked: true,
+    standardFontDataUrl: null, // Don't load external fonts
     ...options
   };
 

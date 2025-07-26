@@ -141,27 +141,48 @@ function EnhancedDocumentUpload({ onUpload, uploading, progress, error }) {
       return;
     }
 
-    simulateUploadProgress();
-
-    // Save document metadata if user is authenticated
-    if (user) {
-      // This would typically save to your database
-      console.log('Saving document metadata for user:', user.id);
-    }
-
+    // Enhanced validation before processing
     try {
+      setValidationStep('🔍 Validating document...');
+      setUploadProgress(10);
+
+      // Import validation utility
+      const { validateFile } = await import('../lib/documentParser.js');
+
+      // Validate file format and size
+      validateFile(selectedFile);
+      console.log('✅ Document validation passed');
+
+      setValidationStep('📄 Processing document...');
+      setUploadProgress(25);
+
+      simulateUploadProgress();
+
+      // Save document metadata if user is authenticated
+      if (user) {
+        console.log('Saving document metadata for user:', user.id);
+      }
+
       await onUpload({
         file: selectedFile,
         industry: selectedIndustry,
         frameworks: selectedFrameworks,
-        userId: user?.id
+        userId: user?.id,
+        validated: true
       });
-      
+
       setUploadProgress(100);
-      setValidationStep('Analysis complete!');
+      setValidationStep('✅ Analysis complete!');
     } catch (error) {
+      console.error('❌ Document validation failed:', error);
       setUploadProgress(0);
-      setValidationStep('');
+      setValidationStep('❌ Validation failed: ' + error.message);
+
+      // Show user-friendly error message
+      setTimeout(() => {
+        alert(`Document validation failed: ${error.message}\n\nPlease ensure your document is a valid policy file and try again.`);
+        setValidationStep('');
+      }, 2000);
     }
   };
 

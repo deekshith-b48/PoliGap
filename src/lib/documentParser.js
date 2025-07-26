@@ -59,8 +59,27 @@ export class DocumentParser {
       const pdfjsLib = await import('pdfjs-dist');
       console.log('✅ PDF.js library loaded');
 
-      // Force main thread execution for better reliability
-      pdfjsLib.GlobalWorkerOptions.workerSrc = '';
+      // Configure PDF.js worker for reliable execution
+      if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
+        // Create a minimal inline worker to avoid CDN issues
+        const workerCode = `
+          // PDF.js inline worker - forces main thread fallback for reliability
+          self.onmessage = function(e) {
+            // Simply return error to force main thread execution
+            self.postMessage({
+              sourceName: e.data.sourceName,
+              targetName: e.data.targetName,
+              data: { error: 'Worker disabled - using main thread' }
+            });
+          };
+        `;
+
+        const blob = new Blob([workerCode], { type: 'application/javascript' });
+        const workerUrl = URL.createObjectURL(blob);
+        pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
+
+        console.log('✅ PDF.js worker configured with inline fallback');
+      }
 
       const arrayBuffer = await file.arrayBuffer();
 

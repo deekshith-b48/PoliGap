@@ -12,13 +12,12 @@ import {
   HiOutlineRefresh,
   HiOutlineDownload
 } from 'react-icons/hi';
-import { 
+import {
   MdAnalytics,
   MdInsights,
   MdSecurity,
   MdSpeed,
-  MdTrending,
-  MdRecommend
+  MdTrendingUp
 } from 'react-icons/md';
 
 function ModernDashboardAnalytics() {

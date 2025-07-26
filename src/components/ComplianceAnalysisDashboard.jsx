@@ -6,8 +6,12 @@ function ComplianceAnalysisDashboard({ analysisResults, onClose }) {
   const [activeFramework, setActiveFramework] = useState('GDPR');
   const [showContentDashboard, setShowContentDashboard] = useState(false);
 
-  if (!analysisResults || !analysisResults.structuredAnalysis) {
-    return null;
+  if (!analysisResults) {
+    return (
+      <div className="p-8 text-center">
+        <p className="text-gray-500">No analysis results available</p>
+      </div>
+    );
   }
 
   const { structuredAnalysis, gaps, overallScore, summary, contentScanResults } = analysisResults;
@@ -37,7 +41,7 @@ function ComplianceAnalysisDashboard({ analysisResults, onClose }) {
     const icons = {
       dataCollection: '🔍',
       userRights: '👤',
-      compliance: '���️',
+      compliance: '⚖️',
       security: '🔒',
       retention: '📅'
     };

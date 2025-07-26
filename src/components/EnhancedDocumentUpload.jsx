@@ -119,20 +119,21 @@ function EnhancedDocumentUpload({ onUpload, uploading, progress, error }) {
     );
   };
 
-  const simulateUploadProgress = () => {
+  const simulateUploadProgress = (targetProgress = 95) => {
     setUploadProgress(0);
     setValidationStep('Uploading file...');
-    
+
     const interval = setInterval(() => {
       setUploadProgress(prev => {
-        if (prev >= 95) {
+        if (prev >= targetProgress) {
           clearInterval(interval);
-          setValidationStep('Validating document...');
-          return 95;
+          return targetProgress;
         }
-        return prev + Math.random() * 15;
+        return prev + Math.random() * 10 + 5; // Faster progress
       });
-    }, 200);
+    }, 100); // Faster updates
+
+    return interval;
   };
 
   const handleSubmit = async () => {
@@ -154,15 +155,23 @@ function EnhancedDocumentUpload({ onUpload, uploading, progress, error }) {
       console.log('✅ Document validation passed');
 
       setValidationStep('📄 Processing document...');
-      setUploadProgress(25);
+      setUploadProgress(30);
 
-      simulateUploadProgress();
+      // Start progress simulation
+      const progressInterval = simulateUploadProgress(85);
+
+      setValidationStep('🤖 Analyzing content...');
+      setUploadProgress(70);
 
       // Save document metadata if user is authenticated
       if (user) {
         console.log('Saving document metadata for user:', user.id);
       }
 
+      setValidationStep('🔬 Running compliance analysis...');
+      setUploadProgress(90);
+
+      // Call the upload handler
       await onUpload({
         file: selectedFile,
         industry: selectedIndustry,
@@ -171,8 +180,18 @@ function EnhancedDocumentUpload({ onUpload, uploading, progress, error }) {
         validated: true
       });
 
+      // Clear any existing intervals
+      clearInterval(progressInterval);
+
       setUploadProgress(100);
       setValidationStep('✅ Analysis complete!');
+
+      // Small delay to show completion, then reset
+      setTimeout(() => {
+        setValidationStep('');
+        setUploadProgress(0);
+      }, 1500);
+
     } catch (error) {
       console.error('❌ Document validation failed:', error);
       setUploadProgress(0);

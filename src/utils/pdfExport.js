@@ -4,6 +4,9 @@ import html2canvas from 'html2canvas';
 
 class PDFExportUtility {
   constructor() {
+    // Check if autoTable plugin is available
+    this.autoTableAvailable = this.checkAutoTableAvailability();
+
     this.colors = {
       primary: [59, 130, 246],      // Blue-500
       secondary: [147, 51, 234],     // Purple-600

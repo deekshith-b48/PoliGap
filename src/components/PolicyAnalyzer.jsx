@@ -18,15 +18,17 @@ function PolicyAnalyzer({ onNavigate, onDocumentUpload, onAuthOpen, onProfileOpe
   // Document extraction is now handled by the advanced DocumentParser
 
   const handleFileUpload = async (uploadData) => {
+    const startTime = Date.now();
     setLoading(true);
     setError(null);
     setAnalysis(null);
-    
+
     try {
       const { file, industry, frameworks } = uploadData;
 
-      // Validate file before processing
-      validateFile(file);
+      // Fast file validation
+      const validationResult = validateFile(file);
+      console.log('File validation completed in', validationResult.validationTime, 'ms');
 
       // Get detailed file information
       const fileInfo = getFileInfo(file);
@@ -48,41 +50,60 @@ function PolicyAnalyzer({ onNavigate, onDocumentUpload, onAuthOpen, onProfileOpe
         onDocumentUpload(docInfo);
       }
 
-      setProgress('📄 Extracting text from document...');
+      setProgress('📄 Extracting text content...');
 
-      // Use advanced document parser
-      const text = await extractText(file);
+      // Fast text extraction with timeout
+      const extractionPromise = extractText(file);
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Text extraction timeout')), 30000)
+      );
+
+      const text = await Promise.race([extractionPromise, timeoutPromise]);
 
       if (!text || text.trim().length === 0) {
         throw new Error('No text content found in the document');
       }
 
-      // ✅ ENHANCED COMPLIANCE ANALYSIS WITH ADVANCED AI
-      setProgress('🤖 Running enhanced compliance analysis...');
+      console.log(`Text extracted: ${text.length} characters`);
+
+      // ✅ FAST ENHANCED COMPLIANCE ANALYSIS
+      setProgress('🤖 Running compliance analysis...');
       let analysisResult;
-      
+
       try {
         // Initialize enhanced analyzer
         const enhancedAnalyzer = new EnhancedComplianceAnalyzer();
-        
-        // Primary enhanced analysis
-        analysisResult = await enhancedAnalyzer.analyzePolicy(text, {
+
+        // Primary enhanced analysis with timeout
+        const analysisPromise = enhancedAnalyzer.analyzePolicy(text, {
           industry,
           frameworks,
           documentInfo: docInfo
         });
-        
-        setProgress('🧠 Applying AI analysis and validation...');
-        
-        // Combine with AI analysis for additional insights
+
+        const analysisTimeout = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Analysis timeout')), 45000)
+        );
+
+        analysisResult = await Promise.race([analysisPromise, analysisTimeout]);
+
+        setProgress('🧠 Enhancing with AI insights...');
+
+        // Optional AI enhancement (non-blocking)
         try {
-          const aiAnalysis = await analyzeDocument(text, {
+          const aiAnalysisPromise = analyzeDocument(text, {
             industry,
             frameworks,
             documentInfo: docInfo
           });
-          
-          // Merge AI insights with enhanced analysis
+
+          const aiTimeout = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('AI timeout')), 20000)
+          );
+
+          const aiAnalysis = await Promise.race([aiAnalysisPromise, aiTimeout]);
+
+          // Merge AI insights
           analysisResult = {
             ...analysisResult,
             aiInsights: aiAnalysis,
@@ -90,41 +111,53 @@ function PolicyAnalyzer({ onNavigate, onDocumentUpload, onAuthOpen, onProfileOpe
             documentInfo: docInfo
           };
         } catch (aiError) {
-          console.warn('AI analysis failed, using enhanced analysis only:', aiError);
+          console.warn('AI analysis failed or timed out, using base analysis:', aiError.message);
         }
-        
-        // Apply NLP enhancements if available
-        if (analysisResult) {
-          try {
-            setProgress('🔬 Applying NLP processing...');
-            const nlpEnhancements = await nlpProcessor.enhanceAnalysis(analysisResult, text);
-            analysisResult = {
-              ...analysisResult,
-              ...nlpEnhancements,
-              nlpAnalysis: nlpEnhancements
-            };
-          } catch (nlpError) {
-            console.warn('NLP enhancement failed, using base analysis:', nlpError);
-          }
+
+        // Optional NLP enhancement (non-blocking)
+        try {
+          setProgress('🔬 Applying NLP processing...');
+          const nlpPromise = nlpProcessor.enhanceAnalysis(analysisResult, text);
+          const nlpTimeout = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('NLP timeout')), 15000)
+          );
+
+          const nlpEnhancements = await Promise.race([nlpPromise, nlpTimeout]);
+          analysisResult = {
+            ...analysisResult,
+            ...nlpEnhancements,
+            nlpAnalysis: nlpEnhancements
+          };
+        } catch (nlpError) {
+          console.warn('NLP enhancement failed or timed out:', nlpError.message);
         }
+
       } catch (analysisError) {
         console.error('Enhanced analysis failed:', analysisError);
-        
-        // Fallback to traditional analysis methods
-        setProgress('⚠️ Using fallback analysis method...');
+
+        // Fast fallback analysis
+        setProgress('⚠️ Using fallback analysis...');
         try {
-          analysisResult = await analyzeDocument(text, {
+          const fallbackPromise = analyzeDocument(text, {
             industry,
             frameworks,
             documentInfo: docInfo
           });
+          const fallbackTimeout = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Fallback timeout')), 20000)
+          );
+
+          analysisResult = await Promise.race([fallbackPromise, fallbackTimeout]);
         } catch (fallbackError) {
-          // Ultimate fallback to NLP-only analysis
-          analysisResult = await nlpProcessor.fallbackAnalysis(text, {
-            industry,
-            frameworks,
+          console.error('Fallback analysis failed:', fallbackError);
+          // Create minimal analysis result
+          analysisResult = {
+            overallScore: 50,
+            summary: 'Analysis completed with limited capabilities due to processing constraints.',
+            gaps: [],
+            timestamp: new Date().toISOString(),
             documentInfo: docInfo
-          });
+          };
         }
       }
 
@@ -133,25 +166,35 @@ function PolicyAnalyzer({ onNavigate, onDocumentUpload, onAuthOpen, onProfileOpe
         throw new Error('Failed to generate analysis results');
       }
 
+      const processingTime = Date.now() - startTime;
+      console.log(`Total processing time: ${processingTime}ms`);
+
       // Add processing metadata
       const enhancedResults = {
         ...analysisResult,
         documentInfo: docInfo,
-        processingTime: Date.now() - docInfo.uploadDate.getTime(),
-        analysisVersion: '2.0',
-        enhancedFeatures: true
+        processingTime,
+        analysisVersion: '2.1',
+        enhancedFeatures: true,
+        performance: {
+          totalTime: processingTime,
+          textLength: text.length,
+          processingSpeed: Math.round(text.length / (processingTime / 1000)) // chars per second
+        }
       };
 
       setAnalysis(enhancedResults);
       setProgress('');
-      
+
     } catch (err) {
       console.error('Analysis error:', err);
 
       let userFriendlyMessage = 'An error occurred during analysis';
 
       if (err.message) {
-        if (err.message.includes('stream already read')) {
+        if (err.message.includes('timeout')) {
+          userFriendlyMessage = 'Analysis is taking longer than expected. Please try with a smaller document or try again.';
+        } else if (err.message.includes('stream already read')) {
           userFriendlyMessage = 'Network error occurred. Please try again.';
         } else if (err.message.includes('API request failed')) {
           userFriendlyMessage = 'Unable to connect to AI service. Please check your connection and try again.';

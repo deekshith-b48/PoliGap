@@ -12,7 +12,10 @@ import {
   HiOutlineAcademicCap,
   HiOutlineClipboardList,
   HiOutlineTemplate,
-  HiOutlineDocumentText
+  HiOutlineDocumentText,
+  HiOutlineShieldCheck,
+  HiOutlineGlobe,
+  HiOutlineFilter
 } from 'react-icons/hi';
 import {
   MdSecurity,
@@ -23,6 +26,8 @@ import {
   MdVerifiedUser,
   MdLibraryBooks
 } from 'react-icons/md';
+import { complianceFrameworks, getFrameworksByCategory, searchFrameworks } from '../data/complianceFrameworks';
+import FrameworkDetailsPopup from './FrameworkDetailsPopup';
 
 function DashboardResources() {
   const { user } = useAuth();
@@ -30,9 +35,26 @@ function DashboardResources() {
   const [editingResource, setEditingResource] = useState(null);
   const [isAdding, setIsAdding] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedFramework, setSelectedFramework] = useState(null);
+  const [showFrameworkPopup, setShowFrameworkPopup] = useState(false);
+  const [activeTab, setActiveTab] = useState('frameworks');
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
   // Check if user is admin
   const isAdmin = user?.email === 'bdeekshith412@gmail.com' || user?.user_metadata?.role === 'admin';
+
+  // Framework filtering logic
+  const frameworksByCategory = getFrameworksByCategory();
+  const filteredFrameworks = searchQuery
+    ? searchFrameworks(searchQuery)
+    : selectedCategory === 'all'
+      ? Object.values(complianceFrameworks)
+      : frameworksByCategory[selectedCategory] || [];
+
+  const handleFrameworkView = (framework) => {
+    setSelectedFramework(framework);
+    setShowFrameworkPopup(true);
+  };
 
   // Mock resources data
   useEffect(() => {
@@ -162,7 +184,7 @@ function DashboardResources() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Resource Library</h1>
           <p className="text-gray-600">
-            {isAdmin ? 'Manage compliance resources and documentation' : 'Access compliance guides and templates'}
+            Comprehensive compliance frameworks, guides, and documentation
           </p>
         </div>
         {isAdmin && (

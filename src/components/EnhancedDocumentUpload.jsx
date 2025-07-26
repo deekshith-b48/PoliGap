@@ -119,20 +119,21 @@ function EnhancedDocumentUpload({ onUpload, uploading, progress, error }) {
     );
   };
 
-  const simulateUploadProgress = () => {
+  const simulateUploadProgress = (targetProgress = 95) => {
     setUploadProgress(0);
     setValidationStep('Uploading file...');
-    
+
     const interval = setInterval(() => {
       setUploadProgress(prev => {
-        if (prev >= 95) {
+        if (prev >= targetProgress) {
           clearInterval(interval);
-          setValidationStep('Validating document...');
-          return 95;
+          return targetProgress;
         }
-        return prev + Math.random() * 15;
+        return prev + Math.random() * 10 + 5; // Faster progress
       });
-    }, 200);
+    }, 100); // Faster updates
+
+    return interval;
   };
 
   const handleSubmit = async () => {
@@ -141,27 +142,68 @@ function EnhancedDocumentUpload({ onUpload, uploading, progress, error }) {
       return;
     }
 
-    simulateUploadProgress();
-
-    // Save document metadata if user is authenticated
-    if (user) {
-      // This would typically save to your database
-      console.log('Saving document metadata for user:', user.id);
-    }
-
+    // Enhanced validation before processing
     try {
+      setValidationStep('🔍 Validating document...');
+      setUploadProgress(10);
+
+      // Import validation utility
+      const { validateFile } = await import('../lib/documentParser.js');
+
+      // Validate file format and size
+      validateFile(selectedFile);
+      console.log('✅ Document validation passed');
+
+      setValidationStep('📄 Processing document...');
+      setUploadProgress(30);
+
+      // Start progress simulation
+      const progressInterval = simulateUploadProgress(85);
+
+      setValidationStep('🤖 Analyzing content...');
+      setUploadProgress(70);
+
+      // Save document metadata if user is authenticated
+      if (user) {
+        console.log('Saving document metadata for user:', user.id);
+      }
+
+      setValidationStep('🔬 Running compliance analysis...');
+      setUploadProgress(90);
+
+      // Call the upload handler
       await onUpload({
         file: selectedFile,
         industry: selectedIndustry,
         frameworks: selectedFrameworks,
-        userId: user?.id
+        userId: user?.id,
+        validated: true
       });
-      
+
+      // Clear any existing intervals
+      clearInterval(progressInterval);
+
       setUploadProgress(100);
-      setValidationStep('Analysis complete!');
+      setValidationStep('✅ Analysis complete! Generating results...');
+
+      console.log('🎉 Document analysis completed successfully');
+
+      // Small delay to show completion, then reset
+      setTimeout(() => {
+        setValidationStep('');
+        setUploadProgress(0);
+      }, 1500);
+
     } catch (error) {
+      console.error('❌ Document validation failed:', error);
       setUploadProgress(0);
-      setValidationStep('');
+      setValidationStep('❌ Validation failed: ' + error.message);
+
+      // Show user-friendly error message
+      setTimeout(() => {
+        alert(`Document validation failed: ${error.message}\n\nPlease ensure your document is a valid policy file and try again.`);
+        setValidationStep('');
+      }, 2000);
     }
   };
 

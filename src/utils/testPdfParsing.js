@@ -1,13 +1,14 @@
 // Test utility to verify PDF parsing functionality
-import * as pdfjsLib from 'pdfjs-dist/webpack';
-
-// Configure PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+import { configurePdfWorker } from './pdfWorker.js';
 
 export const testPdfParsing = async () => {
   console.log('🔧 Testing PDF.js configuration...');
-  
+
   try {
+    // Configure PDF worker
+    await configurePdfWorker();
+    console.log('✅ PDF worker configured successfully');
+
     // Test if PDF.js is properly loaded
     console.log('✅ PDF.js library loaded:', !!pdfjsLib);
     console.log('✅ Worker configured:', pdfjsLib.GlobalWorkerOptions.workerSrc);

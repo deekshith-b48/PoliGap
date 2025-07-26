@@ -20,7 +20,7 @@ import { PageLoader } from './components/LoadingSpinner';
 import DashboardLayout from './components/DashboardLayout';
 import DashboardOverview from './components/DashboardOverview';
 import ModernDashboardAnalytics from './components/ModernDashboardAnalytics';
-import DashboardResources from './components/DashboardResources';
+import DashboardResourcesEnhanced from './components/DashboardResourcesEnhanced';
 import DashboardAdminPanel from './components/DashboardAdminPanel';
 import ModernDashboardProfile from './components/ModernDashboardProfile';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -200,7 +200,7 @@ function AppContent() {
           >
             <Route index element={<DashboardOverview />} />
             <Route path="analytics" element={<ModernDashboardAnalytics />} />
-            <Route path="resources" element={<DashboardResources />} />
+            <Route path="resources" element={<DashboardResourcesEnhanced />} />
             <Route path="profile" element={<ModernDashboardProfile />} />
             <Route
               path="admin"

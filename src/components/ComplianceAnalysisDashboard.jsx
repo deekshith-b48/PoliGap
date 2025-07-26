@@ -6,12 +6,16 @@ function ComplianceAnalysisDashboard({ analysisResults, onClose }) {
   const [activeFramework, setActiveFramework] = useState('GDPR');
   const [showContentDashboard, setShowContentDashboard] = useState(false);
 
-  if (!analysisResults || !analysisResults.structuredAnalysis) {
-    return null;
+  if (!analysisResults) {
+    return (
+      <div className="p-8 text-center">
+        <p className="text-gray-500">No analysis results available</p>
+      </div>
+    );
   }
 
   const { structuredAnalysis, gaps, overallScore, summary, contentScanResults } = analysisResults;
-  const { redFlags, frameworkScores, sectionAnalysis } = structuredAnalysis;
+  const { redFlags = [], frameworkScores = {}, sectionAnalysis = {} } = structuredAnalysis || {};
 
   const severityColors = {
     critical: 'bg-red-500',
@@ -27,9 +31,11 @@ function ComplianceAnalysisDashboard({ analysisResults, onClose }) {
     low: 'bg-green-50 border-green-200'
   };
 
-  const redFlagsByCategory = redFlags.reduce((acc, flag) => {
-    if (!acc[flag.category]) acc[flag.category] = [];
-    acc[flag.category].push(flag);
+  const redFlagsByCategory = (redFlags || []).reduce((acc, flag) => {
+    if (flag && flag.category) {
+      if (!acc[flag.category]) acc[flag.category] = [];
+      acc[flag.category].push(flag);
+    }
     return acc;
   }, {});
 
@@ -187,7 +193,7 @@ function ComplianceAnalysisDashboard({ analysisResults, onClose }) {
                   Framework Compliance Overview
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {Object.entries(frameworkScores).map(([framework, data]) => (
+                  {Object.entries(frameworkScores || {}).map(([framework, data]) => (
                     <div key={framework} className="bg-gray-50 rounded-2xl p-6">
                       <div className="flex justify-between items-center mb-4">
                         <h3 className="font-bold text-gray-900">{framework}</h3>
@@ -225,7 +231,7 @@ function ComplianceAnalysisDashboard({ analysisResults, onClose }) {
                   Compliance Red Flags Detected
                 </h2>
                 
-                {Object.entries(redFlagsByCategory).map(([category, flags]) => (
+                {Object.entries(redFlagsByCategory || {}).map(([category, flags]) => (
                   <div key={category} className="mb-8 last:mb-0">
                     <h3 className="text-lg font-bold text-gray-900 mb-4">{category}</h3>
                     <div className="space-y-4">
@@ -278,7 +284,7 @@ function ComplianceAnalysisDashboard({ analysisResults, onClose }) {
                 </h2>
                 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {Object.entries(sectionAnalysis).map(([sectionKey, section]) => (
+                  {Object.entries(sectionAnalysis || {}).map(([sectionKey, section]) => (
                     <div key={sectionKey} className="bg-gray-50 rounded-2xl p-6">
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center">
@@ -301,20 +307,20 @@ function ComplianceAnalysisDashboard({ analysisResults, onClose }) {
                           <div className="grid grid-cols-2 gap-4 text-sm">
                             <div>
                               <span className="text-gray-600">Keywords Found:</span>
-                              <span className="font-medium ml-2">{section.keywords.length}</span>
+                              <span className="font-medium ml-2">{section.keywords?.length || 0}</span>
                             </div>
                             <div>
                               <span className="text-gray-600">Red Flags:</span>
-                              <span className="font-medium ml-2">{section.redFlags.length}</span>
+                              <span className="font-medium ml-2">{section.redFlags?.length || 0}</span>
                             </div>
                           </div>
                         </div>
                         
-                        {section.redFlags.length > 0 && (
+                        {(section.redFlags?.length || 0) > 0 && (
                           <div>
                             <h4 className="font-semibold text-gray-800 mb-2">🚨 Red Flags in Section</h4>
                             <div className="space-y-1">
-                              {section.redFlags.map((flag, idx) => (
+                              {(section.redFlags || []).map((flag, idx) => (
                                 <div key={idx} className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">
                                   {flag}
                                 </div>
@@ -322,12 +328,12 @@ function ComplianceAnalysisDashboard({ analysisResults, onClose }) {
                             </div>
                           </div>
                         )}
-                        
-                        {section.gaps.length > 0 && (
+
+                        {(section.gaps?.length || 0) > 0 && (
                           <div>
                             <h4 className="font-semibold text-gray-800 mb-2">🎯 Identified Gaps</h4>
                             <div className="space-y-1">
-                              {section.gaps.map((gap, idx) => (
+                              {(section.gaps || []).map((gap, idx) => (
                                 <div key={idx} className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded">
                                   {gap}
                                 </div>
@@ -395,11 +401,11 @@ function ComplianceAnalysisDashboard({ analysisResults, onClose }) {
                       </div>
                     </div>
                     
-                    {frameworkScores[activeFramework].missingElements.length > 0 && (
+                    {(frameworkScores[activeFramework]?.missingElements?.length || 0) > 0 && (
                       <div className="bg-red-50 rounded-2xl p-6 border border-red-200">
                         <h3 className="font-bold text-red-900 mb-4">Missing Requirements</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                          {frameworkScores[activeFramework].missingElements.map((element, idx) => (
+                          {(frameworkScores[activeFramework]?.missingElements || []).map((element, idx) => (
                             <div key={idx} className="bg-white rounded-xl p-3 border border-red-200">
                               <div className="text-red-800 font-medium text-sm">{element}</div>
                             </div>
@@ -423,7 +429,7 @@ function ComplianceAnalysisDashboard({ analysisResults, onClose }) {
                 </h2>
                 
                 <div className="space-y-6">
-                  {gaps.slice(0, 10).map((gap, index) => (
+                  {(gaps || []).slice(0, 10).map((gap, index) => (
                     <div key={index} className={`${severityBgColors[gap.severity]} rounded-2xl p-6 border`}>
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center">

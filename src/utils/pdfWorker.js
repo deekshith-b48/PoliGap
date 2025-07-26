@@ -12,7 +12,7 @@ export const configurePdfWorker = async () => {
     // Don't set workerSrc - let PDF.js handle it with disableWorker option
     // This avoids workerSrc type validation issues
 
-    console.log('✅ PDF.js configured to run without worker (main thread)');
+    console.log('✅ PDF.js configured to run with disableWorker option (main thread)');
     isWorkerConfigured = true;
     return;
   } catch (error) {

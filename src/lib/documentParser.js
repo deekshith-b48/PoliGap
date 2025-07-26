@@ -52,11 +52,7 @@ export class DocumentParser {
       // Try direct PDF.js import first without complex worker setup
       const pdfjsLib = await import('pdfjs-dist');
 
-      // Create a minimal worker blob to avoid external dependencies
-      if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
-        const workerBlob = new Blob(['// Minimal PDF.js worker'], { type: 'application/javascript' });
-        pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(workerBlob);
-      }
+      // Don't set workerSrc - let PDF.js handle it with disableWorker option
 
       const arrayBuffer = await file.arrayBuffer();
 

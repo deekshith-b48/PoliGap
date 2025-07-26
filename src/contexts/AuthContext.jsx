@@ -11,6 +11,22 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const clearSession = () => {
+    // Clear any stored auth tokens from localStorage
+    try {
+      const keys = Object.keys(localStorage);
+      keys.forEach(key => {
+        if (key.startsWith('sb-') || key.includes('supabase')) {
+          localStorage.removeItem(key);
+        }
+      });
+    } catch (error) {
+      console.warn('Error clearing localStorage:', error);
+    }
+
+    setUser(null);
+  };
+
   // Global error handler for auth errors
   const handleAuthError = (error) => {
     if (error?.message?.includes('Invalid Refresh Token') ||

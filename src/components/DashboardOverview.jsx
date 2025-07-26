@@ -170,7 +170,7 @@ function DashboardOverview() {
               <p className="text-2xl font-bold text-gray-900">{stats.totalAnalyses}</p>
             </div>
             <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-              <span className="text-blue-600 text-xl">📊</span>
+              <MdAnalytics className="w-6 h-6 text-blue-600" />
             </div>
           </div>
         </div>
@@ -194,7 +194,7 @@ function DashboardOverview() {
               <p className="text-2xl font-bold text-gray-900">{stats.criticalGaps}</p>
             </div>
             <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
-              <span className="text-orange-600 text-xl">⚠️</span>
+              <HiOutlineExclamation className="w-6 h-6 text-orange-600" />
             </div>
           </div>
         </div>

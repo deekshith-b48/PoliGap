@@ -54,9 +54,11 @@ function PolicyAnalyzer({ onNavigate, onDocumentUpload, onAuthOpen, onProfileOpe
 
       // Fast text extraction with reduced timeout and fallback
       let text;
+      let progressTimer; // Declare in proper scope
+
       try {
         // Add progress updates during extraction
-        const progressTimer = setInterval(() => {
+        progressTimer = setInterval(() => {
           setProgress('📄 Processing document content...');
         }, 3000);
 
@@ -68,7 +70,7 @@ function PolicyAnalyzer({ onNavigate, onDocumentUpload, onAuthOpen, onProfileOpe
         text = await Promise.race([extractionPromise, timeoutPromise]);
         clearInterval(progressTimer);
       } catch (extractionError) {
-        clearInterval(progressTimer);
+        if (progressTimer) clearInterval(progressTimer);
         console.warn('Primary text extraction failed:', extractionError.message);
 
         // Quick fallback - try direct file reading for text files

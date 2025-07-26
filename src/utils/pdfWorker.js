@@ -9,8 +9,8 @@ export const configurePdfWorker = async () => {
   try {
     const pdfjsLib = await import('pdfjs-dist');
 
-    // Don't set workerSrc - let PDF.js handle it with disableWorker option
-    // This avoids workerSrc type validation issues
+    // Set a reliable CDN worker source
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
     console.log('✅ PDF.js configured to run with disableWorker option (main thread)');
     isWorkerConfigured = true;

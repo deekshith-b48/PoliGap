@@ -591,11 +591,11 @@ function GapAnalysisView({ filteredGaps, viewMode, getSeverityConfig }) {
     <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/50 p-8">
       <div className="flex items-center mb-8">
         <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-orange-600 rounded-2xl flex items-center justify-center mr-4">
-          <FiAlertTriangle className="w-6 h-6 text-white" />
+          <FiSearch className="w-6 h-6 text-white" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Compliance Gaps</h2>
-          <p className="text-gray-600">Showing {filteredGaps.length} identified gaps</p>
+          <h2 className="text-2xl font-bold text-gray-900">🔍 Gap Analysis</h2>
+          <p className="text-gray-600">Detailed review of {filteredGaps.length} compliance gaps identified</p>
         </div>
       </div>
 

@@ -1,22 +1,12 @@
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
-// Import autoTable and ensure it's properly initialized
-let autoTableLoaded = false;
+// Import autoTable - this should attach the plugin to jsPDF
 try {
-  require('jspdf-autotable');
-  autoTableLoaded = true;
+  // Try importing the autoTable plugin
+  import 'jspdf-autotable';
 } catch (error) {
-  try {
-    // Alternative import method
-    import('jspdf-autotable').then(() => {
-      autoTableLoaded = true;
-    }).catch(() => {
-      console.warn('autoTable plugin could not be loaded');
-    });
-  } catch (importError) {
-    console.warn('autoTable plugin not available:', importError.message);
-  }
+  console.warn('jspdf-autotable plugin not available:', error.message);
 }
 
 class PDFExportUtility {

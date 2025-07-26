@@ -265,7 +265,7 @@ function ComplianceAnalysisDashboard({ analysisResults, onClose }) {
                 
                 {redFlags.length === 0 && (
                   <div className="text-center py-12">
-                    <div className="text-6xl mb-4">��</div>
+                    <div className="text-6xl mb-4">✅</div>
                     <h3 className="text-xl font-bold text-gray-900 mb-2">No Critical Red Flags Detected</h3>
                     <p className="text-gray-600">Your policy document shows good compliance practices.</p>
                   </div>
@@ -429,7 +429,7 @@ function ComplianceAnalysisDashboard({ analysisResults, onClose }) {
                 </h2>
                 
                 <div className="space-y-6">
-                  {gaps.slice(0, 10).map((gap, index) => (
+                  {(gaps || []).slice(0, 10).map((gap, index) => (
                     <div key={index} className={`${severityBgColors[gap.severity]} rounded-2xl p-6 border`}>
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center">

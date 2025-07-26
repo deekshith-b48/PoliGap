@@ -440,13 +440,7 @@ function LandingPage({ onNavigate, onSearch, onAuthOpen, onProfileOpen, onHistor
                 >
                   ⚡ AI Generator
                 </Link>
-                <Link
-                  to="/compliances"
-                  className="text-left text-gray-700 hover:text-gray-900 transition-colors font-medium text-sm py-2"
-                  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                >
-                  📚 Learn Frameworks
-                </Link>
+
 
                 {/* Mobile Auth Buttons */}
                 {user ? (

@@ -140,7 +140,7 @@ function AnalysisResultsRevamped({ analysis }) {
 
   const getSeverityConfig = (severity) => {
     const configs = {
-      critical: { color: 'bg-red-500', icon: '��', bgColor: 'bg-red-50 border-red-200', textColor: 'text-red-800' },
+      critical: { color: 'bg-red-500', icon: '🚨', bgColor: 'bg-red-50 border-red-200', textColor: 'text-red-800' },
       high: { color: 'bg-orange-500', icon: '⚠️', bgColor: 'bg-orange-50 border-orange-200', textColor: 'text-orange-800' },
       medium: { color: 'bg-yellow-500', icon: '📋', bgColor: 'bg-yellow-50 border-yellow-200', textColor: 'text-yellow-800' },
       low: { color: 'bg-green-500', icon: '✅', bgColor: 'bg-green-50 border-green-200', textColor: 'text-green-800' }
@@ -846,7 +846,7 @@ function ActionButtonsSection({ handleGeneratePlan, handleAdvancedDashboard, isG
       <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-3xl p-8 shadow-xl border border-blue-200">
         <div className="text-center">
           <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-            <FiBarChart3 className="w-8 h-8 text-white" />
+            <FiBarChart className="w-8 h-8 text-white" />
           </div>
           <h3 className="text-xl font-bold text-gray-900 mb-4">Advanced Analytics Dashboard</h3>
           <p className="text-gray-600 mb-6 text-sm">

@@ -37,7 +37,7 @@ function ComplianceAnalysisDashboard({ analysisResults, onClose }) {
     const icons = {
       dataCollection: '🔍',
       userRights: '👤',
-      compliance: '⚖️',
+      compliance: '���️',
       security: '🔒',
       retention: '📅'
     };
@@ -278,7 +278,7 @@ function ComplianceAnalysisDashboard({ analysisResults, onClose }) {
                 </h2>
                 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {Object.entries(sectionAnalysis).map(([sectionKey, section]) => (
+                  {Object.entries(sectionAnalysis || {}).map(([sectionKey, section]) => (
                     <div key={sectionKey} className="bg-gray-50 rounded-2xl p-6">
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center">

@@ -314,6 +314,20 @@ class PDFExportUtility {
   // Export analysis results to professional PDF
   async exportAnalysisResults(analysis, options = {}) {
     const doc = new jsPDF();
+
+    // Ensure autoTable is available on this specific document instance
+    if (!doc.autoTable && typeof window !== 'undefined' && window.jsPDF) {
+      // Sometimes the plugin attaches to the global jsPDF
+      try {
+        const autoTable = require('jspdf-autotable');
+        if (autoTable && autoTable.default) {
+          // Plugin might export as default
+          doc.autoTable = autoTable.default.bind(doc);
+        }
+      } catch (error) {
+        console.warn('Could not manually attach autoTable:', error.message);
+      }
+    }
     const metadata = {
       company: options.company || 'Your Organization',
       date: new Date().toLocaleDateString(),

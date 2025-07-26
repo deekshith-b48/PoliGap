@@ -1,5 +1,28 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import {
+  HiOutlineSearch,
+  HiOutlinePlus,
+  HiOutlineDownload,
+  HiOutlineEye,
+  HiOutlinePencil,
+  HiOutlineTrash,
+  HiOutlineX,
+  HiOutlineBookOpen,
+  HiOutlineAcademicCap,
+  HiOutlineClipboardList,
+  HiOutlineTemplate,
+  HiOutlineDocumentText
+} from 'react-icons/hi';
+import {
+  MdSecurity,
+  MdGavel,
+  MdHealthAndSafety,
+  MdAccountBalance,
+  MdBusiness,
+  MdVerifiedUser,
+  MdLibraryBooks
+} from 'react-icons/md';
 
 function DashboardResources() {
   const { user } = useAuth();

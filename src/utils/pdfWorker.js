@@ -9,8 +9,11 @@ export const configurePdfWorker = async () => {
   try {
     const pdfjsLib = await import('pdfjs-dist');
 
-    // Use data URL to provide a minimal worker that does nothing
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'data:application/javascript;base64,';
+    // Create a minimal worker blob to avoid external dependencies
+    if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
+      const workerBlob = new Blob(['// Minimal PDF.js worker'], { type: 'application/javascript' });
+      pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(workerBlob);
+    }
 
     console.log('✅ PDF.js configured to run without worker (main thread)');
     isWorkerConfigured = true;

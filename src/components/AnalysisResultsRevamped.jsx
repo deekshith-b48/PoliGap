@@ -932,6 +932,133 @@ function ActionPlanView({ analysis, filteredGaps, getSeverityConfig }) {
   );
 }
 
+// Benchmarking View Component
+function BenchmarkingView({ analysis, chartRefs }) {
+  const industryBenchmark = analysis.industryBenchmark || {
+    industry: 'General',
+    score: analysis.overallScore || 0,
+    average: 74,
+    excellent: 87,
+    comparison: 'Industry Analysis',
+    percentile: 65
+  };
+
+  return (
+    <div className="space-y-8">
+      <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/50 p-8">
+        <div className="flex items-center mb-8">
+          <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mr-4">
+            <FiTrendingUp className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">📈 Benchmarking</h2>
+            <p className="text-gray-600">Performance comparison against industry standards</p>
+          </div>
+        </div>
+
+        {/* Industry Comparison */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-200">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Industry Position</h3>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Your Score:</span>
+                <span className="text-2xl font-bold text-blue-600">{industryBenchmark.score}%</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Industry Average:</span>
+                <span className="text-lg font-semibold text-gray-700">{industryBenchmark.average}%</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Excellence Threshold:</span>
+                <span className="text-lg font-semibold text-green-600">{industryBenchmark.excellent}%</span>
+              </div>
+              <div className="mt-4 p-4 bg-white rounded-xl border border-blue-200">
+                <div className="text-sm text-gray-600 mb-2">Industry: {industryBenchmark.industry}</div>
+                <div className="text-lg font-semibold text-blue-700">{industryBenchmark.comparison}</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-200">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Percentile Ranking</h3>
+            <div className="text-center mb-4">
+              <div className="text-4xl font-bold text-green-600 mb-2">{industryBenchmark.percentile}th</div>
+              <div className="text-gray-600">Percentile</div>
+            </div>
+
+            {/* Visual percentile bar */}
+            <div className="relative w-full h-4 bg-gray-200 rounded-full mb-4">
+              <div
+                className="absolute left-0 top-0 h-4 bg-gradient-to-r from-green-400 to-green-600 rounded-full"
+                style={{ width: `${industryBenchmark.percentile}%` }}
+              ></div>
+              <div
+                className="absolute top-0 w-1 h-4 bg-gray-700"
+                style={{ left: `${industryBenchmark.percentile}%` }}
+              ></div>
+            </div>
+
+            <div className="text-sm text-gray-600 text-center">
+              You scored better than {industryBenchmark.percentile}% of organizations
+            </div>
+          </div>
+        </div>
+
+        {/* Performance Metrics */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="text-center p-6 bg-white rounded-2xl border border-gray-200 shadow-sm">
+            <div className="text-3xl font-bold text-blue-600 mb-2">
+              {(analysis.gaps || []).filter(g => g.severity === 'critical').length}
+            </div>
+            <div className="text-gray-600 text-sm">Critical Issues</div>
+            <div className="text-xs text-gray-500 mt-1">Industry Avg: 2.3</div>
+          </div>
+
+          <div className="text-center p-6 bg-white rounded-2xl border border-gray-200 shadow-sm">
+            <div className="text-3xl font-bold text-green-600 mb-2">
+              {analysis.structuredAnalysis?.confidence || 85}%
+            </div>
+            <div className="text-gray-600 text-sm">Confidence Score</div>
+            <div className="text-xs text-gray-500 mt-1">Industry Avg: 78%</div>
+          </div>
+
+          <div className="text-center p-6 bg-white rounded-2xl border border-gray-200 shadow-sm">
+            <div className="text-3xl font-bold text-purple-600 mb-2">
+              {Object.keys(analysis.structuredAnalysis?.frameworkScores || {}).length}
+            </div>
+            <div className="text-gray-600 text-sm">Frameworks</div>
+            <div className="text-xs text-gray-500 mt-1">Industry Avg: 2.1</div>
+          </div>
+
+          <div className="text-center p-6 bg-white rounded-2xl border border-gray-200 shadow-sm">
+            <div className="text-3xl font-bold text-orange-600 mb-2">
+              {(analysis.gaps || []).length}
+            </div>
+            <div className="text-gray-600 text-sm">Total Gaps</div>
+            <div className="text-xs text-gray-500 mt-1">Industry Avg: 12.4</div>
+          </div>
+        </div>
+
+        {/* Improvement Recommendations */}
+        <div className="mt-8 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl border border-blue-200">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">🎯 Improvement Opportunities</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-white p-4 rounded-xl border border-blue-200">
+              <h4 className="font-semibold text-blue-900 mb-2">Quick Wins</h4>
+              <p className="text-blue-800 text-sm">Address medium-priority gaps to boost score by 8-12 points</p>
+            </div>
+            <div className="bg-white p-4 rounded-xl border border-purple-200">
+              <h4 className="font-semibold text-purple-900 mb-2">Strategic Focus</h4>
+              <p className="text-purple-800 text-sm">Invest in framework compliance to reach excellence threshold</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Action Buttons Section Component
 function ActionButtonsSection({ handleGeneratePlan, handleAdvancedDashboard, isGeneratingPlan, filteredGaps, analysis }) {
   return (

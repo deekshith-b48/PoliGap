@@ -298,11 +298,17 @@ export class DocumentParser {
   }
 
   /**
-   * Extract text from plain text files
+   * Extract text from plain text files with timeout protection
    */
   static async extractFromText(file) {
     try {
-      const text = await file.text();
+      // Add timeout even for text files (safety measure)
+      const textPromise = file.text();
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Text reading timeout')), 5000)
+      );
+
+      const text = await Promise.race([textPromise, timeoutPromise]);
       return this.cleanText(text);
     } catch (error) {
       console.error('Text extraction error:', error);

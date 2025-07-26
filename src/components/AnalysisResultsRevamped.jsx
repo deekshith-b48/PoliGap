@@ -350,39 +350,47 @@ function AnalysisResultsRevamped({ analysis }) {
         {/* Content Views */}
         <div className="space-y-8">
           
-          {/* Overview View */}
+          {/* Executive Summary View */}
           {activeView === 'overview' && (
-            <OverviewView 
-              analysis={analysis} 
+            <ExecutiveSummaryView
+              analysis={analysis}
               filteredGaps={filteredGaps}
               summaryRef={summaryRef}
               chartRefs={chartRefs}
             />
           )}
 
-          {/* Gaps View */}
+          {/* Framework Analysis View */}
+          {activeView === 'framework' && (
+            <FrameworkAnalysisView
+              analysis={analysis}
+              chartRefs={chartRefs}
+            />
+          )}
+
+          {/* Gap Analysis View */}
           {activeView === 'gaps' && (
-            <GapsView 
+            <GapAnalysisView
               filteredGaps={filteredGaps}
               viewMode={viewMode}
               getSeverityConfig={getSeverityConfig}
             />
           )}
 
-          {/* Insights View */}
-          {activeView === 'insights' && (
-            <InsightsView 
-              analysis={analysis}
-              chartRefs={chartRefs}
-            />
-          )}
-
-          {/* Recommendations View */}
-          {activeView === 'recommendations' && (
-            <RecommendationsView 
+          {/* Action Plan View */}
+          {activeView === 'actions' && (
+            <ActionPlanView
               analysis={analysis}
               filteredGaps={filteredGaps}
               getSeverityConfig={getSeverityConfig}
+            />
+          )}
+
+          {/* Benchmarking View */}
+          {activeView === 'benchmarking' && (
+            <BenchmarkingView
+              analysis={analysis}
+              chartRefs={chartRefs}
             />
           )}
 
@@ -699,7 +707,7 @@ function InsightsView({ analysis, chartRefs }) {
         {/* Red Flags */}
         {analysis.structuredAnalysis?.redFlags && analysis.structuredAnalysis.redFlags.length > 0 && (
           <div className="mb-8">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">🚨 Critical Red Flags</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">�� Critical Red Flags</h3>
             <div className="space-y-4">
               {analysis.structuredAnalysis.redFlags.slice(0, 5).map((flag, index) => (
                 <div key={index} className="bg-red-50 rounded-2xl p-4 border border-red-200">

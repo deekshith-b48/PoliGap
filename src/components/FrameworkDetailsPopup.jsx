@@ -55,7 +55,7 @@ function FrameworkDetailsPopup({ framework, isOpen, onClose }) {
 
   const tabs = [
     { key: 'overview', label: 'Overview', icon: HiOutlineDocumentText },
-    { key: 'requirements', label: 'Requirements', icon: HiOutlineShield },
+    { key: 'requirements', label: 'Requirements', icon: HiOutlineShieldCheck },
     { key: 'implementation', label: 'Implementation', icon: HiOutlineClipboard }
   ];
 

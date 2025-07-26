@@ -163,10 +163,11 @@ function AnalysisResultsRevamped({ analysis }) {
   };
 
   const views = [
-    { key: 'overview', label: 'Overview', icon: FiBarChart },
-    { key: 'gaps', label: 'Compliance Gaps', icon: FiAlertTriangle },
-    { key: 'insights', label: 'Insights', icon: FiTrendingUp },
-    { key: 'recommendations', label: 'Actions', icon: FiCheckCircle }
+    { key: 'overview', label: '📊 Executive Summary', icon: FiBarChart },
+    { key: 'framework', label: '🛡️ Framework Analysis', icon: FiShield },
+    { key: 'gaps', label: '🔍 Gap Analysis', icon: FiSearch },
+    { key: 'actions', label: '📋 Action Plan', icon: FiClipboard },
+    { key: 'benchmarking', label: '📈 Benchmarking', icon: FiTrendingUp }
   ];
 
   return (

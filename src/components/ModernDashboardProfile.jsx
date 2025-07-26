@@ -8,7 +8,7 @@ import {
   HiOutlineX,
   HiOutlineCog,
   HiOutlineBell,
-  HiOutlineShield,
+  HiOutlineShieldCheck,
   HiOutlineKey,
   HiOutlineDownload,
   HiOutlineTrash,

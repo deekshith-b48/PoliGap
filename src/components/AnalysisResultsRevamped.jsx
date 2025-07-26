@@ -289,16 +289,11 @@ function AnalysisResultsRevamped({ analysis }) {
                 </select>
 
                 <button
-                  onClick={handleExport}
-                  disabled={isExporting}
-                  className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-semibold text-sm hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 transition-all shadow-lg"
+                  onClick={() => setShowExportPanel(true)}
+                  className="flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-semibold text-sm hover:from-blue-600 hover:to-purple-700 transition-all shadow-lg"
                 >
-                  {isExporting ? (
-                    <FiRefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                  ) : (
-                    <FiDownload className="w-4 h-4 mr-2" />
-                  )}
-                  {isExporting ? 'Exporting...' : 'Export'}
+                  <FiShare2 className="w-4 h-4 mr-2" />
+                  Export & Share
                 </button>
               </div>
             </div>

@@ -161,7 +161,7 @@ function AnalysisResultsRevamped({ analysis }) {
   };
 
   const views = [
-    { key: 'overview', label: 'Overview', icon: FiBarChart3 },
+    { key: 'overview', label: 'Overview', icon: FiBarChart },
     { key: 'gaps', label: 'Compliance Gaps', icon: FiAlertTriangle },
     { key: 'insights', label: 'Insights', icon: FiTrendingUp },
     { key: 'recommendations', label: 'Actions', icon: FiCheckCircle }

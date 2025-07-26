@@ -52,7 +52,8 @@ export class DocumentParser {
       // Try direct PDF.js import first without complex worker setup
       const pdfjsLib = await import('pdfjs-dist');
 
-      // Don't set workerSrc - let PDF.js handle it with disableWorker option
+      // Set a reliable CDN worker source
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
       const arrayBuffer = await file.arrayBuffer();
 

@@ -47,6 +47,8 @@ export class DocumentParser {
    */
   static async extractFromPDF(file) {
     try {
+      console.log('📄 Attempting PDF text extraction...');
+
       // Import PDF worker utility
       const { createPdfDocument } = await import('../utils/pdfWorker.js');
 

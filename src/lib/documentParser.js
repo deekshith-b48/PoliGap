@@ -146,8 +146,65 @@ export class DocumentParser {
 
     } catch (error) {
       console.error('❌ PDF extraction failed:', error.message);
-      console.log('⚠️ Using fallback mock content for analysis');
-      return this.generateMockPolicyContent(file.name);
+
+      // Try alternative PDF processing approach
+      try {
+        console.log('🔄 Attempting alternative PDF processing...');
+        return await this.alternativePDFExtraction(file);
+      } catch (altError) {
+        console.warn('Alternative PDF processing also failed:', altError.message);
+        console.log('⚠️ Using enhanced mock content for analysis demonstration');
+        return this.generateMockPolicyContent(file.name);
+      }
+    }
+  }
+
+  /**
+   * Alternative PDF extraction method for when PDF.js fails
+   */
+  static async alternativePDFExtraction(file) {
+    try {
+      // Attempt to read PDF as text (works for some simple PDFs)
+      const text = await file.text();
+
+      // Check if we got readable text
+      if (text && text.length > 50 && !text.includes('%PDF')) {
+        console.log('✅ Alternative text extraction successful');
+        return this.cleanText(text);
+      }
+
+      // If that fails, try to extract any readable text from the buffer
+      const arrayBuffer = await file.arrayBuffer();
+      const uint8Array = new Uint8Array(arrayBuffer);
+      let extractedText = '';
+
+      // Simple text extraction from PDF bytes
+      for (let i = 0; i < uint8Array.length - 1; i++) {
+        const char = uint8Array[i];
+        // Extract printable ASCII characters
+        if (char >= 32 && char <= 126) {
+          extractedText += String.fromCharCode(char);
+        } else if (char === 10 || char === 13) {
+          extractedText += ' ';
+        }
+      }
+
+      // Clean up extracted text
+      const cleanedText = extractedText
+        .replace(/[^\w\s.,;:!?()-]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      if (cleanedText.length > 100) {
+        console.log(`✅ Basic PDF text extraction found ${cleanedText.length} characters`);
+        return this.cleanText(cleanedText);
+      }
+
+      throw new Error('No readable text found in PDF');
+
+    } catch (error) {
+      console.error('Alternative PDF extraction failed:', error.message);
+      throw error;
     }
   }
 

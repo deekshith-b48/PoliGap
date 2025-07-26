@@ -24,6 +24,7 @@ import DashboardResources from './components/DashboardResources';
 import DashboardAdminPanel from './components/DashboardAdminPanel';
 import DashboardProfile from './components/DashboardProfile';
 import ProtectedRoute from './components/ProtectedRoute';
+import AuthErrorBoundary from './components/AuthErrorBoundary';
 import { useAuth } from './contexts/AuthContext';
 
 // Wrapper component to handle navigation and shared state

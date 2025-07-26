@@ -316,11 +316,11 @@ function ComplianceAnalysisDashboard({ analysisResults, onClose }) {
                           </div>
                         </div>
                         
-                        {section.redFlags.length > 0 && (
+                        {(section.redFlags?.length || 0) > 0 && (
                           <div>
                             <h4 className="font-semibold text-gray-800 mb-2">🚨 Red Flags in Section</h4>
                             <div className="space-y-1">
-                              {section.redFlags.map((flag, idx) => (
+                              {(section.redFlags || []).map((flag, idx) => (
                                 <div key={idx} className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded">
                                   {flag}
                                 </div>
@@ -328,12 +328,12 @@ function ComplianceAnalysisDashboard({ analysisResults, onClose }) {
                             </div>
                           </div>
                         )}
-                        
-                        {section.gaps.length > 0 && (
+
+                        {(section.gaps?.length || 0) > 0 && (
                           <div>
                             <h4 className="font-semibold text-gray-800 mb-2">🎯 Identified Gaps</h4>
                             <div className="space-y-1">
-                              {section.gaps.map((gap, idx) => (
+                              {(section.gaps || []).map((gap, idx) => (
                                 <div key={idx} className="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded">
                                   {gap}
                                 </div>

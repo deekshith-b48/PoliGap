@@ -49,14 +49,21 @@ export class DocumentParser {
     try {
       console.log('📄 Attempting PDF text extraction...');
 
-      // Import PDF worker utility
-      const { createPdfDocument } = await import('../utils/pdfWorker.js');
+      // Try direct PDF.js import first without complex worker setup
+      const pdfjsLib = await import('pdfjs-dist');
+
+      // Disable worker immediately
+      pdfjsLib.GlobalWorkerOptions.workerSrc = false;
 
       const arrayBuffer = await file.arrayBuffer();
 
-      // Use the robust PDF document creation
-      const loadingTask = await createPdfDocument(arrayBuffer);
-      const pdf = await loadingTask.promise;
+      // Use simple PDF document creation without worker
+      const pdf = await pdfjsLib.getDocument({
+        data: arrayBuffer,
+        useWorkerFetch: false,
+        isEvalSupported: false,
+        disableWorker: true
+      }).promise;
       
       let fullText = '';
       

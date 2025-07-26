@@ -11,7 +11,7 @@ function ComplianceAnalysisDashboard({ analysisResults, onClose }) {
   }
 
   const { structuredAnalysis, gaps, overallScore, summary, contentScanResults } = analysisResults;
-  const { redFlags, frameworkScores, sectionAnalysis } = structuredAnalysis;
+  const { redFlags = [], frameworkScores = {}, sectionAnalysis = {} } = structuredAnalysis || {};
 
   const severityColors = {
     critical: 'bg-red-500',
@@ -27,7 +27,7 @@ function ComplianceAnalysisDashboard({ analysisResults, onClose }) {
     low: 'bg-green-50 border-green-200'
   };
 
-  const redFlagsByCategory = redFlags.reduce((acc, flag) => {
+  const redFlagsByCategory = (redFlags || []).reduce((acc, flag) => {
     if (!acc[flag.category]) acc[flag.category] = [];
     acc[flag.category].push(flag);
     return acc;

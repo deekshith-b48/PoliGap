@@ -292,7 +292,7 @@ function DashboardResourcesEnhanced() {
 
           {filteredFrameworks.length === 0 && (
             <div className="text-center py-12">
-              <HiOutlineShield className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <HiOutlineShieldCheck className="w-16 h-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">No frameworks found</h3>
               <p className="text-gray-600">
                 {searchQuery ? 'Try adjusting your search terms' : 'No frameworks available in this category'}

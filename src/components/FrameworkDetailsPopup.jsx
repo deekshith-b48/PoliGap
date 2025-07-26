@@ -122,7 +122,7 @@ function FrameworkDetailsPopup({ framework, isOpen, onClose }) {
             </div>
             <div className="bg-white/10 rounded-xl p-3">
               <div className="flex items-center">
-                <HiOutlineShield className="w-4 h-4 text-blue-200 mr-2" />
+                <HiOutlineShieldCheck className="w-4 h-4 text-blue-200 mr-2" />
                 <span className="text-blue-200 text-sm">Category</span>
               </div>
               <div className="text-white font-medium">{framework.category}</div>

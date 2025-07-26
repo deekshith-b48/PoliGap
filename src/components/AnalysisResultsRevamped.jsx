@@ -573,8 +573,8 @@ function ExecutiveSummaryView({ analysis, filteredGaps, summaryRef, chartRefs })
   );
 }
 
-// Gaps View Component
-function GapsView({ filteredGaps, viewMode, getSeverityConfig }) {
+// Gap Analysis View Component
+function GapAnalysisView({ filteredGaps, viewMode, getSeverityConfig }) {
   if (filteredGaps.length === 0) {
     return (
       <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/50 p-12 text-center">

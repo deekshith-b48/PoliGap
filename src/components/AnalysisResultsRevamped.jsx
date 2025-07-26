@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { FiDownload, FiEye, FiFilter, FiGrid, FiList, FiRefreshCw, FiShare2, FiTrendingUp, FiAlertTriangle, FiCheckCircle, FiBarChart, FiTarget, FiShield, FiSearch, FiClipboard, FiBenchmark } from 'react-icons/fi';
+import { FiDownload, FiEye, FiFilter, FiGrid, FiList, FiRefreshCw, FiShare2, FiTrendingUp, FiAlertTriangle, FiCheckCircle, FiBarChart, FiTarget, FiShield, FiSearch, FiClipboard } from 'react-icons/fi';
 import DetailedPlan from './DetailedPlan';
 import ComplianceAnalysisDashboard from './ComplianceAnalysisDashboard';
 import ExportSharePanel from './ExportSharePanel';

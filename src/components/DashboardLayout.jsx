@@ -1,6 +1,25 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import {
+  HiOutlineHome,
+  HiOutlineChartBar,
+  HiOutlineBookOpen,
+  HiOutlineCog,
+  HiOutlineUser,
+  HiOutlineLogout,
+  HiOutlineMenu,
+  HiOutlinePlus,
+  HiOutlineDownload
+} from 'react-icons/hi';
+import {
+  MdDashboard,
+  MdAnalytics,
+  MdLibraryBooks,
+  MdSettings,
+  MdPerson,
+  MdExitToApp
+} from 'react-icons/md';
 
 function DashboardLayout() {
   const navigate = useNavigate();
@@ -57,37 +76,42 @@ function DashboardLayout() {
     {
       id: 'overview',
       label: 'Overview',
-      icon: '📊',
+      icon: MdDashboard,
       path: '/dashboard',
-      description: 'Analysis summary & quick actions'
+      description: 'Analysis summary & quick actions',
+      color: 'text-blue-600'
     },
     {
       id: 'analytics',
       label: 'Analytics',
-      icon: '📈',
+      icon: MdAnalytics,
       path: '/dashboard/analytics',
-      description: 'Trends & performance metrics'
+      description: 'Trends & performance metrics',
+      color: 'text-green-600'
     },
     {
       id: 'resources',
       label: 'Resources',
-      icon: '📚',
+      icon: MdLibraryBooks,
       path: '/dashboard/resources',
-      description: 'Documentation & guides'
+      description: 'Documentation & guides',
+      color: 'text-purple-600'
     },
     ...(isAdmin ? [{
       id: 'admin',
       label: 'Admin Panel',
-      icon: '⚙️',
+      icon: MdSettings,
       path: '/dashboard/admin',
-      description: 'User management & system settings'
+      description: 'User management & system settings',
+      color: 'text-orange-600'
     }] : []),
     {
       id: 'profile',
       label: 'Profile',
-      icon: '👤',
+      icon: MdPerson,
       path: '/dashboard/profile',
-      description: 'Account settings & preferences'
+      description: 'Account settings & preferences',
+      color: 'text-gray-600'
     }
   ];
 
@@ -106,17 +130,17 @@ function DashboardLayout() {
       } ${isMobile ? 'fixed z-50 h-full' : 'relative'}`}>
         
         {/* Logo Area */}
-        <div className="h-16 flex items-center px-4 border-b border-gray-200">
+        <div className="h-16 flex items-center px-4 border-b border-gray-200 bg-gradient-to-r from-slate-50 to-gray-50">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-xl transform transition-all duration-300 hover:scale-105">
+              <svg className="w-5 h-5 text-white font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
             </div>
             {!sidebarCollapsed && (
               <div>
-                <h1 className="text-lg font-bold text-gray-900">POLIGAP</h1>
-                <p className="text-xs text-gray-500">Dashboard</p>
+                <h1 className="text-xl font-black text-gray-900 tracking-tight">POLIGAP</h1>
+                <p className="text-xs text-gray-500 font-medium">Professional Dashboard</p>
               </div>
             )}
           </div>
@@ -136,7 +160,7 @@ function DashboardLayout() {
                 }`}
                 title={sidebarCollapsed ? item.label : undefined}
               >
-                <span className="text-lg mr-3 flex-shrink-0">{item.icon}</span>
+                <item.icon className={`w-5 h-5 mr-3 flex-shrink-0 ${isActiveRoute(item.path) ? item.color : 'text-gray-500'} transition-colors duration-200`} />
                 {!sidebarCollapsed && (
                   <div className="flex-1 min-w-0">
                     <div className="font-medium text-sm">{item.label}</div>
@@ -176,14 +200,12 @@ function DashboardLayout() {
           
           <button
             onClick={handleSignOut}
-            className={`w-full flex items-center px-3 py-2 text-red-600 hover:bg-red-50 rounded-xl transition-colors ${
+            className={`w-full flex items-center px-3 py-3 text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 group hover:shadow-md ${
               sidebarCollapsed ? 'justify-center' : 'justify-start space-x-3'
             }`}
             title={sidebarCollapsed ? 'Sign Out' : undefined}
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
+            <MdExitToApp className="w-5 h-5 group-hover:scale-110 transition-transform" />
             {!sidebarCollapsed && <span className="text-sm font-medium">Sign Out</span>}
           </button>
         </div>
@@ -192,44 +214,41 @@ function DashboardLayout() {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-h-screen">
         {/* Top Bar */}
-        <header className="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-6">
+        <header className="bg-white/80 backdrop-blur-xl border-b border-gray-200/50 h-16 flex items-center justify-between px-6 shadow-sm">
           <div className="flex items-center space-x-4">
             <button
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 hover:scale-105"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
+              <HiOutlineMenu className="w-5 h-5" />
             </button>
-            
+
             <div>
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-xl font-bold text-gray-900">
                 {location.pathname === '/dashboard' && 'Overview'}
                 {location.pathname === '/dashboard/analytics' && 'Analytics'}
                 {location.pathname === '/dashboard/resources' && 'Resources'}
                 {location.pathname === '/dashboard/admin' && 'Admin Panel'}
                 {location.pathname === '/dashboard/profile' && 'Profile'}
               </h2>
-              <p className="text-xs text-gray-500">
+              <p className="text-sm text-gray-600 font-medium">
                 Welcome back, {user.user_metadata?.full_name || 'User'}
               </p>
             </div>
           </div>
 
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3">
             {/* Quick Actions */}
             <button
               onClick={() => navigate('/analyzer')}
-              className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-medium text-sm hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+              className="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold text-sm hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
             >
+              <HiOutlinePlus className="w-4 h-4 mr-2" />
               New Analysis
             </button>
-            
-            <button className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5-5-5h5V3h5v14z" />
-              </svg>
+
+            <button className="p-2.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 hover:scale-105">
+              <HiOutlineDownload className="w-5 h-5" />
             </button>
           </div>
         </header>

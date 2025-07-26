@@ -60,25 +60,35 @@ export class DocumentParser {
       console.log('✅ PDF.js library loaded');
 
       // Configure PDF.js worker for reliable execution
-      if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
-        // Create a minimal inline worker to avoid CDN issues
-        const workerCode = `
-          // PDF.js inline worker - forces main thread fallback for reliability
-          self.onmessage = function(e) {
-            // Simply return error to force main thread execution
-            self.postMessage({
-              sourceName: e.data.sourceName,
-              targetName: e.data.targetName,
-              data: { error: 'Worker disabled - using main thread' }
-            });
-          };
-        `;
+      try {
+        if (!pdfjsLib.GlobalWorkerOptions.workerSrc || pdfjsLib.GlobalWorkerOptions.workerSrc === '') {
+          // Create a minimal inline worker to avoid CDN and URL issues
+          const workerCode = `
+            // PDF.js inline worker - forces main thread fallback for reliability
+            self.onmessage = function(e) {
+              // Simply return error to force main thread execution
+              self.postMessage({
+                sourceName: e.data.sourceName,
+                targetName: e.data.targetName,
+                data: { error: 'Worker disabled - using main thread' }
+              });
+            };
+          `;
 
-        const blob = new Blob([workerCode], { type: 'application/javascript' });
-        const workerUrl = URL.createObjectURL(blob);
-        pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
-
-        console.log('✅ PDF.js worker configured with inline fallback');
+          try {
+            const blob = new Blob([workerCode], { type: 'application/javascript' });
+            const workerUrl = URL.createObjectURL(blob);
+            pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
+            console.log('✅ PDF.js worker configured with inline fallback');
+          } catch (blobError) {
+            console.warn('Blob worker creation failed, using CDN fallback:', blobError.message);
+            // Use a known working CDN URL as last resort
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+          }
+        }
+      } catch (workerError) {
+        console.warn('Worker configuration failed, PDF.js will use default:', workerError.message);
+        // Continue without custom worker - PDF.js will handle it
       }
 
       const arrayBuffer = await file.arrayBuffer();

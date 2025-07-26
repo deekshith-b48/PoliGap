@@ -2,6 +2,11 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import html2canvas from 'html2canvas';
 
+// Ensure autoTable is properly attached to jsPDF
+if (typeof jsPDF.API.autoTable === 'undefined') {
+  console.warn('autoTable plugin not found, PDF tables may not work correctly');
+}
+
 class PDFExportUtility {
   constructor() {
     this.colors = {

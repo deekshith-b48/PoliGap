@@ -32,7 +32,6 @@ export const createPdfDocument = async (data, options = {}) => {
     useWorkerFetch: false,
     isEvalSupported: false,
     useSystemFonts: true,
-    disableWorker: true,
     ...options
   };
 

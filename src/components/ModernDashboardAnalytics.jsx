@@ -191,7 +191,7 @@ function ModernDashboardAnalytics() {
       'critical': HiOutlineExclamation,
       'optimization': HiOutlineTrendingUp,
       'insight': HiOutlineLightBulb,
-      'trend': MdTrending
+      'trend': MdTrendingUp
     };
     return icons[type] || HiOutlineLightBulb;
   };

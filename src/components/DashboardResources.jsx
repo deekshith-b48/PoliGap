@@ -184,7 +184,7 @@ function DashboardResources() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Resource Library</h1>
           <p className="text-gray-600">
-            {isAdmin ? 'Manage compliance resources and documentation' : 'Access compliance guides and templates'}
+            Comprehensive compliance frameworks, guides, and documentation
           </p>
         </div>
         {isAdmin && (

@@ -243,8 +243,15 @@ class PDFExportUtility {
       ...options.tableStyles
     };
     
-    doc.autoTable(tableOptions);
-    return doc.lastAutoTable.finalY + 10;
+    // Check if autoTable is available
+    if (typeof doc.autoTable === 'function') {
+      doc.autoTable(tableOptions);
+      return doc.lastAutoTable.finalY + 10;
+    } else {
+      // Fallback: create simple table manually
+      console.warn('autoTable not available, using basic table fallback');
+      return this.createBasicTable(doc, data, columns, options);
+    }
   }
 
   // Get color based on score

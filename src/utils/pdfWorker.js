@@ -9,10 +9,10 @@ export const configurePdfWorker = async () => {
   try {
     const pdfjsLib = await import('pdfjs-dist');
 
-    // Try multiple CDN sources for better reliability
+    // Try multiple CDN sources for better reliability - using version 5.3.93 to match package.json
     const workerSources = [
-      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js',
-      'https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js'
+      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.3.93/pdf.worker.min.js',
+      'https://unpkg.com/pdfjs-dist@5.3.93/build/pdf.worker.min.js'
     ];
 
     // Set the first worker source

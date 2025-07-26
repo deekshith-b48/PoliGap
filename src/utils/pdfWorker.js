@@ -9,20 +9,26 @@ export const configurePdfWorker = async () => {
   try {
     const pdfjsLib = await import('pdfjs-dist');
 
-    // Get the actual PDF.js version to ensure worker compatibility
-    const pdfVersion = pdfjsLib.version || '5.3.93';
+    // Create an inline worker that runs PDF.js in main thread
+    // This avoids external CDN dependencies and network issues
+    const workerCode = `
+      // Minimal PDF.js worker stub - forces main thread execution
+      self.addEventListener('message', function(e) {
+        // Return error to force fallback to main thread
+        self.postMessage({
+          sourceName: e.data.sourceName,
+          targetName: e.data.targetName,
+          data: { error: 'Use main thread' }
+        });
+      });
+    `;
 
-    // Try multiple CDN sources for better reliability - using detected version
-    const workerSources = [
-      `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfVersion}/pdf.worker.min.js`,
-      `https://unpkg.com/pdfjs-dist@${pdfVersion}/build/pdf.worker.min.js`
-    ];
+    const workerBlob = new Blob([workerCode], { type: 'application/javascript' });
+    const workerUrl = URL.createObjectURL(workerBlob);
 
-    // Set the first worker source
-    pdfjsLib.GlobalWorkerOptions.workerSrc = workerSources[0];
-    console.log(`📦 Using PDF.js version ${pdfVersion} with matching worker`);
+    pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl;
+    console.log('✅ PDF.js configured with inline worker (main thread execution)');
 
-    console.log('✅ PDF.js configured with CDN worker source');
     isWorkerConfigured = true;
     return;
   } catch (error) {

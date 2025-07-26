@@ -35,6 +35,10 @@ function DashboardResources() {
   const [editingResource, setEditingResource] = useState(null);
   const [isAdding, setIsAdding] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedFramework, setSelectedFramework] = useState(null);
+  const [showFrameworkPopup, setShowFrameworkPopup] = useState(false);
+  const [activeTab, setActiveTab] = useState('frameworks');
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
   // Check if user is admin
   const isAdmin = user?.email === 'bdeekshith412@gmail.com' || user?.user_metadata?.role === 'admin';

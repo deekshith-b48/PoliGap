@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import EnhancedDocumentUpload from './EnhancedDocumentUpload';
-import EnterpriseAnalysisResults from './EnterpriseAnalysisResults';
+import AnalysisResultsRevamped from './AnalysisResultsRevamped';
 import { analyzeDocument } from '../lib/gemini';
 import { nlpProcessor } from '../lib/nlpProcessor';
 import { extractText, validateFile, getFileInfo } from '../lib/documentParser';
+import EnhancedComplianceAnalyzer from '../lib/enhancedComplianceAnalyzer';
 
 function PolicyAnalyzer({ onNavigate, onDocumentUpload, onAuthOpen, onProfileOpen, onHistoryOpen }) {
   const [analysis, setAnalysis] = useState(null);
@@ -56,28 +57,89 @@ function PolicyAnalyzer({ onNavigate, onDocumentUpload, onAuthOpen, onProfileOpe
         throw new Error('No text content found in the document');
       }
 
-      setProgress('🧠 Processing document with advanced NLP...');
+      // ✅ ENHANCED COMPLIANCE ANALYSIS WITH ADVANCED AI
+      setProgress('🤖 Running enhanced compliance analysis...');
+      let analysisResult;
+      
+      try {
+        // Initialize enhanced analyzer
+        const enhancedAnalyzer = new EnhancedComplianceAnalyzer();
+        
+        // Primary enhanced analysis
+        analysisResult = await enhancedAnalyzer.analyzePolicy(text, {
+          industry,
+          frameworks,
+          documentInfo: docInfo
+        });
+        
+        setProgress('🧠 Applying AI analysis and validation...');
+        
+        // Combine with AI analysis for additional insights
+        try {
+          const aiAnalysis = await analyzeDocument(text, {
+            industry,
+            frameworks,
+            documentInfo: docInfo
+          });
+          
+          // Merge AI insights with enhanced analysis
+          analysisResult = {
+            ...analysisResult,
+            aiInsights: aiAnalysis,
+            summary: aiAnalysis?.summary || analysisResult.summary,
+            documentInfo: docInfo
+          };
+        } catch (aiError) {
+          console.warn('AI analysis failed, using enhanced analysis only:', aiError);
+        }
+        
+        // Apply NLP enhancements if available
+        if (analysisResult) {
+          try {
+            setProgress('🔬 Applying NLP processing...');
+            const nlpEnhancements = await nlpProcessor.enhanceAnalysis(analysisResult, text);
+            analysisResult = {
+              ...analysisResult,
+              ...nlpEnhancements,
+              nlpAnalysis: nlpEnhancements
+            };
+          } catch (nlpError) {
+            console.warn('NLP enhancement failed, using base analysis:', nlpError);
+          }
+        }
+      } catch (analysisError) {
+        console.error('Enhanced analysis failed:', analysisError);
+        
+        // Fallback to traditional analysis methods
+        setProgress('⚠️ Using fallback analysis method...');
+        try {
+          analysisResult = await analyzeDocument(text, {
+            industry,
+            frameworks,
+            documentInfo: docInfo
+          });
+        } catch (fallbackError) {
+          // Ultimate fallback to NLP-only analysis
+          analysisResult = await nlpProcessor.fallbackAnalysis(text, {
+            industry,
+            frameworks,
+            documentInfo: docInfo
+          });
+        }
+      }
 
-      // First, run our advanced NLP processor
-      const nlpResults = await nlpProcessor.processDocument(text, file.name);
+      // Ensure we have a valid analysis result
+      if (!analysisResult) {
+        throw new Error('Failed to generate analysis results');
+      }
 
-      setProgress('🤖 Analyzing document with AI...');
-
-      // Then, run the Gemini AI analysis with NLP insights
-      const results = await analyzeDocument(text, {
-        industry: industry,
-        frameworks: frameworks,
-        fileType: docInfo.type,
-        fileInfo: docInfo,
-        nlpInsights: nlpResults // Pass NLP results to enhance AI analysis
-      });
-
-      // Combine AI analysis with NLP insights
+      // Add processing metadata
       const enhancedResults = {
-        ...results,
-        nlpAnalysis: nlpResults,
+        ...analysisResult,
         documentInfo: docInfo,
-        processingTime: Date.now() - docInfo.uploadDate.getTime()
+        processingTime: Date.now() - docInfo.uploadDate.getTime(),
+        analysisVersion: '2.0',
+        enhancedFeatures: true
       };
 
       setAnalysis(enhancedResults);
@@ -107,6 +169,13 @@ function PolicyAnalyzer({ onNavigate, onDocumentUpload, onAuthOpen, onProfileOpe
     }
   };
 
+  const handleNewAnalysis = () => {
+    setAnalysis(null);
+    setDocumentInfo(null);
+    setError(null);
+    setProgress('');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Header */}
@@ -125,7 +194,7 @@ function PolicyAnalyzer({ onNavigate, onDocumentUpload, onAuthOpen, onProfileOpe
 
             <div className="text-center flex-1">
               <h1 className="text-2xl lg:text-3xl font-bold text-gray-900">Policy Gap Analyzer</h1>
-              <p className="text-gray-600 mt-1 text-sm lg:text-base">AI-powered compliance analysis with smart validation</p>
+              <p className="text-gray-600 mt-1 text-sm lg:text-base">AI-powered compliance analysis with enhanced accuracy</p>
             </div>
 
             {/* User Actions */}
@@ -150,188 +219,39 @@ function PolicyAnalyzer({ onNavigate, onDocumentUpload, onAuthOpen, onProfileOpe
                         {user.user_metadata?.full_name?.[0] || user.email[0].toUpperCase()}
                       </span>
                     </div>
-                    <span className="text-gray-700 font-medium text-sm hidden lg:inline">
-                      {user.user_metadata?.full_name || 'User'}
-                    </span>
+                    <span className="hidden lg:inline">Profile</span>
                   </button>
                 </>
               ) : (
-                <>
-                  <button
-                    onClick={() => onAuthOpen('signin')}
-                    className="px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors font-medium text-sm"
-                  >
-                    Sign In
-                  </button>
-                  <button
-                    onClick={() => onAuthOpen('signup')}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium text-sm transition-colors"
-                  >
-                    Sign Up
-                  </button>
-                </>
+                <button
+                  onClick={() => onAuthOpen('signin')}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                >
+                  Sign In
+                </button>
               )}
             </div>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-        
-        {/* How It Works */}
-        <div className="bg-white/95 backdrop-blur-sm rounded-3xl p-6 lg:p-8 shadow-xl border border-gray-200 mb-8 animate-fadeInUp">
-          <div className="text-center mb-8">
-            <h2 className="text-xl lg:text-2xl font-bold text-gray-900 mb-3">How it works</h2>
-            <p className="text-gray-600 text-sm lg:text-base">Three simple steps to comprehensive policy analysis with AI validation</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
-            <div className="text-center p-4 lg:p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border border-blue-100 card-hover">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-              </div>
-              <h3 className="font-bold text-gray-900 mb-2 text-sm lg:text-base">1. Upload & Validate</h3>
-              <p className="text-xs lg:text-sm text-gray-600">Smart file validation ensures only policy documents are analyzed</p>
-              <div className="mt-3 text-xs text-blue-600 font-medium">
-                ✓ PDF, Word, Text • ✓ Policy Detection • ✓ Content Validation
-              </div>
-            </div>
-
-            <div className="text-center p-4 lg:p-6 bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl border border-purple-100 card-hover">
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-              </div>
-              <h3 className="font-bold text-gray-900 mb-2 text-sm lg:text-base">2. AI Analysis</h3>
-              <p className="text-xs lg:text-sm text-gray-600">Advanced AI analyzes compliance gaps with industry benchmarks</p>
-              <div className="mt-3 text-xs text-purple-600 font-medium">
-                ✓ Framework Mapping • ✓ Risk Assessment • ✓ Benchmarking
-              </div>
-            </div>
-
-            <div className="text-center p-4 lg:p-6 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl border border-emerald-100 card-hover">
-              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-              <h3 className="font-bold text-gray-900 mb-2 text-sm lg:text-base">3. Actionable Results</h3>
-              <p className="text-xs lg:text-sm text-gray-600">Detailed insights with prioritized recommendations and timelines</p>
-              <div className="mt-3 text-xs text-emerald-600 font-medium">
-                ✓ Compliance Score • ✓ Gap Analysis • ✓ Action Plans
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Upload Section */}
-        <div className="animate-fadeInUp" style={{animationDelay: '0.1s'}}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {!analysis ? (
           <EnhancedDocumentUpload
-            onUpload={handleFileUpload}
-            uploading={loading}
-            progress={progress}
+            onFileUpload={handleFileUpload}
+            loading={loading}
             error={error}
+            progress={progress}
+            onAuthOpen={onAuthOpen}
           />
-        </div>
-
-        {/* Loading State */}
-        {loading && (
-          <div className="bg-white/95 backdrop-blur-sm rounded-3xl p-6 lg:p-8 shadow-xl border border-gray-200 mt-8 animate-fadeInUp">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-4 animate-ai-pulse">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-              </div>
-              <h3 className="text-lg lg:text-xl font-semibold text-gray-900 mb-2">Analyzing Policy Document</h3>
-              <p className="text-gray-600 mb-4 text-sm lg:text-base">{progress}</p>
-              <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
-                <div className="bg-gradient-primary h-3 rounded-full animate-ai-pulse transition-all duration-1000" style={{width: '65%'}}></div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
-                <div className="bg-blue-50 rounded-xl p-3 border border-blue-200">
-                  <div className="text-blue-600 text-xs font-semibold">STEP 1</div>
-                  <div className="text-blue-900 text-sm font-medium">Document Processing</div>
-                </div>
-                <div className="bg-purple-50 rounded-xl p-3 border border-purple-200">
-                  <div className="text-purple-600 text-xs font-semibold">STEP 2</div>
-                  <div className="text-purple-900 text-sm font-medium">AI Analysis</div>
-                </div>
-                <div className="bg-green-50 rounded-xl p-3 border border-green-200 opacity-50">
-                  <div className="text-green-600 text-xs font-semibold">STEP 3</div>
-                  <div className="text-green-900 text-sm font-medium">Results Generation</div>
-                </div>
-              </div>
-            </div>
-          </div>
+        ) : (
+          <AnalysisResultsRevamped
+            analysis={analysis}
+            documentInfo={documentInfo}
+            onNewAnalysis={handleNewAnalysis}
+          />
         )}
-
-        {/* Results Section */}
-        {analysis && (
-          <div className="mt-8 animate-fadeInUp">
-            <EnterpriseAnalysisResults
-              analysis={analysis}
-              documentInfo={documentInfo}
-              onExport={(format) => console.log('Export:', format)}
-              onShare={(platform) => console.log('Share:', platform)}
-            />
-          </div>
-        )}
-
-        {/* Enhanced Authentication Prompt */}
-        {!user && !loading && !analysis && (
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-3xl p-8 mt-8 border border-blue-200">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Save Your Analysis History</h3>
-              <p className="text-gray-600 mb-6">Create a free account to save your compliance analyses, track improvements, and access advanced features.</p>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <button
-                  onClick={() => onAuthOpen('signup')}
-                  className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300"
-                >
-                  Create Free Account
-                </button>
-                <button
-                  onClick={() => onAuthOpen('signin')}
-                  className="px-6 py-3 bg-white text-gray-700 rounded-xl font-semibold border border-gray-300 hover:bg-gray-50 transition-colors"
-                >
-                  Sign In
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Error State */}
-        {error && (
-          <div className="bg-red-50 border border-red-200 rounded-2xl p-4 lg:p-6 mt-8 animate-fadeInUp">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-              <div className="w-10 h-10 bg-red-500 rounded-xl flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-red-900 mb-1">Analysis Error</h3>
-                <p className="text-red-700 text-sm lg:text-base">{error}</p>
-                <div className="mt-3 text-xs text-red-600">
-                  💡 Try uploading a different policy document or check your internet connection
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-        
-      </main>
+      </div>
     </div>
   );
 }

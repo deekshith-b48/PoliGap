@@ -867,8 +867,8 @@ function InsightsView({ analysis, chartRefs }) {
   );
 }
 
-// Recommendations View Component
-function RecommendationsView({ analysis, filteredGaps, getSeverityConfig }) {
+// Action Plan View Component
+function ActionPlanView({ analysis, filteredGaps, getSeverityConfig }) {
   const prioritizedGaps = filteredGaps.sort((a, b) => {
     const severityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
     return severityOrder[a.severity?.toLowerCase()] - severityOrder[b.severity?.toLowerCase()];

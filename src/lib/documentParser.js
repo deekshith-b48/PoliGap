@@ -50,8 +50,8 @@ export class DocumentParser {
       // Import PDF.js dynamically
       const pdfjsLib = await import('pdfjs-dist');
 
-      // Set worker source for Vite
-      pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+      // Set worker source - use CDN for compatibility
+      pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
       
       const arrayBuffer = await file.arrayBuffer();
       const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;

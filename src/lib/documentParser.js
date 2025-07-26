@@ -74,12 +74,15 @@ export class DocumentParser {
 
       const arrayBuffer = await file.arrayBuffer();
 
-      // Use PDF document creation with CDN worker
+      // Use PDF document creation with optimized settings
       const pdf = await pdfjsLib.getDocument({
         data: arrayBuffer,
         useWorkerFetch: false,
         isEvalSupported: false,
-        useSystemFonts: true
+        useSystemFonts: true,
+        verbosity: 0, // Reduce logging
+        cMapPacked: true,
+        standardFontDataUrl: null // Don't load external fonts
       }).promise;
       
       let fullText = '';

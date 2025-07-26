@@ -195,7 +195,7 @@ function DashboardResourcesEnhanced() {
             }`}
           >
             <div className="flex items-center">
-              <HiOutlineShield className="w-5 h-5 mr-2" />
+              <HiOutlineShieldCheck className="w-5 h-5 mr-2" />
               Compliance Frameworks
             </div>
           </button>

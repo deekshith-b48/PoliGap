@@ -237,24 +237,37 @@ export class DocumentParser {
   }
 
   /**
-   * Extract text from a single PDF page with optimized settings
+   * Extract text from a single PDF page with optimized settings and timeout
    */
   static async extractPageText(pdf, pageNum) {
-    try {
-      const page = await pdf.getPage(pageNum);
-      const textContent = await page.getTextContent({
-        normalizeWhitespace: true,
-        disableCombineTextItems: false
-      });
+    const pageTimeout = 3000; // 3 second timeout per page
 
-      return textContent.items
+    try {
+      const pagePromise = pdf.getPage(pageNum).then(page =>
+        page.getTextContent({
+          normalizeWhitespace: true,
+          disableCombineTextItems: false,
+          includeMarkedContent: false // Faster processing
+        })
+      );
+
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Page timeout')), pageTimeout)
+      );
+
+      const textContent = await Promise.race([pagePromise, timeoutPromise]);
+
+      const pageText = textContent.items
         .map(item => item.str)
+        .filter(str => str.trim().length > 0) // Filter empty strings
         .join(' ')
         .replace(/\s+/g, ' ')
         .trim();
+
+      return pageText;
     } catch (error) {
       console.warn(`Failed to extract page ${pageNum}:`, error.message);
-      return '';
+      return `[Page ${pageNum} extraction failed]`;
     }
   }
 

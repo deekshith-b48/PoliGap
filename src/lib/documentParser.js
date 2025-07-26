@@ -52,8 +52,8 @@ export class DocumentParser {
       // Try direct PDF.js import first without complex worker setup
       const pdfjsLib = await import('pdfjs-dist');
 
-      // Disable worker immediately
-      pdfjsLib.GlobalWorkerOptions.workerSrc = false;
+      // Set worker to empty string to disable it
+      pdfjsLib.GlobalWorkerOptions.workerSrc = '';
 
       const arrayBuffer = await file.arrayBuffer();
 

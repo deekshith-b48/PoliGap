@@ -123,22 +123,40 @@ export class DocumentParser {
       console.log(`PDF loaded: ${pdf.numPages} pages`);
 
       let fullText = '';
-      const maxPages = isLargeFile ? Math.min(pdf.numPages, 20) : pdf.numPages;
+      const maxPages = isLargeFile ? Math.min(pdf.numPages, 10) : Math.min(pdf.numPages, 20); // Reduced max pages
 
-      // Process pages in batches for large files
-      const batchSize = isLargeFile ? 3 : 5;
+      // Process pages with timeout protection
+      const batchSize = isLargeFile ? 2 : 3; // Smaller batches for faster processing
+      const pageTimeout = 5000; // 5 second timeout per batch
 
       for (let i = 0; i < maxPages; i += batchSize) {
         const batch = [];
         const endPage = Math.min(i + batchSize, maxPages);
 
-        // Process batch of pages concurrently
+        // Process batch of pages concurrently with timeout
         for (let pageNum = i + 1; pageNum <= endPage; pageNum++) {
           batch.push(this.extractPageText(pdf, pageNum));
         }
 
-        const batchResults = await Promise.all(batch);
-        fullText += batchResults.join('\n') + '\n';
+        try {
+          const batchPromise = Promise.all(batch);
+          const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Batch timeout')), pageTimeout)
+          );
+
+          const batchResults = await Promise.race([batchPromise, timeoutPromise]);
+          fullText += batchResults.join('\n') + '\n';
+
+          // Quick check if we have enough content
+          if (fullText.length > 10000 && i > 5) {
+            console.log(`✅ Sufficient content extracted from first ${i + batchSize} pages`);
+            break;
+          }
+        } catch (batchError) {
+          console.warn(`Batch ${i}-${endPage} failed:`, batchError.message);
+          // Continue with next batch instead of failing completely
+          continue;
+        }
       }
 
       if (isLargeFile && maxPages < pdf.numPages) {

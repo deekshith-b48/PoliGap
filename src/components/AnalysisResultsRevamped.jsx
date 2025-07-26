@@ -21,6 +21,7 @@ function AnalysisResultsRevamped({ analysis }) {
   const [viewMode, setViewMode] = useState('grid');
   const [exportFormat, setExportFormat] = useState('pdf');
   const [showFilters, setShowFilters] = useState(false);
+  const [showExportPanel, setShowExportPanel] = useState(false);
   
   const chartRefs = useRef([]);
   const summaryRef = useRef(null);

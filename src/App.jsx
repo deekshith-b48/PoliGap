@@ -200,7 +200,7 @@ function AppContent() {
           >
             <Route index element={<DashboardOverview />} />
             <Route path="analytics" element={<ModernDashboardAnalytics />} />
-            <Route path="resources" element={<DashboardResources />} />
+            <Route path="resources" element={<DashboardResourcesEnhanced />} />
             <Route path="profile" element={<ModernDashboardProfile />} />
             <Route
               path="admin"

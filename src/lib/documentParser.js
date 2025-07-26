@@ -54,7 +54,9 @@ export class DocumentParser {
 
       // Set a reliable CDN worker source if not already set
       if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/5.3.93/pdf.worker.min.js';
+        const pdfVersion = pdfjsLib.version || '5.3.93';
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfVersion}/pdf.worker.min.js`;
+        console.log(`📦 Using PDF.js version ${pdfVersion} with matching worker`);
       }
 
       const arrayBuffer = await file.arrayBuffer();

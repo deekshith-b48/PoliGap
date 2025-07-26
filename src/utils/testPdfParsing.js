@@ -1,10 +1,5 @@
 // Test utility to verify PDF parsing functionality
-import * as pdfjsLib from 'pdfjs-dist';
-
-// Configure PDF.js worker - use same configuration as main app
-if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
-}
+import { configurePdfWorker } from './pdfWorker.js';
 
 export const testPdfParsing = async () => {
   console.log('🔧 Testing PDF.js configuration...');

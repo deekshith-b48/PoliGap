@@ -10,7 +10,7 @@ export const configurePdfWorker = async () => {
     const pdfjsLib = await import('pdfjs-dist');
 
     // Simply disable worker by default for better compatibility
-    pdfjsLib.GlobalWorkerOptions.workerSrc = false;
+    pdfjsLib.GlobalWorkerOptions.workerSrc = '';
 
     console.log('✅ PDF.js configured to run without worker (main thread)');
     isWorkerConfigured = true;

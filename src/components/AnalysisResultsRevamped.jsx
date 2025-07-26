@@ -421,6 +421,13 @@ function AnalysisResultsRevamped({ analysis }) {
             onClose={() => setShowAdvancedDashboard(false)}
           />
         )}
+
+        {/* Export & Share Panel */}
+        <ExportSharePanel
+          analysis={analysis}
+          isOpen={showExportPanel}
+          onClose={() => setShowExportPanel(false)}
+        />
       </div>
     </div>
   );
@@ -707,7 +714,7 @@ function InsightsView({ analysis, chartRefs }) {
         {/* Red Flags */}
         {analysis.structuredAnalysis?.redFlags && analysis.structuredAnalysis.redFlags.length > 0 && (
           <div className="mb-8">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">�� Critical Red Flags</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">🚨 Critical Red Flags</h3>
             <div className="space-y-4">
               {analysis.structuredAnalysis.redFlags.slice(0, 5).map((flag, index) => (
                 <div key={index} className="bg-red-50 rounded-2xl p-4 border border-red-200">

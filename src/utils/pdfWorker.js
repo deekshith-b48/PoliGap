@@ -24,22 +24,17 @@ export const configurePdfWorker = async () => {
 
 export const createPdfDocument = async (data, options = {}) => {
   await configurePdfWorker();
-  
+
   const pdfjsLib = await import('pdfjs-dist');
-  
+
   const defaultOptions = {
+    data,
     useWorkerFetch: false,
     isEvalSupported: false,
     useSystemFonts: true,
+    disableWorker: true,
     ...options
   };
 
-  if (pdfjsLib.GlobalWorkerOptions.workerSrc === false) {
-    defaultOptions.disableWorker = true;
-  }
-
-  return pdfjsLib.getDocument({
-    data,
-    ...defaultOptions
-  });
+  return pdfjsLib.getDocument(defaultOptions);
 };

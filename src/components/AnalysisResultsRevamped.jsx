@@ -492,10 +492,13 @@ function ExecutiveSummaryView({ analysis, filteredGaps, summaryRef, chartRefs })
       {/* Executive Summary */}
       <div ref={summaryRef} className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/50 p-8">
         <div className="flex items-center mb-6">
-          <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mr-4">
+          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mr-4">
             <FiBarChart className="w-6 h-6 text-white" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900">Executive Summary</h2>
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">📊 Executive Summary</h2>
+            <p className="text-gray-600 text-sm">Comprehensive overview of compliance status</p>
+          </div>
         </div>
         <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl p-6 border border-gray-200">
           <p className="text-gray-700 text-lg leading-relaxed">{analysis.summary}</p>

@@ -78,28 +78,28 @@ function DashboardOverview() {
     {
       title: 'Upload Document',
       description: 'Analyze a new policy document',
-      icon: '📄',
+      icon: HiOutlineUpload,
       action: () => navigate('/analyzer'),
       color: 'from-blue-500 to-blue-600'
     },
     {
       title: 'Generate Policy',
       description: 'Create a new compliance document',
-      icon: '✨',
+      icon: HiOutlineSparkles,
       action: () => navigate('/generator'),
       color: 'from-purple-500 to-purple-600'
     },
     {
       title: 'Risk Assessment',
       description: 'Evaluate organizational risk',
-      icon: '🎯',
+      icon: HiOutlineShieldCheck,
       action: () => navigate('/assessment'),
       color: 'from-orange-500 to-orange-600'
     },
     {
       title: 'Learn Frameworks',
       description: 'Explore compliance guides',
-      icon: '📚',
+      icon: HiOutlineAcademicCap,
       action: () => navigate('/compliances'),
       color: 'from-green-500 to-green-600'
     }

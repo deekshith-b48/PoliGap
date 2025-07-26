@@ -307,11 +307,11 @@ function ComplianceAnalysisDashboard({ analysisResults, onClose }) {
                           <div className="grid grid-cols-2 gap-4 text-sm">
                             <div>
                               <span className="text-gray-600">Keywords Found:</span>
-                              <span className="font-medium ml-2">{section.keywords.length}</span>
+                              <span className="font-medium ml-2">{section.keywords?.length || 0}</span>
                             </div>
                             <div>
                               <span className="text-gray-600">Red Flags:</span>
-                              <span className="font-medium ml-2">{section.redFlags.length}</span>
+                              <span className="font-medium ml-2">{section.redFlags?.length || 0}</span>
                             </div>
                           </div>
                         </div>

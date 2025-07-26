@@ -156,22 +156,6 @@ export function AuthProvider({ children }) {
     return { data, error };
   };
 
-  const clearSession = () => {
-    // Clear any stored auth tokens from localStorage
-    try {
-      const keys = Object.keys(localStorage);
-      keys.forEach(key => {
-        if (key.startsWith('sb-') || key.includes('supabase')) {
-          localStorage.removeItem(key);
-        }
-      });
-    } catch (error) {
-      console.warn('Error clearing localStorage:', error);
-    }
-
-    setUser(null);
-  };
-
   const signOut = async () => {
     try {
       const { error } = await supabase.auth.signOut();

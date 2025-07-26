@@ -152,7 +152,7 @@ function DashboardOverview() {
               className="group bg-white rounded-xl p-6 border border-gray-200 hover:border-gray-300 transition-all duration-300 hover:shadow-lg transform hover:scale-105"
             >
               <div className={`w-12 h-12 bg-gradient-to-r ${action.color} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                <span className="text-2xl text-white">{action.icon}</span>
+                <action.icon className="w-6 h-6 text-white" />
               </div>
               <h3 className="font-semibold text-gray-900 mb-2">{action.title}</h3>
               <p className="text-sm text-gray-600">{action.description}</p>

@@ -128,9 +128,32 @@ export function AuthProvider({ children }) {
     return { data, error };
   };
 
+  const clearSession = () => {
+    // Clear any stored auth tokens from localStorage
+    try {
+      const keys = Object.keys(localStorage);
+      keys.forEach(key => {
+        if (key.startsWith('sb-') || key.includes('supabase')) {
+          localStorage.removeItem(key);
+        }
+      });
+    } catch (error) {
+      console.warn('Error clearing localStorage:', error);
+    }
+
+    setUser(null);
+  };
+
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    return { error };
+    try {
+      const { error } = await supabase.auth.signOut();
+      clearSession();
+      return { error };
+    } catch (error) {
+      // Even if signOut fails, clear local session
+      clearSession();
+      return { error };
+    }
   };
 
   const signInWithProvider = async (provider) => {

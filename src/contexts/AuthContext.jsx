@@ -12,13 +12,33 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Get initial session with error handling
+    // Get initial session with comprehensive error handling
     const initializeAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        setUser(session?.user ?? null);
+        const { data: { session }, error } = await supabase.auth.getSession();
+
+        if (error) {
+          // Handle specific refresh token errors
+          if (error.message?.includes('refresh_token_not_found') ||
+              error.message?.includes('Invalid Refresh Token')) {
+            console.warn('Invalid refresh token detected, clearing session');
+            await supabase.auth.signOut();
+            setUser(null);
+          } else {
+            console.warn('Auth session error:', error);
+            setUser(null);
+          }
+        } else {
+          setUser(session?.user ?? null);
+        }
       } catch (error) {
         console.warn('Auth initialization error:', error);
+        // Clear any corrupted session
+        try {
+          await supabase.auth.signOut();
+        } catch (signOutError) {
+          console.warn('Error clearing session:', signOutError);
+        }
         setUser(null);
       } finally {
         setLoading(false);
@@ -27,16 +47,39 @@ export function AuthProvider({ children }) {
 
     initializeAuth();
 
-    // Listen for auth changes with error handling
+    // Listen for auth changes with enhanced error handling
     let subscription;
     try {
-      const { data } = supabase.auth.onAuthStateChange((event, session) => {
+      const { data } = supabase.auth.onAuthStateChange(async (event, session) => {
+        // Handle token refresh errors
+        if (event === 'TOKEN_REFRESHED' && !session) {
+          console.warn('Token refresh failed, clearing session');
+          setUser(null);
+          return;
+        }
+
+        // Handle sign out events
+        if (event === 'SIGNED_OUT') {
+          setUser(null);
+          setLoading(false);
+          return;
+        }
+
+        // Handle sign in events
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          setUser(session?.user ?? null);
+          setLoading(false);
+          return;
+        }
+
+        // Default handling
         setUser(session?.user ?? null);
         setLoading(false);
       });
       subscription = data.subscription;
     } catch (error) {
       console.warn('Auth state change listener error:', error);
+      setLoading(false);
     }
 
     return () => {

@@ -188,7 +188,8 @@ export function AuthProvider({ children }) {
     signOut,
     signInWithProvider,
     resetPassword,
-    updateProfile
+    updateProfile,
+    clearSession
   };
 
   return (

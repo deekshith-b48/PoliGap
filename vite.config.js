@@ -10,4 +10,11 @@ export default defineConfig({
       plugins: [tailwindcss(), autoprefixer()],
     },
   },
+  optimizeDeps: {
+    include: ['pdfjs-dist']
+  },
+  worker: {
+    format: 'es'
+  },
+  assetsInclude: ['**/*.worker.js']
 });

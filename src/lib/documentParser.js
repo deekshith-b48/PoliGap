@@ -333,27 +333,61 @@ This document demonstrates comprehensive policy structure and compliance framewo
   }
 
   /**
-   * Validate file before processing
+   * Enhanced file validation before processing
    */
   static validateFile(file) {
-    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (!file) {
+      throw new Error('No file provided for analysis');
+    }
+
+    const maxSize = 50 * 1024 * 1024; // 50MB (increased from 10MB)
+    const minSize = 100; // Minimum 100 bytes
+
     const allowedTypes = [
       'application/pdf',
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       'application/msword',
       'text/plain',
-      'application/rtf'
+      'application/rtf',
+      'text/rtf'
     ];
 
+    // Check file size
     if (file.size > maxSize) {
-      throw new Error('File size exceeds 10MB limit');
+      throw new Error(`File size (${(file.size / 1024 / 1024).toFixed(1)}MB) exceeds 50MB limit`);
     }
 
+    if (file.size < minSize) {
+      throw new Error('File appears to be empty or too small for analysis');
+    }
+
+    // Validate file name
+    const fileName = file.name.toLowerCase();
+    if (fileName.length > 255) {
+      throw new Error('File name is too long. Please use a shorter file name.');
+    }
+
+    // Check for valid extensions
+    const allowedExtensions = ['.pdf', '.docx', '.doc', '.txt', '.rtf'];
+    const hasValidExtension = allowedExtensions.some(ext => fileName.endsWith(ext));
+
+    if (!hasValidExtension) {
+      throw new Error('Invalid file extension. Please upload PDF, Word, or text files.');
+    }
+
+    // Check file type
     const fileType = file.type || this.getFileTypeFromName(file.name);
     if (!allowedTypes.includes(fileType)) {
-      throw new Error('Unsupported file format. Please upload PDF, DOCX, or TXT files.');
+      throw new Error(`Unsupported file format: ${fileType}. Please upload PDF, DOCX, DOC, or TXT files.`);
     }
 
+    // Check for suspicious patterns
+    const suspiciousPatterns = ['.exe', '.bat', '.com', '.scr', '.vbs', '.js'];
+    if (suspiciousPatterns.some(pattern => fileName.includes(pattern))) {
+      throw new Error('File appears to contain executable content. Please upload document files only.');
+    }
+
+    console.log(`✅ File validation passed: ${file.name} (${(file.size / 1024).toFixed(1)}KB)`);
     return true;
   }
 

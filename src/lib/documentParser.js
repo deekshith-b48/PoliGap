@@ -74,6 +74,7 @@ export class DocumentParser {
       }
 
       const arrayBuffer = await file.arrayBuffer();
+      console.log(`📦 PDF file size: ${arrayBuffer.byteLength} bytes`);
 
       // Use PDF document creation with optimized settings
       const pdf = await pdfjsLib.getDocument({

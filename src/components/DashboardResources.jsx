@@ -12,7 +12,10 @@ import {
   HiOutlineAcademicCap,
   HiOutlineClipboardList,
   HiOutlineTemplate,
-  HiOutlineDocumentText
+  HiOutlineDocumentText,
+  HiOutlineShield,
+  HiOutlineGlobe,
+  HiOutlineFilter
 } from 'react-icons/hi';
 import {
   MdSecurity,
@@ -23,6 +26,8 @@ import {
   MdVerifiedUser,
   MdLibraryBooks
 } from 'react-icons/md';
+import { complianceFrameworks, getFrameworksByCategory, searchFrameworks } from '../data/complianceFrameworks';
+import FrameworkDetailsPopup from './FrameworkDetailsPopup';
 
 function DashboardResources() {
   const { user } = useAuth();

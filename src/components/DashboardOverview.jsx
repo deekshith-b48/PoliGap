@@ -211,7 +211,7 @@ function DashboardOverview() {
               </p>
             </div>
             <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-              <span className="text-green-600 text-xl">🕒</span>
+              <HiOutlineClock className="w-6 h-6 text-green-600" />
             </div>
           </div>
         </div>

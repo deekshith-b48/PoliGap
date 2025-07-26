@@ -32,8 +32,10 @@ function ComplianceAnalysisDashboard({ analysisResults, onClose }) {
   };
 
   const redFlagsByCategory = (redFlags || []).reduce((acc, flag) => {
-    if (!acc[flag.category]) acc[flag.category] = [];
-    acc[flag.category].push(flag);
+    if (flag && flag.category) {
+      if (!acc[flag.category]) acc[flag.category] = [];
+      acc[flag.category].push(flag);
+    }
     return acc;
   }, {});
 

@@ -265,7 +265,7 @@ function ComplianceAnalysisDashboard({ analysisResults, onClose }) {
                 
                 {redFlags.length === 0 && (
                   <div className="text-center py-12">
-                    <div className="text-6xl mb-4">✅</div>
+                    <div className="text-6xl mb-4">��</div>
                     <h3 className="text-xl font-bold text-gray-900 mb-2">No Critical Red Flags Detected</h3>
                     <p className="text-gray-600">Your policy document shows good compliance practices.</p>
                   </div>
@@ -405,7 +405,7 @@ function ComplianceAnalysisDashboard({ analysisResults, onClose }) {
                       <div className="bg-red-50 rounded-2xl p-6 border border-red-200">
                         <h3 className="font-bold text-red-900 mb-4">Missing Requirements</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                          {frameworkScores[activeFramework].missingElements.map((element, idx) => (
+                          {(frameworkScores[activeFramework]?.missingElements || []).map((element, idx) => (
                             <div key={idx} className="bg-white rounded-xl p-3 border border-red-200">
                               <div className="text-red-800 font-medium text-sm">{element}</div>
                             </div>

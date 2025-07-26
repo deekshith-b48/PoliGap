@@ -71,13 +71,14 @@ export class DocumentParser {
         
         fullText += pageText + '\n';
       }
-      
+
+      console.log(`✅ Successfully extracted ${fullText.length} characters from PDF`);
       return this.cleanText(fullText);
     } catch (error) {
-      console.error('❌ PDF extraction failed:', error);
+      console.error('❌ PDF extraction failed:', error.message);
 
       // Final fallback: return mock content for demonstration
-      console.log('⚠️ Using mock content for PDF analysis');
+      console.log('⚠️ PDF parsing failed, using mock content for analysis demonstration');
       return this.generateMockPolicyContent(file.name);
     }
   }

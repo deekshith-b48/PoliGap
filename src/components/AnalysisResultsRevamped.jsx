@@ -140,7 +140,7 @@ function AnalysisResultsRevamped({ analysis }) {
 
   const getSeverityConfig = (severity) => {
     const configs = {
-      critical: { color: 'bg-red-500', icon: '🚨', bgColor: 'bg-red-50 border-red-200', textColor: 'text-red-800' },
+      critical: { color: 'bg-red-500', icon: '��', bgColor: 'bg-red-50 border-red-200', textColor: 'text-red-800' },
       high: { color: 'bg-orange-500', icon: '⚠️', bgColor: 'bg-orange-50 border-orange-200', textColor: 'text-orange-800' },
       medium: { color: 'bg-yellow-500', icon: '📋', bgColor: 'bg-yellow-50 border-yellow-200', textColor: 'text-yellow-800' },
       low: { color: 'bg-green-500', icon: '✅', bgColor: 'bg-green-50 border-green-200', textColor: 'text-green-800' }
@@ -480,7 +480,7 @@ function OverviewView({ analysis, filteredGaps, summaryRef, chartRefs }) {
       <div ref={summaryRef} className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/50 p-8">
         <div className="flex items-center mb-6">
           <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mr-4">
-            <FiBarChart3 className="w-6 h-6 text-white" />
+            <FiBarChart className="w-6 h-6 text-white" />
           </div>
           <h2 className="text-2xl font-bold text-gray-900">Executive Summary</h2>
         </div>

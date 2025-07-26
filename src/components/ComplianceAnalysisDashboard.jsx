@@ -187,7 +187,7 @@ function ComplianceAnalysisDashboard({ analysisResults, onClose }) {
                   Framework Compliance Overview
                 </h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {Object.entries(frameworkScores).map(([framework, data]) => (
+                  {Object.entries(frameworkScores || {}).map(([framework, data]) => (
                     <div key={framework} className="bg-gray-50 rounded-2xl p-6">
                       <div className="flex justify-between items-center mb-4">
                         <h3 className="font-bold text-gray-900">{framework}</h3>
